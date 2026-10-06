@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Flame in Freefall — Team CinderLens
+   tokens.css — design tokens (colour, type scale, spacing, radii, motion)
+   Single source of truth for the visual language. Change values here first.
+   ========================================================================== */
+
+:root {
+  /* --- Surfaces: restrained deep navy ------------------------------------ */
+  --bg-app: #0a1120;
+  --bg-shell: #0d1626;
+  --bg-panel: #111b2e;
+  --bg-panel-2: #16223a;
+  --bg-inset: #0b1424;
+  --bg-hover: #182742;
+
+  /* --- Lines ------------------------------------------------------------- */
+  --line-soft: #1e2b45;
+  --line: #253352;
+  --line-strong: #35496e;
+
+  /* --- Text: high contrast for long reading sessions ---------------------- */
+  --tx-1: #e9eff8;   /* headings, primary text      ~15.6:1 on --bg-app */
+  --tx-2: #b3c1d8;   /* body copy                   ~9.1:1             */
+  --tx-3: #8593ab;   /* meta, captions              ~5.2:1             */
+  --tx-4: #64718a;   /* disabled / placeholder      (large text only)   */
+
+  /* --- Teal: interaction -------------------------------------------------- */
+  --teal-300: #7ff0e2;
+  --teal-400: #3ed6c4;
+  --teal-500: #16b8a7;
+  --teal-600: #0d9184;
+  --teal-wash: rgba(62, 214, 196, 0.10);
+  --teal-wash-2: rgba(62, 214, 196, 0.18);
+
+  /* --- Ember: combustion highlights (used sparingly) ---------------------- */
+  --ember-300: #f7c982;
+  --ember-400: #edaa4a;
+  --ember-500: #c8822a;
+  --ember-wash: rgba(237, 170, 74, 0.12);
+
+  /* --- Semantic status ---------------------------------------------------- */
+  --st-ok: #4bc79a;          /* comparable / recorded            */
+  --st-warn: #e8b055;        /* caution / partial                */
+  --st-risk: #e5796b;        /* unsuitable / extinction          */
+  --st-info: #7ba6f2;        /* informational                    */
+  --st-unknown: #6d7b93;     /* not recorded / no evidence       */
+
+  /* --- Typography --------------------------------------------------------- */
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --fs-11: 0.6875rem;  /* micro labels      */
+  --fs-12: 0.75rem;    /* badges, meta      */
+  --fs-13: 0.8125rem;  /* dense table text  */
+  --fs-14: 0.875rem;   /* secondary body    */
+  --fs-15: 0.9375rem;  /* body              */
+  --fs-17: 1.0625rem;  /* lead              */
+  --fs-20: 1.25rem;    /* card titles       */
+  --fs-24: 1.5rem;     /* section titles    */
+  --fs-30: 1.875rem;   /* page titles       */
+  --fs-38: 2.375rem;   /* hero              */
+
+  --lh-tight: 1.22;
+  --lh-snug: 1.4;
+  --lh-body: 1.65;
+
+  --tr-tight: -0.02em;
+  --tr-wide: 0.08em;
+
+  /* --- Spacing scale (4px base) ------------------------------------------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+
+  /* --- Radii -------------------------------------------------------------- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-full: 999px;
+
+  /* --- Elevation ---------------------------------------------------------- */
+  --sh-1: 0 1px 2px rgba(3, 8, 18, 0.45);
+  --sh-2: 0 6px 18px -8px rgba(3, 8, 18, 0.7);
+  --sh-3: 0 18px 44px -18px rgba(3, 8, 18, 0.85);
+
+  /* --- Motion: subtle, explanatory --------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --t-fast: 120ms;
+  --t-med: 200ms;
+  --t-slow: 320ms;
+
+  /* --- Layout ------------------------------------------------------------- */
+  --w-max: 1240px;
+  --w-prose: 68ch;
+  --h-header: 60px;
+}

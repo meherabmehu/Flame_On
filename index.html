@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flame in Freefall · Team CinderLens</title>
+<meta name="description" content="A question-led explorer across recorded microgravity combustion conditions. Prototype for the 2026 NASA Space Apps Challenge by Team CinderLens.">
+<meta name="color-scheme" content="dark">
+
+<!-- No external fonts or CDNs: the prototype must run from a plain file server
+     and inside restricted previews. System font stacks are used instead. -->
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f1a2c'/%3E%3Cpath d='M16 24c0 0-6-4.4-6-9.6C10 10.8 12.6 8 16 5c3.4 3 6 5.8 6 9.4 0 5.2-6 9.6-6 9.6Z' fill='none' stroke='%23edaa4a' stroke-width='1.6'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<div class="app">
+  <header class="header" id="app-header"></header>
+  <div id="app-strip"></div>
+
+  <main id="main" tabindex="-1">
+    <div class="wrap section">
+      <div class="state">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="state-title">Loading the explorer</p>
+        <p>Preparing the demonstration catalog and the screen shell.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" id="app-footer"></footer>
+</div>
+
+<noscript>
+  <div class="wrap section">
+    <div class="notice notice-warn">
+      <p><strong>JavaScript is required.</strong> This prototype renders every screen in the browser, including the filter and comparison logic.
+      Enable JavaScript, then reload the page.</p>
+    </div>
+  </div>
+</noscript>
+
+<!-- Data layer: replace catalog.js with backend responses to go live. -->
+<script src="assets/js/data/catalog.js"></script>
+
+<!-- Core logic -->
+<script src="assets/js/store.js"></script>
+<script src="assets/js/matcher.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/router.js"></script>
+<script src="assets/js/shell.js"></script>
+
+<!-- Screens -->
+<script src="assets/js/pages/overview.js"></script>
+<script src="assets/js/pages/explorer.js"></script>
+<script src="assets/js/pages/compare.js"></script>
+<script src="assets/js/pages/evidence.js"></script>
+<script src="assets/js/pages/record.js"></script>
+<script src="assets/js/pages/dataNotes.js"></script>
+
+<!-- Bootstrap -->
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
