@@ -1,0 +1,96 @@
+/* ==========================================================================
+   responsive.css — tablet and mobile behaviour
+   Desktop-first: the prototype is tuned for the presentation demo, then
+   progressively simplified for narrower viewports.
+   ========================================================================== */
+
+@media (max-width: 1100px) {
+  .explorer { grid-template-columns: 248px minmax(0, 1fr); gap: var(--sp-6); }
+  .compare-grid { grid-template-columns: minmax(0, 1fr) 300px; gap: var(--sp-6); }
+  .evidence-grid { grid-template-columns: minmax(0, 1fr); }
+  .detail-grid { grid-template-columns: minmax(0, 1fr); }
+  .flow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .honesty-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+  :root { --fs-38: 2rem; --fs-30: 1.6rem; }
+
+  .section { padding-block: var(--sp-12); }
+  .hero { padding-block: var(--sp-12) var(--sp-10); }
+
+  .explorer { grid-template-columns: minmax(0, 1fr); }
+  .filters {
+    position: static;
+    max-height: none;
+  }
+  .filters-scroll { max-height: 360px; }
+
+  .compare-grid { grid-template-columns: minmax(0, 1fr); }
+  .side-panel { position: static; }
+
+  .check-row { grid-template-columns: 1fr 1fr; row-gap: var(--sp-2); }
+  .check-row.is-head { display: none; }
+  .check-row > *:nth-child(2)::before { content: "A · "; color: var(--tx-4); }
+  .check-row > *:nth-child(3)::before { content: "B · "; color: var(--tx-4); }
+
+  .grid-4, .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .split-claim { grid-template-columns: 1fr; }
+
+  /* Mobile navigation */
+  .nav-toggle { display: inline-flex; }
+  .nav {
+    position: absolute;
+    top: var(--h-header);
+    left: 0;
+    right: 0;
+    background: var(--bg-shell);
+    border-bottom: 1px solid var(--line);
+    padding: var(--sp-3) var(--sp-4) var(--sp-5);
+    display: none;
+    box-shadow: var(--sh-2);
+  }
+  .nav.is-open { display: block; }
+  .nav-list { flex-direction: column; align-items: stretch; gap: var(--sp-1); }
+  .nav-link { padding: var(--sp-3); font-size: var(--fs-15); }
+  .brand-sub { display: none; }
+}
+
+@media (max-width: 640px) {
+  :root { --fs-38: 1.7rem; --fs-30: 1.45rem; --fs-24: 1.3rem; }
+
+  .wrap { padding-inline: var(--sp-4); }
+  .grid-2, .grid-3, .grid-4, .stat-strip, .flow-steps, .pair-grid, .def-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .footer-grid { grid-template-columns: 1fr; gap: var(--sp-6); }
+  .card, .card-lg, .step-body, .panel-body { padding: var(--sp-4); }
+  .state { padding: var(--sp-8) var(--sp-4); }
+  .header-actions .mode-chip .mode-text { display: none; }
+  .timeline-item { grid-template-columns: 1fr; gap: var(--sp-1); }
+  .timeline-body { border-left: 0; padding-left: 0; }
+  .toast-region { left: var(--sp-4); right: var(--sp-4); bottom: var(--sp-4); }
+  .popover { left: var(--sp-4); right: var(--sp-4); width: auto; }
+  .check-row { grid-template-columns: 1fr; }
+  .check-row > *:nth-child(2)::before { content: "Test A · "; }
+  .check-row > *:nth-child(3)::before { content: "Test B · "; }
+}
+
+/* --- Print: keep the evidence sheet useful ------------------------------ */
+@media print {
+  .header, .footer, .side-panel, .toast-region, .hero-actions { display: none !important; }
+  body { background: #fff; color: #111; }
+  .card, .record-card, .panel { border-color: #ccc; }
+}
+
+/* --- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
