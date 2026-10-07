@@ -27,9 +27,11 @@ h1, h2, h3, h4 {
   letter-spacing: var(--tr-tight);
 }
 
-h1 { font-size: var(--fs-38); }
-h2 { font-size: var(--fs-24); }
-h3 { font-size: var(--fs-20); }
+/* Fluid headings: readable from a 320 px phone to a 2560 px display wall,
+   without a jump at any breakpoint. */
+h1 { font-size: clamp(1.5rem, 1.15rem + 1.8vw, var(--fs-38)); }
+h2 { font-size: clamp(1.15rem, 1.02rem + 0.7vw, var(--fs-24)); }
+h3 { font-size: clamp(1.05rem, 0.98rem + 0.4vw, var(--fs-20)); }
 h4 { font-size: var(--fs-15); }
 
 p { margin: 0; }
@@ -199,9 +201,9 @@ img, svg, video, canvas, table { max-width: 100%; }
 main { flex: 1 0 auto; }
 
 .section {
-  padding-block: var(--sp-16);
+  padding-block: clamp(32px, 6vw, var(--sp-16));
 }
-.section-sm { padding-block: var(--sp-12); }
+.section-sm { padding-block: clamp(24px, 4.5vw, var(--sp-12)); }
 
 .section-head {
   display: flex;
