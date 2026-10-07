@@ -452,6 +452,8 @@
   border-bottom: 1px solid var(--line-soft);
   font-size: var(--fs-13);
 }
+/* Labels that only appear once the rows stack on a narrow screen. */
+.check-cell-label { display: none; }
 .check-row:last-child { border-bottom: 0; }
 .check-row.is-head {
   font-size: var(--fs-11);

@@ -30,10 +30,10 @@ const ComparePage = (function () {
       '<div class="step-head">' +
         '<span class="step-num">1</span>' +
         '<h2 id="step1-title">Choose the factor to compare</h2>' +
-        '<span class="step-hint">One factor at a time</span>' +
       '</div>' +
       '<div class="step-body">' +
-        '<p style="font-size:var(--fs-14);max-width:80ch">The comparison holds every other recorded condition as close as the tests allow and varies exactly one factor. ' +
+        '<p dir="auto" style="font-size:var(--fs-14);max-width:80ch">' +
+          'One factor at a time. The comparison holds every other recorded condition as close as the tests allow and varies exactly that factor. ' +
           'Only values that exist in the indexed records are offered.</p>' +
         '<div class="factor-grid mt-4">' +
           FACTORS.map((f) => {
@@ -169,9 +169,13 @@ const ComparePage = (function () {
           : '<span class="badge badge-unknown">not recorded</span>';
         return '<div class="check-row ' + cls + '" role="row">' +
           '<span class="check-field" role="cell">' + UI.esc(r.label) + '</span>' +
-          '<span class="check-val' + (r.aMissing ? ' is-missing' : '') + '" role="cell">' + UI.esc(r.a || 'not recorded') + '</span>' +
-          '<span class="check-val' + (r.bMissing ? ' is-missing' : '') + '" role="cell">' + UI.esc(r.b || 'not recorded') + '</span>' +
-          '<span role="cell">' + badge + '</span>' +
+          '<span class="check-val check-a' + (r.aMissing ? ' is-missing' : '') + '" role="cell">' +
+            '<span class="check-cell-label">' + UI.esc(c.a || 'Test A') + '</span>' +
+            UI.esc(r.a || 'not recorded') + '</span>' +
+          '<span class="check-val check-b' + (r.bMissing ? ' is-missing' : '') + '" role="cell">' +
+            '<span class="check-cell-label">' + UI.esc(c.b || 'Test B') + '</span>' +
+            UI.esc(r.b || 'not recorded') + '</span>' +
+          '<span class="check-assess" role="cell">' + badge + '</span>' +
         '</div>';
       }).join('') +
     '</div></div>';
