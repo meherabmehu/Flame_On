@@ -1,0 +1,153 @@
+/* ==========================================================================
+   pages/dataNotes.js — in-app documentation
+   Two audiences at once: a reviewer checking scientific honesty, and the
+   developer who will connect the Django backend.
+   ========================================================================== */
+
+const DataNotesPage = (function () {
+
+  function honestyBlock() {
+    const rows = [
+      ['Experiment records', 'Illustrative demonstration rows in <code>assets/js/data/catalog.js</code>. Test IDs, values, outcomes and timings were written by the team to exercise the interface.', 'Replace with hand-reviewed extraction from PSI files and NTRS reports.'],
+      ['Media', 'Never streamed and never shown. A generated duct schematic is drawn from the record’s own fields and labelled as a schematic.', 'Serve PSI video or extracted frames and keep the source label visible.'],
+      ['Visual measurements', 'None produced. The measurement panel states that computer vision is proposed, not implemented.', 'Add verified measurements only after a human review pass.'],
+      ['Retrieval ranking', 'A transparent rule-based match check. The suggested pairs carry a “fit” indicator derived from matched conditions, not from a trained model.', 'Swap in the ML retrieval step and compare it against the keyword baseline, as the build guide describes.'],
+      ['Predictions and scores', 'No fire-risk prediction, no accuracy figure, no confidence percentage is displayed anywhere.', 'Only published if verified labels and coverage support it, and only with its uncertainty stated.'],
+      ['Abstention', 'Any pair that differs in too many conditions, or whose factor is not recorded, returns “Not enough comparable tests.”', 'Keep this behaviour: it is the scientific contribution of the product.']
+    ];
+    return '<div class="table-wrap"><table class="table">' +
+      '<thead><tr><th scope="col">Area</th><th scope="col">What this prototype does</th><th scope="col">What replaces it</th></tr></thead><tbody>' +
+      rows.map((r) => '<tr><td class="tx-1"><strong>' + r[0] + '</strong></td><td>' + r[1] + '</td><td class="muted">' + r[2] + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  function connectionBlock() {
+    const endpoints = [
+      { m: 'GET', p: '/api/records/', d: 'Full catalog. Each object uses the exact field names in catalog.js, including the nested <code>outcomes</code>, <code>phases</code>, <code>media</code> and <code>source</code> objects.', f: 'Replaces <code>CATALOG</code>' },
+      { m: 'GET', p: '/api/records/{id}/', d: 'A single record for the experiment detail page.', f: 'Replaces <code>Store.byId()</code>' },
+      { m: 'GET', p: '/api/factors/', d: 'The comparable factors with labels, units, tolerances and the note shown beside each factor.', f: 'Replaces <code>FACTORS</code> and <code>MATCH_RULES</code>' },
+      { m: 'GET', p: '/api/coverage/', d: 'Coverage counts per factor combination and the gap statements, so the matrix and the “gaps stated in plain English” list stay in step with the catalog.', f: 'Replaces <code>Matcher.coverageGrid()</code>' },
+      { m: 'GET', p: '/api/compare/?a=ID&b=ID&factor=KEY', d: 'Server-side verdict so the same rules are authoritative in one place, and the match check can be tested directly.', f: 'Replaces <code>Matcher.pairVerdict()</code>' },
+      { m: 'GET', p: '/api/records/{id}/neighbours/?factor=KEY', d: 'Suggested comparable tests for one record.', f: 'Replaces <code>Matcher.suggestPairs()</code>' }
+    ];
+    return '<div class="table-wrap"><table class="table">' +
+      '<thead><tr><th scope="col">Endpoint</th><th scope="col">Purpose</th><th scope="col">Frontend hook</th></tr></thead><tbody>' +
+      endpoints.map((e) =>
+        '<tr><td class="nowrap"><span class="badge badge-teal">' + e.m + '</span> <code class="mono">' + e.p + '</code></td>' +
+        '<td>' + e.d + '</td><td class="muted">' + e.f + '</td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  function structureBlock() {
+    return '<pre class="card" style="overflow:auto;font-size:var(--fs-12);line-height:1.7;color:var(--tx-2)">' +
+UI.esc(
+`flame-on/
+├── index.html                  single entry point, hash-routed
+├── assets/css/
+│   ├── tokens.css              colour, type, spacing, motion
+│   ├── base.css                reset, typography, layout primitives
+│   ├── components.css          header, buttons, badges, tables, states
+│   ├── pages.css               page layouts (explorer, compare, evidence)
+│   └── responsive.css          tablet and mobile behaviour
+├── assets/js/
+│   ├── data/catalog.js         DEMONSTRATION RECORDS + factor definitions
+│   ├── store.js                state, filtering, faceting, persistence
+│   ├── matcher.js              comparison + abstention rules (portable to Python)
+│   ├── ui.js                   shared components and empty states
+│   ├── router.js               hash routing
+│   ├── shell.js                header, navigation, data-mode control
+│   ├── pages/                  overview, explorer, compare, evidence, record, data-notes
+│   └── main.js                 bootstrap and delegated actions
+└── docs/                       design notes and screen walkthrough`) +
+    '</pre>';
+  }
+
+  function runBlock() {
+    return '<div class="card card-lg">' +
+      '<div class="card-title"><h3>Running the prototype locally</h3><span class="badge badge-teal">no build step</span></div>' +
+      '<p class="muted" style="font-size:var(--fs-13)">The frontend is plain HTML, CSS and JavaScript with no dependencies.</p>' +
+      '<ol class="mt-4" style="display:flex;flex-direction:column;gap:14px">' +
+        '<li><strong class="tx-1">1. Clone the repository</strong><pre class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">git clone https://github.com/meherabmehu/Flame_On.git\ncd Flame_On</pre></li>' +
+        '<li><strong class="tx-1">2. Serve the folder</strong>' +
+          '<pre class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">python3 -m http.server 8000</pre>' +
+          '<p class="muted mt-2" style="font-size:var(--fs-13)">Opening <code>index.html</code> directly also works, but a local server keeps navigation and clipboard behaviour consistent.</p></li>' +
+        '<li><strong class="tx-1">3. Open the app</strong><pre class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">http://localhost:8000</pre></li>' +
+      '</ol>' +
+      '<hr>' +
+      '<h4>Demonstration walkthrough (about one minute)</h4>' +
+      '<ol class="mt-3" style="display:flex;flex-direction:column;gap:10px;font-size:var(--fs-14)">' +
+        '<li>1. On the overview, press <strong class="tx-1">Open this comparison</strong> to load the airflow example.</li>' +
+        '<li>2. In the workspace, step 3 already shows the match check and the recorded difference.</li>' +
+        '<li>3. Change the varied factor to <strong class="tx-1">Thickness</strong> and pick a suggested pair to see the same machinery on another condition.</li>' +
+        '<li>4. Load <strong class="tx-1">BASS2-T121 vs BASS2-T145</strong> to watch the interface refuse to conclude.</li>' +
+        '<li>5. Open an evidence view, then the full record, to show traceability and limitations.</li>' +
+        '<li>6. Switch the data chip in the header to <strong class="tx-1">Empty catalog</strong> to show the honest empty state.</li>' +
+      '</ol>' +
+    '</div>';
+  }
+
+  function render(route, container) {
+    container.innerHTML =
+      '<div class="page-head"><div class="wrap page-head-inner">' +
+        '<div>' +
+          '<p class="eyebrow">Data notes</p>' +
+          '<h1>What is real here, what is not, and where the backend connects</h1>' +
+          '<p class="lead">Written for two readers: a reviewer checking the honesty of the demo, and the developer who will wire this frontend to a Django service.</p>' +
+        '</div>' +
+      '</div></div>' +
+      '<div class="wrap section-sm stack-lg">' +
+
+        UI.state({
+          role: 'note',
+          icon: 'alert',
+          title: 'Demonstration content',
+          message: UI.esc(COPY.datasetCaveat) + ' ' + UI.esc(COPY.noProvenance),
+          inline: true
+        }) +
+
+        '<section class="card card-lg">' +
+          '<div class="card-title"><h2 style="font-size:var(--fs-20)">Honesty table</h2>' +
+            '<span class="badge badge-ember">Read before judging output</span></div>' +
+          honestyBlock() +
+        '</section>' +
+
+        '<section class="card card-lg">' +
+          '<div class="card-title"><h2 style="font-size:var(--fs-20)">Backend connection points</h2>' +
+            '<span class="badge badge-teal">Django-ready</span></div>' +
+          '<p style="font-size:var(--fs-14);max-width:78ch">The frontend never computes science it cannot see: every rule lives in <code>matcher.js</code> and every field name comes from the catalog. ' +
+            'The endpoints below are the only places that need to change when the reviewed dataset replaces the demonstration rows.</p>' +
+          '<div class="mt-4">' + connectionBlock() + '</div>' +
+          '<p class="muted mt-4" style="font-size:var(--fs-13)">Response shapes are documented in <code>docs/design-notes.md</code>. ' +
+            'If the backend omits a field, the interface keeps showing “not recorded” rather than assuming a value.</p>' +
+        '</section>' +
+
+        '<section class="card card-lg">' +
+          '<div class="card-title"><h2 style="font-size:var(--fs-20)">Matching rules used by this build</h2></div>' +
+          '<div class="grid grid-2" style="gap:20px">' +
+            '<div>' +
+              '<h4 class="tx-1">Hard conditions</h4>' +
+              '<p class="mt-2" style="font-size:var(--fs-14)">Fuel family, sample geometry and flow direction must be identical. A different flow direction changes the physics, so the pair is rejected rather than annotated.</p>' +
+              '<h4 class="tx-1 mt-5">Tolerance</h4>' +
+              '<p class="mt-2" style="font-size:var(--fs-14)">Numeric conditions may differ by up to ' + Math.round(MATCH_RULES.numericTolerance * 100) + '% of the higher value. Every difference is still listed in the check table, so a user can judge it.</p>' +
+            '</div>' +
+            '<div>' +
+              '<h4 class="tx-1">Missing values</h4>' +
+              '<p class="mt-2" style="font-size:var(--fs-14)">An empty field is unknown. It is never treated as equal to a recorded value, and a comparison needing it returns “not enough comparable data”.</p>' +
+              '<h4 class="tx-1 mt-5">Abstention</h4>' +
+              '<p class="mt-2" style="font-size:var(--fs-14)">More than ' + MATCH_RULES.maxDiffering + ' differing conditions, an identical varied value, or a missing varied value all stop the comparison.</p>' +
+            '</div>' +
+          '</div>' +
+        '</section>' +
+
+        '<section class="card card-lg">' +
+          '<div class="card-title"><h2 style="font-size:var(--fs-20)">Project structure</h2></div>' +
+          structureBlock() +
+        '</section>' +
+
+        runBlock() +
+
+      '</div>';
+  }
+
+  return { render };
+})();
