@@ -121,7 +121,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--sp-4);
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-4);
   padding: var(--sp-4) 0;
   border-bottom: 1px solid var(--line-soft);
 }
@@ -238,8 +239,10 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--sp-4);
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-4);
 }
+.record-card-top > .tag-row { justify-content: flex-start !important; }
 .record-id {
   font-family: var(--font-mono);
   font-size: var(--fs-12);
@@ -330,11 +333,13 @@
 .step-head {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
   padding: var(--sp-4) var(--sp-5);
   border-bottom: 1px solid var(--line-soft);
   background: var(--bg-inset);
 }
+.step-head h2 { min-width: 0; }
 .step-num {
   width: 24px; height: 24px;
   border-radius: 50%;
@@ -436,7 +441,7 @@
 
 .check-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 118px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 118px;
   gap: var(--sp-3);
   align-items: center;
   padding: var(--sp-3) var(--sp-2);

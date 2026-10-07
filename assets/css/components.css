@@ -234,7 +234,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-3);
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
   margin-bottom: var(--sp-3);
 }
 .card-title h3 { font-size: var(--fs-17); }
@@ -315,9 +316,18 @@
 .pill-ember { border-color: rgba(237, 170, 74, 0.3); background: var(--ember-wash); color: var(--ember-300); }
 .pill-teal { border-color: rgba(62, 214, 196, 0.3); background: var(--teal-wash); color: var(--teal-300); }
 
-.kv { display: flex; gap: var(--sp-2); align-items: baseline; font-size: var(--fs-13); }
-.kv dt { color: var(--tx-3); min-width: 118px; }
+/* Definition pairs: label column + value column, two pairs per row.
+   Stacked into a single column on narrow screens (see responsive.css). */
+.kv {
+  display: grid;
+  grid-template-columns: minmax(84px, max-content) minmax(0, 1fr);
+  gap: var(--sp-2) var(--sp-4);
+  align-items: baseline;
+  font-size: var(--fs-13);
+}
+.kv dt { color: var(--tx-3); }
 .kv dd { margin: 0; color: var(--tx-1); font-variant-numeric: tabular-nums; }
+.kv > div { display: contents; }
 
 .factor-tag {
   font-family: var(--font-mono);
@@ -593,7 +603,7 @@ input[type="range"]::-moz-range-thumb {
 .cov-2 { background: rgba(62, 214, 196, 0.22); color: var(--teal-300); }
 .cov-3 { background: rgba(62, 214, 196, 0.34); color: #dcfffa; }
 
-.legend { display: flex; gap: var(--sp-4); flex-wrap: wrap; font-size: var(--fs-12); color: var(--tx-3); }
+.legend { display: flex; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap; font-size: var(--fs-12); color: var(--tx-3); }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; }
 .legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
 

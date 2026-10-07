@@ -206,12 +206,12 @@ const RecordPage = (function () {
           '<div class="card">' +
             '<div class="card-title"><h3 style="font-size:var(--fs-15)">Provenance</h3>' +
               '<span class="badge badge-unknown">placeholder</span></div>' +
-            '<dl class="kv" style="display:grid;gap:10px">' +
-              '<div><dt>Catalog row</dt><dd>' + UI.esc(record.id) + '</dd></div>' +
-              '<div><dt>PSI collection</dt><dd>' + UI.esc(record.source.psi) + '</dd></div>' +
-              '<div><dt>Report</dt><dd>' + UI.esc(record.source.report) + ' (' + UI.esc(record.source.ntrs) + ')</dd></div>' +
-              '<div><dt>Extraction</dt><dd>Not run — demonstration row</dd></div>' +
-              '<div><dt>Human review</dt><dd>' + (record.metadataReviewed ? 'First pass complete' : 'Pending') + '</dd></div>' +
+            '<dl class="kv">' +
+              '<dt>Catalog row</dt><dd>' + UI.esc(record.id) + '</dd>' +
+              '<dt>PSI collection</dt><dd>' + UI.esc(record.source.psi) + '</dd>' +
+              '<dt>Report</dt><dd>' + UI.esc(record.source.report) + ' (' + UI.esc(record.source.ntrs) + ')</dd>' +
+              '<dt>Extraction</dt><dd>Not run — demonstration row</dd>' +
+              '<dt>Human review</dt><dd>' + (record.metadataReviewed ? 'First pass complete' : 'Pending') + '</dd>' +
             '</dl>' +
             '<p class="muted mt-4" style="font-size:var(--fs-12)">' +
               'The provenance block is where a reviewer checks the claim. Today it says plainly that no extraction has been verified.</p>' +

@@ -94,6 +94,28 @@ hr {
   border: 0;
 }
 
+/* --- Overflow guards ------------------------------------------------------
+   Grid and flex children default to min-width:auto, which refuses to shrink
+   below their content. On narrow screens that is the classic cause of a page
+   that scrolls sideways. These rules let every container actually shrink so
+   the inner scrollers (tables, matrices) can do their job instead.        */
+.grid > *, .row > *, .stack > *, .pair-grid > *, .check-row > *,
+.evidence-grid > *, .detail-grid > *, .compare-grid > *, .explorer > *,
+.record-card-top > *, .card > *, .card-title > *, .footer-grid > *,
+.split-claim > *, .honesty-grid > *, .flow-steps > *, .stat-strip > * {
+  min-width: 0;
+}
+
+/* Long identifiers, URLs and spec strings must wrap rather than push the
+   layout sideways. On desktop only break between words; the phone breakpoint
+   switches to anywhere (see responsive.css). */
+.mono, code, kbd, .record-id, .source-ref, .state p, .verdict-reason span,
+.obs-note, .limit-item span, .check-val, .def-val, .timeline-body {
+  overflow-wrap: break-word;
+}
+
+img, svg, video, canvas, table { max-width: 100%; }
+
 /* --- Layout primitives --------------------------------------------------- */
 .wrap {
   width: 100%;
@@ -110,6 +132,7 @@ hr {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+  flex-wrap: wrap;
 }
 .row-between { justify-content: space-between; }
 .row-wrap { flex-wrap: wrap; }
