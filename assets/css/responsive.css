@@ -271,6 +271,39 @@
 }
 
 /* ==========================================================================
+   7. TOUCH INPUT — coarser targets wherever the pointer is a finger
+   ========================================================================== */
+@media (pointer: coarse) {
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 40px; padding-inline: var(--sp-4); }
+  .btn-icon { width: 44px; height: 44px; }
+  .nav-toggle { width: 44px; height: 44px; }
+  .check { min-height: 44px; align-items: center; padding-block: var(--sp-2); }
+  .check input { width: 20px; height: 20px; margin-top: 0; }
+  .check input:checked::after { left: 5.5px; top: 1px; }
+  .filter-chip { min-height: 32px; }
+  .filter-chip button { width: 26px; height: 26px; }
+  input[type="range"] { height: 28px; }
+  input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; }
+  .link-quiet, .nav-link { min-height: 40px; display: inline-flex; align-items: center; }
+  /* Header, footer and card-title links are real navigation targets on a
+     phone, so they get a finger-sized box rather than a text-height one. */
+  .brand, .mode-chip { min-height: 44px; }
+  .mode-chip { min-width: 44px; justify-content: center; padding-inline: var(--sp-3); }
+  .footer a { min-height: 44px; display: inline-flex; align-items: center; }
+  .record-card h3 a, .breadcrumb a, .suggest-main a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .check input { width: 22px; height: 22px; }
+  .check input:checked::after { left: 6px; }
+  /* Hover styling is meaningless on touch; keep the visual state explicit. */
+  .record-card:hover { background: var(--bg-panel); border-color: var(--line-soft); }
+  .record-card.is-selected { border-color: var(--teal-500); }
+}
+
+/* ==========================================================================
    9. ACCESSIBILITY PREFERENCES
    ========================================================================== */
 
