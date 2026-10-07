@@ -1,49 +1,65 @@
 /* ==========================================================================
-   responsive.css — tablet and mobile behaviour
-   Desktop-first: the prototype is tuned for the presentation demo, then
-   progressively simplified for narrower viewports.
+   responsive.css — device coverage for phones, tablets, laptops and large
+   displays.
+   --------------------------------------------------------------------------
+   Tested widths: 320 · 360 · 375 · 390 · 412 · 430 · 480 · 568 · 640 · 740
+   (landscape phone) · 768 · 820 · 834 · 1024 · 1180 · 1280 · 1440 · 1920 · 2560
+
+   Order matters: each block only tightens what the wider one established, so
+   a narrow phone inherits every fix above it.
    ========================================================================== */
 
-@media (max-width: 1100px) {
-  .explorer { grid-template-columns: 248px minmax(0, 1fr); gap: var(--sp-6); }
-  .compare-grid { grid-template-columns: minmax(0, 1fr) 300px; gap: var(--sp-6); }
-  .evidence-grid { grid-template-columns: minmax(0, 1fr); }
-  .detail-grid { grid-template-columns: minmax(0, 1fr); }
-  .flow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .honesty-grid { grid-template-columns: minmax(0, 1fr); }
+/* ==========================================================================
+   1. LARGE DISPLAYS — 1600 px and up
+   Keep the content column from stretching, and lift the base font size so the
+   interface stays comfortable on a 27" screen or a projector.
+   ========================================================================== */
+@media (min-width: 1600px) {
+  :root { --w-max: 1320px; }
 }
 
-@media (max-width: 900px) {
-  :root { --fs-38: 2rem; --fs-30: 1.6rem; }
+@media (min-width: 1800px) {
+  html { font-size: 17px; }
+}
 
-  .section { padding-block: var(--sp-12); }
-  .hero { padding-block: var(--sp-12) var(--sp-10); }
+@media (min-width: 2400px) {
+  :root { --w-max: 1440px; }
+}
 
-  .explorer { grid-template-columns: minmax(0, 1fr); }
-  .filters {
-    position: static;
-    max-height: none;
-  }
-  .filters-scroll { max-height: 360px; }
-
-  .compare-grid { grid-template-columns: minmax(0, 1fr); }
+/* ==========================================================================
+   2. SMALL DESKTOP / TABLET LANDSCAPE — below 1100 px
+   The sticky side panels stop being useful next to a narrower content column.
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .explorer { grid-template-columns: 250px minmax(0, 1fr); gap: var(--sp-6); }
+  .compare-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+  .evidence-grid,
+  .detail-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
   .side-panel { position: static; }
+  .side-panel .card { max-width: none; }
+  .flow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .honesty-grid { grid-template-columns: minmax(0, 1fr); }
+  .split-claim { grid-template-columns: 1fr 1fr; }
+}
 
-  .check-row { grid-template-columns: 1fr 1fr; row-gap: var(--sp-2); }
-  .check-row.is-head { display: none; }
-  .check-row > *:nth-child(2)::before { content: "A · "; color: var(--tx-4); }
-  .check-row > *:nth-child(3)::before { content: "B · "; color: var(--tx-4); }
+/* ==========================================================================
+   3. TABLET — below 900 px (iPad portrait and smaller, plus phones landscape)
+   Navigation collapses, the filter rail becomes a drawer, and every
+   multi-column arrangement turns into a single readable column.
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root { --h-header: 56px; }
 
-  .grid-4, .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .split-claim { grid-template-columns: 1fr; }
+  .section { padding-block: var(--sp-10); }
+  .section-sm { padding-block: var(--sp-8); }
+  .hero { padding-block: var(--sp-10) var(--sp-8); }
+  .page-head { padding-block: var(--sp-8) var(--sp-6); }
 
-  /* Mobile navigation */
+  /* ---- navigation ------------------------------------------------------ */
   .nav-toggle { display: inline-flex; }
   .nav {
     position: absolute;
-    top: var(--h-header);
+    top: 100%;
     left: 0;
     right: 0;
     background: var(--bg-shell);
@@ -51,41 +67,266 @@
     padding: var(--sp-3) var(--sp-4) var(--sp-5);
     display: none;
     box-shadow: var(--sh-2);
+    max-height: calc(100vh - var(--h-header));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .nav.is-open { display: block; }
   .nav-list { flex-direction: column; align-items: stretch; gap: var(--sp-1); }
-  .nav-link { padding: var(--sp-3); font-size: var(--fs-15); }
+  .nav-link { padding: var(--sp-3) var(--sp-4); font-size: var(--fs-15); min-height: 48px; display: flex; align-items: center; }
   .brand-sub { display: none; }
+
+  /* ---- explorer: filters become a drawer ------------------------------- */
+  .explorer { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
+  .filters {
+    position: static;
+    display: none;
+    max-height: none;
+  }
+  .filters.is-open { display: flex; }
+  .filters-scroll { max-height: none; overflow-y: visible; }
+  .filters-toggle { display: inline-flex; }
+  .panel-foot { position: sticky; bottom: 0; }
+
+  /* The filter drawer opens directly under the results header. */
+  #results-slot .filters { margin-bottom: var(--sp-4); }
+
+  /* ---- layout grids ---------------------------------------------------- */
+  .grid-4, .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+
+  /* ---- comparison: stacked condition rows ------------------------------ */
+  .check-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    row-gap: var(--sp-2);
+    padding: var(--sp-4) var(--sp-2);
+  }
+  .check-row.is-head { display: none; }
+  .check-field { grid-column: 1 / -1; font-weight: 620; color: var(--tx-1); }
+  .check-assess { grid-column: 1 / -1; }
+  .check-cell-label {
+    display: block;
+    font-size: var(--fs-11);
+    text-transform: uppercase;
+    letter-spacing: var(--sp-1);
+    color: var(--tx-4);
+    margin-bottom: 2px;
+  }
+
+  .step-head .step-hint { width: 100%; margin-left: 0; }
+  .step-body, .panel-body { padding: var(--sp-4); }
+
+  .suggest-item { align-items: flex-start; }
+  .suggest-main { min-width: 0; flex: 1 1 100%; }
+
+  /* ---- footer ---------------------------------------------------------- */
+  .footer { margin-top: var(--sp-12); padding-block: var(--sp-8); }
 }
 
+/* ==========================================================================
+   4. PHONE — below 640 px
+   ========================================================================== */
 @media (max-width: 640px) {
-  :root { --fs-38: 1.7rem; --fs-30: 1.45rem; --fs-24: 1.3rem; }
+  :root {
+    --fs-30: 1.45rem;
+    --fs-24: 1.3rem;
+    --fs-17: 1rem;
+  }
 
   .wrap { padding-inline: var(--sp-4); }
-  .grid-2, .grid-3, .grid-4, .stat-strip, .flow-steps, .pair-grid, .def-list {
+
+  /* ---- single column everywhere ---------------------------------------- */
+  .grid-2, .grid-3, .grid-4, .stat-strip, .flow-steps, .pair-grid,
+  .def-list, .honesty-grid, .split-claim, .grid-auto {
     grid-template-columns: minmax(0, 1fr);
   }
-  .footer-grid { grid-template-columns: 1fr; gap: var(--sp-6); }
-  .card, .card-lg, .step-body, .panel-body { padding: var(--sp-4); }
+
+  /* ---- header ---------------------------------------------------------- */
+  .header-inner { gap: var(--sp-2); }
+  .header-actions .mode-text { display: none; }
+  .mode-chip { padding: var(--sp-2); }
+  .brand-name { font-size: var(--fs-14); }
+
+  /* ---- padding and cards ----------------------------------------------- */
+  .card, .card-lg, .verdict, .state { padding: var(--sp-4); }
+  .card-flush { padding: 0; }
   .state { padding: var(--sp-8) var(--sp-4); }
-  .header-actions .mode-chip .mode-text { display: none; }
-  .timeline-item { grid-template-columns: 1fr; gap: var(--sp-1); }
+  .record-card { padding: var(--sp-4); }
+  .cond-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-4); }
+
+  /* ---- buttons: comfortable, tappable targets -------------------------- */
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { width: 100%; }
+  .page-head-actions { width: 100%; flex-direction: column; align-items: stretch; }
+  .page-head-actions .btn { width: 100%; }
+  .record-card .record-actions .btn { flex: 1 1 auto; }
+  .btn-lg { padding: var(--sp-3) var(--sp-4); }
+
+  /* ---- forms ----------------------------------------------------------- */
+  /* 16 px avoids the automatic zoom iOS applies to smaller inputs. */
+  .input, .select, .search-field .input { font-size: 16px; }
+  .search-field .input { height: 46px; }
+  .select { height: 44px; }
+  #explorer-sort, .results-head .select { width: 100% !important; }
+  .results-head > .row { width: 100%; }
+  .results-head .btn { flex: 1 1 auto; justify-content: center; }
+
+  /* ---- definition lists stack ------------------------------------------ */
+  .kv { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
+  .kv dt { margin-top: var(--sp-2); }
+  .kv dt:first-of-type { margin-top: 0; }
+
+  /* ---- comparison ------------------------------------------------------ */
+  .check-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+  .check-field { grid-column: 1; }
+  .factor-radio { padding: var(--sp-3); }
+  .pair-slot { min-height: 0; }
+
+  /* ---- evidence and detail -------------------------------------------- */
+  .media-canvas { aspect-ratio: 4 / 3; }
+  .media-frame figcaption { padding: var(--sp-3); }
+  .def-list { gap: var(--sp-3); }
+  .timeline-item { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
   .timeline-body { border-left: 0; padding-left: 0; }
+  .timeline-time { min-width: 0; }
+
+  /* Wide data tables scroll inside their own box; say so. */
+  .scroll-hint { font-size: var(--fs-12); color: var(--tx-4); margin-bottom: var(--sp-2); }
+  .table-wrap { margin-inline: calc(var(--sp-4) * -1); padding-inline: var(--sp-4); }
+  .table th, .table td { padding: var(--sp-3); }
+
+  /* ---- coverage matrix ------------------------------------------------- */
+  .matrix { min-width: 300px; }
+  .matrix td { width: 54px; }
+
+  /* ---- overlays -------------------------------------------------------- */
   .toast-region { left: var(--sp-4); right: var(--sp-4); bottom: var(--sp-4); }
-  .popover { left: var(--sp-4); right: var(--sp-4); width: auto; }
-  .check-row { grid-template-columns: 1fr; }
-  .check-row > *:nth-child(2)::before { content: "Test A · "; }
-  .check-row > *:nth-child(3)::before { content: "Test B · "; }
+  .toast { max-width: none; }
+  .popover {
+    left: var(--sp-4);
+    right: var(--sp-4);
+    width: auto;
+    top: calc(var(--h-header) + var(--sp-2));
+    max-height: calc(100vh - var(--h-header) - var(--sp-6));
+    overflow-y: auto;
+  }
+
+  /* Long unbroken tokens (test IDs, report numbers) may break mid-word on a
+     phone, where a single long string would otherwise force a scrollbar. */
+  .mono, code, kbd, .record-id, .source-ref, .check-val, .def-val,
+  .timeline-body, .verdict-reason span, .obs-note {
+    overflow-wrap: anywhere;
+  }
+
+  /* ---- footer ---------------------------------------------------------- */
+  .footer-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+  .footer-bottom { flex-direction: column; gap: var(--sp-2); }
 }
 
-/* --- Print: keep the evidence sheet useful ------------------------------ */
+/* ==========================================================================
+   5. SMALL PHONE — below 400 px (iPhone SE, older Android)
+   ========================================================================== */
+@media (max-width: 400px) {
+  :root { --fs-13: 0.78rem; }
+
+  /* Only tell the reader to scroll when the matrix genuinely cannot fit. */
+  .scroll-hint { display: block; }
+
+  .wrap { padding-inline: var(--sp-3); }
+  .cond-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-3); }
+  .cond-label { font-size: 10px; }
+  .cond-value { font-size: var(--fs-13); }
+  .stat-value { font-size: var(--fs-20); }
+  .stat { padding: var(--sp-3); }
+  .tag-row { gap: 6px; }
+  .badge { font-size: 10px; padding: 2px 6px; }
+  .btn { padding: var(--sp-3) var(--sp-4); }
+  .hero-meta { gap: var(--sp-2) var(--sp-4); }
+  .step-head { padding: var(--sp-3) var(--sp-4); }
+  .step-body { padding: var(--sp-3); }
+  .matrix td { width: 46px; }
+  .matrix th[scope="row"] { min-width: 76px; font-size: 10px; }
+}
+
+@media (max-width: 340px) {
+  .cond-grid { grid-template-columns: minmax(0, 1fr); }
+  .brand-name { font-size: var(--fs-13); }
+  .badge { font-size: 9.5px; }
+}
+
+/* ==========================================================================
+   6. LANDSCAPE PHONES — short viewports
+   The header must not eat the screen, so vertical rhythm tightens and the
+   menu scrolls instead of overflowing.
+   ========================================================================== */
+@media (max-height: 520px) and (orientation: landscape) {
+  :root { --h-header: 50px; }
+  .hero, .page-head { padding-block: var(--sp-6) var(--sp-5); }
+  .section { padding-block: var(--sp-8); }
+  .nav { max-height: calc(100vh - var(--h-header)); }
+  .media-canvas { aspect-ratio: 16 / 9; }
+  .toast-region { bottom: var(--sp-3); right: var(--sp-3); }
+}
+
+/* ==========================================================================
+   9. ACCESSIBILITY PREFERENCES
+   ========================================================================== */
+
+/* Larger default text or a narrow window both benefit from the phone layout. */
+@media (max-width: 640px) and (min-resolution: 0.001dpcm) {
+  .state p { max-width: none; }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --line: #3c4f75;
+    --line-soft: #2f3f60;
+    --tx-2: #ccd8ea;
+    --tx-3: #a3b1c8;
+  }
+  .card, .record-card, .step, .filters { border-color: var(--line); }
+  .nav-link[aria-current="page"] { border-color: var(--teal-400); }
+}
+
+@media (forced-colors: active) {
+  .badge, .pill, .btn, .card { border: 1px solid currentColor; }
+  .meter-fill { background: Highlight; }
+  .dot { forced-color-adjust: none; }
+}
+
+/* ==========================================================================
+   10. PRINT — an evidence view should survive on paper
+   ========================================================================== */
 @media print {
-  .header, .footer, .side-panel, .toast-region, .hero-actions { display: none !important; }
+  .header, .footer, .side-panel, .toast-region, .hero-actions,
+  .filters, .nav-toggle, .mode-chip, .page-head-actions,
+  .filters-toggle, .btn { display: none !important; }
+
   body { background: #fff; color: #111; }
-  .card, .record-card, .panel { border-color: #ccc; }
+  .wrap { max-width: none; padding-inline: 0; }
+  .grid, .grid-2, .grid-3, .grid-4, .stat-strip, .flow-steps,
+  .evidence-grid, .detail-grid, .compare-grid, .explorer {
+    display: block;
+  }
+  .card, .record-card, .step, .panel, .media-frame {
+    border: 1px solid #bbb;
+    background: #fff;
+    box-shadow: none;
+    break-inside: avoid;
+    margin-bottom: 12px;
+  }
+  h1, h2, h3, h4, .tx-1, .stat-value, .def-val, .check-val { color: #111 !important; }
+  p, li, td, th, .muted, .cond-value { color: #333 !important; }
+  a { color: #0a5c52; text-decoration: underline; }
+  .media-canvas { background: #f4f4f4; }
+  .badge { border-color: #999; color: #333; }
 }
 
-/* --- Reduced motion ----------------------------------------------------- */
+/* ==========================================================================
+   11. REDUCED MOTION
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -9,6 +9,7 @@ const ExplorerPage = (function () {
   let root = null;
   let loading = false;
   let showCoverage = false;
+  let filtersOpen = false;   // mobile filter drawer
 
   /* ------------------------------------------------------------------ view */
 
@@ -76,7 +77,7 @@ const ExplorerPage = (function () {
         (f.reviewedOnly ? ' checked' : '') + '><span>Metadata review finished only</span></label>' +
     '</div>';
 
-    return '<form class="filters" id="filters" aria-label="Experiment filters">' +
+    return '<form class="filters' + (filtersOpen ? ' is-open' : '') + '" id="filters" aria-label="Experiment filters">' +
       '<div class="filters-scroll">' +
         '<div class="filter-group">' +
           '<div class="filter-group-title">Search</div>' +
@@ -182,6 +183,11 @@ const ExplorerPage = (function () {
           (chips.length ? ' · ' + chips.length + ' filter' + (chips.length > 1 ? 's' : '') + ' active' : '') +
         '</p>' +
         '<div class="row" style="gap:8px">' +
+          '<button class="btn btn-sm filters-toggle" data-action="toggle-filters" ' +
+            'aria-expanded="' + (filtersOpen ? 'true' : 'false') + '" aria-controls="filters">' +
+            UI.icon('filter', 14) + ' <span class="filters-toggle-label">Filters</span>' +
+            (chips.length ? '<span class="badge badge-teal">' + chips.length + '</span>' : '') +
+          '</button>' +
           '<button class="btn btn-sm" data-action="toggle-coverage" aria-expanded="' + showCoverage + '">' +
             UI.icon('grid', 14) + ' Coverage</button>' +
           '<label class="sr-only" for="explorer-sort">Sort records</label>' +
@@ -432,6 +438,19 @@ const ExplorerPage = (function () {
 
   /* Actions delegated from main.js (data-action attributes). */
   const actions = {
+    'toggle-filters': () => {
+      filtersOpen = !filtersOpen;
+      // The filter rail lives outside the results slot, so the class is applied
+      // to the existing element first, then the results head is re-rendered to
+      // refresh the filter count on the button.
+      const panel = root.querySelector('#filters');
+      if (panel) panel.classList.toggle('is-open', filtersOpen);
+      refresh();
+      if (filtersOpen && panel) {
+        const first = panel.querySelector('input, select, button');
+        if (first) first.focus();
+      }
+    },
     'toggle-coverage': () => {
       showCoverage = !showCoverage;
       refresh();

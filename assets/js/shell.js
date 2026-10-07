@@ -89,6 +89,8 @@ const Shell = (function () {
         const open = nav.classList.toggle('is-open');
         toggle.setAttribute('aria-expanded', String(open));
         toggle.setAttribute('aria-label', open ? 'Hide navigation' : 'Show navigation');
+        // Stop the page scrolling behind the open menu on a phone.
+        document.body.classList.toggle('no-scroll', open);
       });
     }
 
@@ -154,7 +156,9 @@ const Shell = (function () {
     if (nav && nav.classList.contains('is-open')) {
       nav.classList.remove('is-open');
       toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Show navigation');
     }
+    document.body.classList.remove('no-scroll');
   }
 
   return { render, setActiveNav, closeMobileNav, NAV };

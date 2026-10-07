@@ -49,6 +49,9 @@
 .nav { margin-left: auto; }
 .nav-list { display: flex; align-items: center; gap: var(--sp-1); }
 
+/* Stops the page scrolling behind the open mobile menu. */
+body.no-scroll { overflow: hidden; }
+
 .nav-link {
   display: block;
   padding: var(--sp-2) var(--sp-3);

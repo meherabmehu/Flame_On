@@ -161,6 +161,10 @@
   flex-direction: column;
 }
 .filters-scroll { overflow-y: auto; padding: var(--sp-4); }
+
+/* The rail is always visible on desktop; the button that opens it as a drawer
+   only appears at the tablet and phone breakpoints (see responsive.css). */
+.filters-toggle { display: none; }
 .filter-group + .filter-group {
   margin-top: var(--sp-5);
   padding-top: var(--sp-5);
