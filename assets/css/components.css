@@ -517,7 +517,23 @@ input[type="range"]::-moz-range-thumb {
 /* --------------------------------------------------------------------------
    Tables
    -------------------------------------------------------------------------- */
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  /* A hairline shadow appears only when the content is actually clipped. */
+  background:
+    linear-gradient(to right, var(--bg-panel) 30%, rgba(17, 27, 46, 0)) left center,
+    linear-gradient(to left, var(--bg-panel) 30%, rgba(17, 27, 46, 0)) right center,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.32), transparent) left center,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.32), transparent) right center;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+
+/* Hint shown above a scrollable table on touch-sized screens. */
+.scroll-hint { display: none; }
 
 .table {
   width: 100%;
@@ -583,7 +599,29 @@ input[type="range"]::-moz-range-thumb {
 .bar-row:last-child { border-bottom: 0; }
 
 /* Coverage matrix */
-.matrix { border-collapse: separate; border-spacing: 4px; font-size: var(--fs-12); }
+/* Coverage matrix: scrolls sideways on narrow screens with the fuel name
+   pinned, so a phone can still read a complete row. */
+.matrix-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+.matrix {
+  border-collapse: separate;
+  border-spacing: 4px;
+  font-size: var(--fs-12);
+  width: 100%;
+  min-width: 340px;
+}
+.matrix th[scope="row"] {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--bg-panel);
+  padding-right: var(--sp-3);
+  min-width: 92px;
+}
 .matrix th {
   text-align: left;
   font-weight: 600;

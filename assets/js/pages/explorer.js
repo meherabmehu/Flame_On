@@ -127,7 +127,8 @@ const ExplorerPage = (function () {
 
     function table(grid, colLabel, unit) {
       const cols = grid.cols.slice().sort((a, b) => (a === null ? 1 : b === null ? -1 : a - b));
-      return '<div class="table-wrap">' +
+      return '<p class="scroll-hint">Scroll the table sideways to see every recorded value.</p>' +
+        '<div class="matrix-scroll">' +
         '<table class="matrix" role="table" aria-label="' + colLabel + ' coverage by fuel family">' +
         '<thead><tr><th scope="col">' + colLabel + '</th>' +
           cols.map((c) => '<th scope="col" style="text-align:center">' + (c === null ? 'n/a' : c + (unit || '')) + '</th>').join('') +
@@ -144,7 +145,7 @@ const ExplorerPage = (function () {
             return '<td class="' + cls + '" title="' + UI.esc(title) + '">' + (n === 0 ? '·' : n) + '</td>';
           }).join('') +
         '</tr>').join('') +
-        '</tbody></table></div>';
+        '</tbody></table></div></div>';
     }
 
     return '<section class="card card-lg" id="coverage-panel" aria-labelledby="coverage-title">' +
