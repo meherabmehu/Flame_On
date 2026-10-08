@@ -138,11 +138,38 @@ comparison table highlights the varied-factor row and tints conflicting rows whe
 movement that carries meaning. `prefers-reduced-motion: reduce` collapses all of it.
 
 ### Responsive behaviour
-Desktop-first (the demo runs at 1440 px). At ≤1100 px the side panels move below the content; at
-≤900 px the explorer becomes single-column with a collapsible filter rail and the condition table
-switches to a stacked A/B layout with explicit prefixes; at ≤640 px everything is single-column, the
-comparison table becomes a list, and the header collapses to a menu button. A print stylesheet trims
-chrome so an evidence view can be exported on paper.
+
+Layout is fluid rather than fixed: headings scale with `clamp()`, section rhythm uses `clamp()`, and
+grids collapse through `auto-fit` / explicit breakpoint changes. Verified at every width below with a
+headless browser, checking for horizontal overflow and undersized tap targets on each of the eight
+routes:
+
+| Class | Widths tested | Behaviour |
+|---|---|---|
+| Small phone | 320, 360, 375, 390 | Single column, filter drawer, 44 px targets, 16 px inputs (no iOS zoom), one condition per row in cards |
+| Phone | 412, 430, 480 | As above with roomier card padding |
+| Phone landscape | 568, 740 × 360 | Tightened vertical rhythm so the header does not eat the viewport |
+| Tablet | 768, 820, 834 | Collapsible nav, filter drawer, two-column metric grids, side panels below content |
+| Tablet landscape | 1024, 1180 | Side panels return to a static column; comparison keeps its three-step layout |
+| Laptop | 1280, 1440 | Full three-column comparison workspace — the demo target |
+| Desktop | 1600, 1920, 2560 | Content column capped and centered; base font size steps up so text does not look lost |
+
+Notable mechanics:
+- **Comparison table** keeps its four-column grid from 641 px up, then stacks at ≤640 px with the test
+  ID printed above each value and the assessment on its own line — no information is dropped.
+- **Coverage matrix** scrolls sideways inside its own container with the fuel name pinned via
+  `position: sticky`, so a 320 px phone can still read a complete row. The "scroll sideways" hint only
+  appears at ≤400 px, where the matrix genuinely cannot fit.
+- **Wide data tables** (conditions, traceability) scroll inside `.table-wrap` with a shadow that
+  appears only when content is clipped, and break out to the screen edges on phones.
+- **Touch input** (`pointer: coarse`) raises every control to a minimum 44 px and neutralises hover
+  styling that has no meaning on a finger.
+- **Notches** are handled with `env(safe-area-inset-*)` for the header, the page gutters and the toast
+  region.
+- **Overflow guards** — grid and flex children carry `min-width: 0` so they can actually shrink; this
+  was the single largest source of sideways scrolling before the pass.
+- **Print** trims chrome, flattens grids and switches to dark-on-white so an evidence view can be
+  exported on paper.
 
 ---
 
