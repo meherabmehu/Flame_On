@@ -304,6 +304,19 @@
 }
 
 /* ==========================================================================
+   8. SAFE AREAS — notched phones in portrait and landscape
+   ========================================================================== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .header { padding-top: env(safe-area-inset-top); }
+  .wrap {
+    padding-left: max(var(--sp-4), env(safe-area-inset-left));
+    padding-right: max(var(--sp-4), env(safe-area-inset-right));
+  }
+  .toast-region { padding-bottom: env(safe-area-inset-bottom); }
+  .filters .panel-foot { padding-bottom: max(var(--sp-4), env(safe-area-inset-bottom)); }
+}
+
+/* ==========================================================================
    9. ACCESSIBILITY PREFERENCES
    ========================================================================== */
 
