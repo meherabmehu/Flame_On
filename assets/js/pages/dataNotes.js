@@ -63,7 +63,7 @@ UI.esc(
   }
 
   function runBlock() {
-    return '<div class="card card-lg">' +
+    return '<div class="card card-lg" id="notes-running" tabindex="-1">' +
       '<div class="card-title"><h3>Running the prototype locally</h3><span class="badge badge-teal">no build step</span></div>' +
       '<p class="muted" style="font-size:var(--fs-13)">The frontend is plain HTML, CSS and JavaScript with no dependencies.</p>' +
       '<ol class="mt-4" style="display:flex;flex-direction:column;gap:14px">' +
@@ -91,11 +91,14 @@ UI.esc(
       '<div class="page-head"><div class="wrap page-head-inner">' +
         '<div>' +
           '<p class="eyebrow">Data notes</p>' +
-          '<h1>What is real here, what is not, and where the backend connects</h1>' +
+          '<h1>Data Notes</h1>' +
           '<p class="lead">Understand the demonstration data, what the prototype rules check, and why a match is not scientific validation.</p>' +
         '</div>' +
       '</div></div>' +
-      '<div class="wrap section-sm stack-lg">' +
+      '<div class="wrap section-sm notes-workspace"><nav class="notes-nav" aria-label="Data notes sections">' +
+        [['notes-overview','Overview','info'], ['notes-demo','Demonstration data','layers'], ['notes-matching','Matching methodology','compare'], ['notes-developer','Integration contracts','book'], ['notes-structure','Project structure','grid'], ['notes-running','Run & walkthrough','chevron']]
+        .map((s) => '<button class="btn btn-ghost" type="button"' + (s[0] === 'notes-overview' ? ' aria-current="location"' : '') + ' data-notes-section="' + s[0] + '">' + UI.icon(s[2],16) + s[1] + '</button>').join('') +
+      '</nav><div class="stack-lg notes-content"><section class="card card-lg" id="notes-overview" tabindex="-1"><p class="eyebrow">About this project</p><h2>From experimental conditions to evidence</h2><p class="mt-3">CinderLens explores the repository’s illustrative microgravity combustion records. Search recorded conditions, compare two experiments, and review the available metadata and its limitations.</p><p class="notice notice-ember mt-4"><strong>This is a prototype.</strong> Verified NASA experiment data has not yet been integrated. The animated hero is concept artwork, not experiment footage or a validated simulation.</p></section>' +
 
         UI.state({
           role: 'note',
@@ -105,13 +108,13 @@ UI.esc(
           inline: true
         }) +
 
-        '<section class="card card-lg">' +
+        '<section class="card card-lg" id="notes-demo" tabindex="-1">' +
           '<div class="card-title"><h2 style="font-size:var(--fs-20)">Honesty table</h2>' +
             '<span class="badge badge-ember">Read before judging output</span></div>' +
           honestyBlock() +
         '</section>' +
 
-        '<details class="card card-lg"><summary>Developer reference: future integration contracts</summary>' +
+        '<details class="card card-lg" id="notes-developer" tabindex="-1"><summary>Developer reference: future integration contracts</summary>' +
           '<div class="card-title mt-4"><h2 style="font-size:var(--fs-20)">Future integration contracts</h2>' +
             '<span class="badge badge-teal">Not implemented</span></div>' +
           '<p style="font-size:var(--fs-14);max-width:78ch">The frontend never computes science it cannot see: every rule lives in <code>matcher.js</code> and every field name comes from the catalog. ' +
@@ -121,7 +124,7 @@ UI.esc(
             'If the backend omits a field, the interface keeps showing “not recorded” rather than assuming a value.</p>' +
         '</details>' +
 
-        '<section class="card card-lg">' +
+        '<section class="card card-lg" id="notes-matching" tabindex="-1">' +
           '<div class="card-title"><h2 style="font-size:var(--fs-20)">Matching rules used by this build</h2></div>' +
           '<p class="notice notice-warn mb-4">Prototype heuristics, not scientifically validated. The six checked fields exclude ignition, pressure and duration. A comparable verdict is not evidence of causation.</p>' +
           '<div class="grid grid-2" style="gap:20px">' +
@@ -140,14 +143,24 @@ UI.esc(
           '</div>' +
         '</section>' +
 
-        '<section class="card card-lg">' +
+        '<section class="card card-lg" id="notes-structure" tabindex="-1">' +
           '<div class="card-title"><h2 style="font-size:var(--fs-20)">Project structure</h2></div>' +
           structureBlock() +
         '</section>' +
 
         runBlock() +
 
-      '</div>';
+      '</div></div>';
+    container.querySelectorAll('[data-notes-section]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = container.querySelector('#' + button.dataset.notesSection);
+        if (target.tagName === 'DETAILS') target.open = true;
+        target.scrollIntoView({ block: 'start' });
+        target.focus({ preventScroll: true });
+        container.querySelectorAll('[data-notes-section]').forEach((item) => item.removeAttribute('aria-current'));
+        button.setAttribute('aria-current', 'location');
+      });
+    });
   }
 
   return { render };
