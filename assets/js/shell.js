@@ -4,12 +4,14 @@
 
 const Shell = (function () {
   let releaseNavTrap = null;
+  let navInertRegions = [];
 
   const NAV = [
     { name: 'overview', label: 'Overview', path: '#/', icon: 'layers', description: 'Start with the research workflow' },
     { name: 'explorer', label: 'Explorer', path: '#/explorer', icon: 'search', description: 'Find and select experiment records' },
     { name: 'compare', label: 'Compare', path: '#/compare', icon: 'compare', description: 'Check conditions across two tests' },
     { name: 'coverage', label: 'Coverage', path: '#/explorer?coverage=1', icon: 'grid', description: 'Inspect catalog counts and gaps' },
+    { name: 'evidence', label: 'Evidence', path: '#/evidence', icon: 'book', description: 'Inspect observations and source availability' },
     { name: 'data-notes', label: 'Data notes', path: '#/data-notes', icon: 'book', description: 'Review sources, rules and limitations' }
   ];
 
@@ -97,6 +99,8 @@ const Shell = (function () {
         toggle.setAttribute('aria-label', 'Hide navigation');
         toggle.innerHTML = UI.icon('close', 18);
         document.body.classList.add('no-scroll');
+        navInertRegions = ['main', 'app-strip', 'app-footer'].map((id) => document.getElementById(id)).filter(Boolean).map((el) => ({ el, inert: el.inert }));
+        navInertRegions.forEach(({ el }) => { el.inert = true; });
         const dismiss = () => { closeMobileNav(); toggle.focus(); };
         const backdrop = document.createElement('div');
         backdrop.className = 'nav-backdrop';
@@ -167,13 +171,15 @@ const Shell = (function () {
     const coverage = name === 'explorer' && Router.current().params.coverage === '1';
     document.querySelectorAll('.nav-link').forEach((a) => {
       const isActive = a.dataset.nav === (coverage ? 'coverage' : name) ||
-        (['record', 'evidence'].includes(name) && a.dataset.nav === 'explorer');
+        (name === 'record' && a.dataset.nav === 'explorer');
       if (isActive) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
   }
 
   function closeMobileNav() {
+    navInertRegions.forEach(({ el, inert }) => { el.inert = inert; });
+    navInertRegions = [];
     if (releaseNavTrap) { releaseNavTrap(); releaseNavTrap = null; }
     document.querySelector('.nav-backdrop')?.remove();
     const nav = document.getElementById('primary-nav');
