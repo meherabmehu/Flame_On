@@ -35,12 +35,6 @@ const RecordPage = (function () {
     }
   ];
 
-  function definition(f) {
-    const raw = f.key === 'id' || f.key === 'title' ? null : null;
-    const value = f.key === 'id' ? null : null;
-    return { raw, value };
-  }
-
   function fieldHTML(record, f) {
     const v = record[f.key];
     const missing = v === null || v === undefined || v === '';
@@ -52,23 +46,23 @@ const RecordPage = (function () {
     else shown = Matcher.displayValue(f.key, v) || (v + (f.unit ? ' ' + f.unit : ''));
 
     return '<div>' +
-      '<div class="def-term">' + UI.esc(f.label) + (f.unit ? ' <span class="muted">(' + UI.esc(f.unit) + ')</span>' : '') + '</div>' +
-      '<div class="def-val' + (missing ? ' is-missing' : '') + '">' + UI.esc(shown) + '</div>' +
+      '<dt class="def-term">' + UI.esc(f.label) + (f.unit ? ' <span class="muted">(' + UI.esc(f.unit) + ')</span>' : '') + '</dt>' +
+      '<dd class="def-val' + (missing ? ' is-missing' : '') + '">' + UI.esc(shown) + '</dd>' +
     '</div>';
   }
 
   function mediaSection(record) {
     const kind = record.media.kind;
     const inventory = [
-      { label: 'Video file', available: kind === 'video' },
-      { label: 'Extracted frames', available: kind === 'frame-set' },
+      { label: 'Video file', available: false, note: 'demo metadata only; no video file supplied' },
+      { label: 'Extracted frames', available: false, note: 'demo metadata only; no frame files supplied' },
       { label: 'Instrumented measurements', available: false, note: 'not produced in this prototype' },
       { label: 'Verified labels', available: false, note: 'requires a human review pass' }
     ];
     return '<section class="card card-lg">' +
       '<div class="card-title"><h2 style="font-size:var(--fs-20)">Media inventory</h2>' +
         '<span class="badge ' + (kind === 'none' ? 'badge-unknown' : 'badge-teal') + '">' +
-          UI.esc(kind === 'none' ? 'no media indexed' : kind === 'video' ? 'video available' : 'frames available') + '</span></div>' +
+          UI.esc(kind === 'none' ? 'no media indexed' : kind === 'video' ? 'video described only' : 'frames described only') + '</span></div>' +
       UI.mediaPlaceholder(record, { showPlay: kind === 'video' }) +
       '<div class="mt-4">' +
         inventory.map((i) =>
@@ -83,7 +77,7 @@ const RecordPage = (function () {
           '</div>').join('') +
       '</div>' +
       '<p class="muted mt-3" style="font-size:var(--fs-12)">' +
-        'Streaming the underlying NASA files is a backend task. The prototype states what exists so a reviewer can tell evidence from interface.</p>' +
+        'No original video or frame files are supplied. Media descriptors are illustrative metadata, not verified NASA assets.</p>' +
     '</section>';
   }
 
@@ -148,6 +142,7 @@ const RecordPage = (function () {
         '</div>' +
         '<div class="stack-sm" style="min-width:230px">' +
           '<button class="btn btn-primary btn-block" data-action="use-in-compare">' + UI.icon('compare', 15) + ' Use in a comparison</button>' +
+          '<button class="btn btn-block" data-action="copy-id">Copy experiment ID</button>' +
           '<a class="btn btn-block" href="#/evidence/' + UI.esc(record.id) + '">Open evidence view</a>' +
         '</div>' +
       '</div></div>' +
@@ -160,7 +155,7 @@ const RecordPage = (function () {
               '<div class="' + (g.title === 'Test conditions' ? 'mt-6' : '') + '">' +
                 '<div class="card-title"><h2 style="font-size:var(--fs-17)">' + g.title + '</h2>' +
                   '<span class="badge">' + g.fields.filter((f) => !Store.isMissing(record, f.key)).length + '/' + g.fields.length + ' recorded</span></div>' +
-                '<div class="def-list">' + g.fields.map((f) => fieldHTML(record, f)).join('') + '</div>' +
+                '<dl class="def-list">' + g.fields.map((f) => fieldHTML(record, f)).join('') + '</dl>' +
               '</div>').join('') +
             '<p class="muted mt-6" style="font-size:var(--fs-13)">' +
               'Empty fields are shown as “not recorded” and never as zero. In the finished product this grid is rendered from the reviewed catalog table, ' +
@@ -170,12 +165,12 @@ const RecordPage = (function () {
           mediaSection(record) +
 
           '<section class="card card-lg">' +
-            '<div class="card-title"><h2 style="font-size:var(--fs-20)">Recorded behaviour and phase notes</h2></div>' +
+            '<div class="card-title"><h2 style="font-size:var(--fs-20)">Illustrative behaviour and phase notes</h2></div>' +
             (record.outcomes || []).map((o) =>
               '<div class="obs-row"><div class="row row-wrap" style="gap:10px">' + UI.outcomeBadge(o.type) +
                 '<span class="obs-value">' + UI.esc(o.label) + '</span></div>' +
                 '<p class="obs-note">' + UI.esc(o.detail) + '</p>' +
-                '<p class="muted mt-1" style="font-size:var(--fs-12)">Basis: ' + UI.esc(o.basis) + '</p></div>').join('') +
+                '<p class="muted mt-1" style="font-size:var(--fs-12)">Basis: ' + 'Team-authored demo observation; not a verified source extraction' + '</p></div>').join('') +
             '<hr>' +
             '<h3 style="font-size:var(--fs-15)">Phase notes</h3>' +
             '<ul class="mt-3" style="display:flex;flex-direction:column;gap:8px">' +
@@ -211,7 +206,7 @@ const RecordPage = (function () {
               '<dt>PSI collection</dt><dd>' + UI.esc(record.source.psi) + '</dd>' +
               '<dt>Report</dt><dd>' + UI.esc(record.source.report) + ' (' + UI.esc(record.source.ntrs) + ')</dd>' +
               '<dt>Extraction</dt><dd>Not run — demonstration row</dd>' +
-              '<dt>Human review</dt><dd>' + (record.metadataReviewed ? 'First pass complete' : 'Pending') + '</dd>' +
+              '<dt>Demo metadata check</dt><dd>' + (record.metadataReviewed ? 'Interface review only; source unverified' : 'Pending; source unverified') + '</dd>' +
             '</dl>' +
             '<p class="muted mt-4" style="font-size:var(--fs-12)">' +
               'The provenance block is where a reviewer checks the claim. Today it says plainly that no extraction has been verified.</p>' +
@@ -227,6 +222,7 @@ const RecordPage = (function () {
   }
 
   const actions = {
+    'copy-id': () => { const id = Router.current().id; if (Store.byId(id)) UI.copyText(id, 'Experiment ID copied.'); },
     'use-in-compare': () => {
       const id = (location.hash.split('/')[2] || '').split('?')[0];
       const record = Store.byId(id);

@@ -23,7 +23,7 @@ const EvidencePage = (function () {
       '<div>' +
         '<p class="eyebrow">Evidence &amp; results</p>' +
         '<h1>Open a test to see its evidence</h1>' +
-        '<p class="lead">Each evidence view shows the media that exists, the conditions that were recorded, the behaviour that was observed, ' +
+        '<p class="lead">Each view shows illustrative conditions and observations, media status, ' +
           'and the neighbouring tests that can be compared fairly.</p>' +
       '</div>' +
     '</div></div>' +
@@ -39,10 +39,10 @@ const EvidencePage = (function () {
             '</div></div></div>'
         : '') +
       '<div class="card card-lg">' +
-        '<div class="card-title"><h2 style="font-size:var(--fs-20)">Records with media indexed</h2>' +
+        '<div class="card-title"><h2 style="font-size:var(--fs-20)">Records with illustrative media descriptions</h2>' +
           '<span class="badge">' + withMedia.length + ' of ' + list.length + '</span></div>' +
-        '<p style="font-size:var(--fs-13);color:var(--tx-3)">Video files themselves are not streamed by this prototype. ' +
-          'The view states what media exists and what it does or does not support.</p>' +
+        '<p style="font-size:var(--fs-13);color:var(--tx-3)">No original video or frame files are supplied. ' +
+          'Media descriptions are demonstration metadata only, not verified source assets.</p>' +
         '<div class="grid grid-auto mt-4">' +
           withMedia.slice(0, 8).map((r) =>
             '<a class="card" href="#/evidence/' + UI.esc(r.id) + '" style="text-decoration:none;background:var(--bg-inset)">' +
@@ -58,12 +58,12 @@ const EvidencePage = (function () {
   /* -------------------------------------------------------------- helpers */
 
   function traceabilityTable(record) {
-    return '<div class="table-wrap"><table class="table">' +
+    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table class="table">' +
       '<thead><tr><th scope="col">Observation</th><th scope="col">Value recorded</th><th scope="col">Where it comes from</th><th scope="col">Review state</th></tr></thead><tbody>' +
       (record.outcomes || []).map((o) =>
         '<tr><td><strong class="tx-1">' + UI.esc(o.label) + '</strong><div class="muted" style="font-size:var(--fs-12)">' + UI.esc(o.detail) + '</div></td>' +
           '<td>' + UI.outcomeBadge(o.type) + '</td>' +
-          '<td>' + UI.esc(o.basis) + '<div class="muted" style="font-size:var(--fs-12)">' + UI.esc(record.source.report) + ' · ' + UI.esc(record.source.ntrs) + '</div></td>' +
+          '<td>' + 'Team-authored demonstration observation; source extraction unverified' + '<div class="muted" style="font-size:var(--fs-12)">' + UI.esc(record.source.report) + ' · ' + UI.esc(record.source.ntrs) + '</div></td>' +
           '<td>' + UI.reviewedBadge(record) + '</td></tr>').join('') +
       '</tbody></table></div>';
   }
@@ -85,7 +85,7 @@ const EvidencePage = (function () {
 
   function conditionsTable(record) {
     const keys = ['fuel', 'geometry', 'thickness_mm', 'oxygen_pct', 'airflow_cms', 'flow_direction', 'ignition', 'pressure_kpa', 'duration_s'];
-    return '<div class="table-wrap"><table class="table">' +
+    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table class="table">' +
       '<thead><tr><th scope="col">Condition</th><th scope="col">Recorded value</th><th scope="col">Status</th></tr></thead><tbody>' +
       keys.map((k) => {
         const missing = Store.isMissing(record, k);
@@ -118,7 +118,7 @@ const EvidencePage = (function () {
         icon: 'layersOff',
         title: 'No suitable comparison found for this test',
         message: 'On the factor currently selected in the workspace (' + UI.esc(Matcher.factorLabel(factor)) + '), no other indexed record matches closely enough. ' +
-          'That is a statement about the records, not about the physics: the test was run, it simply has no fair partner in this dataset yet.'
+          'This describes the demonstration catalog only, not real experiments or physical behavior.'
       });
     }
 
@@ -150,10 +150,8 @@ const EvidencePage = (function () {
   function fullView(record) {
     const c = Store.state.compare;
     const mediaNote = record.media.kind === 'none'
-      ? 'No media file is indexed for this run. Behaviour here rests on the recorded outcome field alone.'
-      : record.media.kind === 'frame-set'
-        ? 'Extracted frames only: ' + record.media.label + '. Frame sampling limits any statement about timing between frames.'
-        : 'A video file exists for this run: ' + record.media.label + '. The prototype does not stream it, and it does not claim to have measured it.';
+      ? 'No media is described for this demonstration record. Its observation is illustrative text only.'
+      : 'Illustrative media description: ' + record.media.label + '. No original video or frame files are supplied or verified.';
 
     return '<div class="page-head"><div class="wrap page-head-inner">' +
       '<div>' +
@@ -197,19 +195,20 @@ const EvidencePage = (function () {
 
         '<section class="card card-lg" aria-labelledby="obs-title">' +
           '<div class="card-title"><h2 id="obs-title" style="font-size:var(--fs-20)">Observed behaviour</h2>' +
-            '<span class="badge badge-ember">Recorded, not predicted</span></div>' +
+            '<span class="badge badge-ember">Illustrative, unverified</span></div>' +
+          '<p class="muted mb-4">These team-authored observations demonstrate the evidence layout. They are not findings extracted from NASA experiments.</p>' +
           '<div class="mt-2">' + (record.outcomes || []).map((o) =>
             '<div class="obs-row">' +
               '<div class="row row-wrap" style="gap:10px">' + UI.outcomeBadge(o.type) +
                 '<span class="obs-value">' + UI.esc(o.label) + '</span></div>' +
               '<p class="obs-note">' + UI.esc(o.detail) + '</p>' +
-              '<p class="muted mt-1" style="font-size:var(--fs-12)">Basis: ' + UI.esc(o.basis) + '</p>' +
+              '<p class="muted mt-1" style="font-size:var(--fs-12)">Basis: ' + 'Team-authored demonstration observation; source extraction unverified' + '</p>' +
             '</div>').join('') + '</div>' +
         '</section>' +
 
         '<section class="card card-lg" aria-labelledby="tl-title">' +
           '<div class="card-title"><h2 id="tl-title" style="font-size:var(--fs-20)">Phase timeline</h2>' +
-            '<span class="badge badge-unknown">Operator notes</span></div>' +
+            '<span class="badge badge-unknown">Illustrative phase notes</span></div>' +
           '<p class="muted mb-4" style="font-size:var(--fs-13)">Timings are demonstration values recorded by hand in this prototype. ' +
             'Instrumented timings would come from the PSI files once extraction is verified.</p>' +
           timeline(record) +
@@ -249,9 +248,9 @@ const EvidencePage = (function () {
 
         '<div class="split-claim">' +
           '<div class="claim claim-observed">' +
-            '<h4>Observed</h4>' +
+            '<h4>Illustrative observation</h4>' +
             '<p class="tx-1">' + UI.esc((record.outcomes && record.outcomes[0]) ? record.outcomes[0].label : 'Not recorded') + '</p>' +
-            '<p class="muted" style="font-size:var(--fs-12)">Taken from the recorded outcome field of ' + UI.esc(record.id) + '.</p>' +
+            '<p class="muted" style="font-size:var(--fs-12)">Team-authored demonstration outcome in ' + UI.esc(record.id) + '.</p>' +
           '</div>' +
           '<div class="claim claim-concept">' +
             '<h4>Proposed interpretation</h4>' +
@@ -272,7 +271,7 @@ const EvidencePage = (function () {
         '</div>' +
 
         '<div class="card">' +
-          '<div class="card-title"><h3 style="font-size:var(--fs-15)">Original sources</h3></div>' +
+          '<div class="card-title"><h3 style="font-size:var(--fs-15)">NASA background references</h3></div>' +
           '<div class="source-item" style="padding:12px 0">' +
             '<div><h4>' + UI.esc(record.source.report) + '</h4><p>Published BASS-II reporting</p></div>' +
             '<span class="source-ref">' + UI.esc(record.source.ntrs) + '</span>' +
@@ -285,7 +284,7 @@ const EvidencePage = (function () {
             '<a class="btn btn-sm" href="https://ntrs.nasa.gov/citations/' + UI.esc(record.source.ntrs) + '" target="_blank" rel="noopener">' + UI.icon('external', 13) + ' NTRS ' + UI.esc(record.source.ntrs) + '</a>' +
             '<a class="btn btn-sm" href="https://www.nasa.gov/physical-sciences-informatics-psi/" target="_blank" rel="noopener">' + UI.icon('external', 13) + ' PSI investigation</a>' +
           '</div>' +
-          '<button class="btn btn-sm btn-ghost mt-3" data-action="copy-citation">' + UI.icon('book', 13) + ' Copy citation string</button>' +
+          '<p class="muted mt-3">These background reports do not verify this invented record or its observations.</p><button class="btn btn-sm btn-ghost mt-3" data-action="copy-citation">' + UI.icon('book', 13) + ' Copy citation string</button>' +
         '</div>' +
 
       '</aside>' +
@@ -330,13 +329,8 @@ const EvidencePage = (function () {
       const id = (location.hash.split('/')[2] || '').split('?')[0];
       const r = Store.byId(id);
       if (!r) return;
-      const text = 'Team CinderLens demonstration record ' + r.id + ' — replaces NASA ' + r.source.psi +
-        ' / NTRS ' + r.source.ntrs + '. Not a NASA measurement.';
-      if (navigator.clipboard) navigator.clipboard.writeText(text).then(
-        () => UI.toast('Citation string copied. It states clearly that the row is demonstration content.'),
-        () => UI.toast('Copy failed in this browser — the string is shown in the button tooltip.', 'warn')
-      );
-      else UI.toast('Clipboard is unavailable here.', 'warn');
+      const text = 'Team CinderLens illustrative record ' + r.id + '. Invented conditions and observations; not a NASA measurement. Background reference: https://ntrs.nasa.gov/citations/' + r.source.ntrs;
+      UI.copyText(text, 'Citation copied with demonstration status.');
     }
   };
 
