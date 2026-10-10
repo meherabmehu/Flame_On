@@ -1,7 +1,9 @@
 ﻿/* Cinematic homepage. Local procedural artwork; all scientific labels remain explicit. */
-.cinematic-overview { background: radial-gradient(ellipse at 84% 3%,rgba(0,106,181,.11),transparent 27%),#050d19; }
+.cinematic-overview { background: radial-gradient(ellipse at 84% 3%,rgba(0,106,181,.16),transparent 27%),radial-gradient(ellipse at 6% 18%,rgba(0,166,189,.06),transparent 24%),#030c17; }
 .cinematic-hero { padding-block: 36px 14px; overflow: hidden; border-bottom: 0; background: radial-gradient(ellipse at 78% 70%,rgba(0,106,181,.09),transparent 45%); }
 .cinematic-hero .hero-inner { grid-template-columns: .95fr 1.05fr; gap: 16px; }
+.cinematic-hero .hero-copy { padding-block: 16px; }
+.cinematic-hero .hero-actions .btn { min-height: 50px; }
 .cinematic-hero .hero-copy { position: relative; z-index: 2; }
 .cinematic-hero h1 { font-size: clamp(44px,4.9vw,76px); letter-spacing: -.05em; line-height: 1.07; font-weight: 700; }
 .cinematic-hero h1 span { color: #22d7d2; }

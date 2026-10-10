@@ -6,16 +6,16 @@
 
 :root {
   /* --- Surfaces: restrained deep navy ------------------------------------ */
-  --bg-app: #0a1120;
-  --bg-shell: #0d1626;
-  --bg-panel: #111b2e;
-  --bg-panel-2: #16243a;
-  --bg-inset: #0b1424;
+  --bg-app: #030c17;
+  --bg-shell: #05111e;
+  --bg-panel: #071827;
+  --bg-panel-2: #0a2032;
+  --bg-inset: #04111e;
   --bg-hover: #182742;
 
   /* --- Lines ------------------------------------------------------------- */
-  --line-soft: #1e2b45;
-  --line: #2a3950;
+  --line-soft: #153044;
+  --line: #21445b;
   --line-strong: #586d89;
 
   /* --- Text: high contrast for long reading sessions ---------------------- */
@@ -26,7 +26,7 @@
 
   /* --- Teal: interaction -------------------------------------------------- */
   --teal-300: #7ff0e2;
-  --teal-400: #3ed6c4;
+  --teal-400: #25e1dd;
   --teal-500: #16b8a7;
   --teal-600: #0d9184;
   --teal-wash: rgba(62, 214, 196, 0.10);
