@@ -124,8 +124,8 @@ const ExplorerPage = (function () {
       return '<p class="scroll-hint">Scroll the table sideways to see every recorded value.</p>' +
         '<div class="matrix-scroll">' +
         '<table class="matrix" role="table" aria-label="' + colLabel + ' coverage by fuel family">' +
-        '<thead><tr><th scope="col">' + colLabel + '</th>' +
-          cols.map((c) => '<th scope="col" style="text-align:center">' + (c === null ? 'n/a' : c + (unit || '')) + '</th>').join('') +
+        '<thead><tr><th scope="col">Fuel family</th>' +
+          cols.map((c) => '<th scope="col" style="text-align:center">' + (c === null ? 'Unknown' : c + (unit || '')) + '</th>').join('') +
         '</tr></thead><tbody>' +
         grid.grid.map((row) => '<tr>' +
           '<th scope="row">' + UI.esc(Matcher.displayValue('fuel', row.value)) + '</th>' +
@@ -134,9 +134,10 @@ const ExplorerPage = (function () {
             const n = cell ? cell.count : 0;
             const cls = n === 0 ? 'cov-0' : n === 1 ? 'cov-1' : n === 2 ? 'cov-2' : 'cov-3';
             const title = n === 0
-              ? 'No record: ' + row.label + ' at ' + (c === null ? 'an unrecorded value' : c + unit)
-              : n + ' record' + (n > 1 ? 's' : '') + ' · ' + cell.ids.join(', ');
-            return '<td class="' + cls + '"><button type="button" data-coverage-fuel="' + UI.esc(row.value) + '" data-coverage-key="' + columnKey + '" data-coverage-value="' + c + '" aria-label="' + UI.esc(title) + '. Filter this combination." title="' + UI.esc(title) + '">' + (n === 0 ? '—' : n) + '</button></td>';
+              ? 'No indexed demonstration record: ' + row.label + ' at ' + (c === null ? 'an unrecorded ' + colLabel.toLowerCase() + ' value' : c + unit)
+              : row.label + ' · ' + colLabel + ': ' + (c === null ? 'not recorded' : c + unit) + ' · ' + n + ' record' + (n > 1 ? 's' : '') + ' · ' + cell.ids.join(', ');
+            const action = c === null ? 'Filter this fuel family to records with missing conditions.' : 'Filter this combination.';
+            return '<td class="' + cls + '"><button type="button" data-coverage-fuel="' + UI.esc(row.value) + '" data-coverage-key="' + columnKey + '" data-coverage-value="' + c + '" data-coverage-detail="' + UI.esc(title + '. ' + action) + '" aria-label="' + UI.esc(title) + '. ' + action + '" aria-describedby="coverage-cell-detail" title="' + UI.esc(title) + '">' + (n === 0 ? '—' : n) + '</button></td>';
           }).join('') +
         '</tr>').join('') +
         '</tbody></table></div>';
@@ -152,15 +153,16 @@ const ExplorerPage = (function () {
         'Cells count indexed records. A dashed “—” cell means no record exists for that combination — that is a catalog gap, not a zero result. ' +
         'Select a cell to filter that combination. Counts use the full demo catalog, independent of current filters.</p>' +
       '<div class="legend mt-4">' +
-        '<span class="legend-item"><span class="legend-swatch cov-0"></span> no record</span>' +
+        '<span class="legend-item"><span class="legend-swatch cov-0"></span> No indexed demo record</span>' +
         '<span class="legend-item"><span class="legend-swatch cov-1"></span> 1 record</span>' +
         '<span class="legend-item"><span class="legend-swatch cov-2"></span> 2 records</span>' +
         '<span class="legend-item"><span class="legend-swatch cov-3"></span> 3 or more</span>' +
       '</div>' +
-      '<div class="grid grid-2 mt-6" style="align-items:start">' +
-        '<div><h3 style="font-size:var(--fs-15)" class="mb-4">Oxygen coverage</h3>' + table(oxy, 'Fuel', '% O₂', 'oxygen') + '</div>' +
-        '<div><h3 style="font-size:var(--fs-15)" class="mb-4">Airflow coverage</h3>' + table(air, 'Fuel', ' cm/s', 'airflow') + '</div>' +
+      '<div class="coverage-matrices mt-6">' +
+        '<div><h3 class="mb-2">Fuel family × oxygen</h3><p class="matrix-axis-note">Columns: oxygen (% by volume). Rows: fuel families.</p>' + table(oxy, 'Oxygen', '% O₂', 'oxygen') + '</div>' +
+        '<div><h3 class="mb-2">Fuel family × airflow</h3><p class="matrix-axis-note">Columns: airflow (cm/s). Rows: fuel families.</p>' + table(air, 'Airflow', ' cm/s', 'airflow') + '</div>' +
       '</div>' +
+      '<div class="coverage-cell-inspector"><span class="research-label">Cell detail</span><p id="coverage-cell-detail" role="status" aria-live="polite">Hover or focus a cell to see its indexed records. Select it to apply filters.</p></div>' +
       '<hr>' +
       '<h3 style="font-size:var(--fs-15)">Gaps stated in plain English</h3>' +
       '<ul class="mt-3 honesty-list" style="gap:10px">' + gaps.map((g) =>
@@ -442,6 +444,14 @@ const ExplorerPage = (function () {
 
   function bindCoverage() {
     root.querySelectorAll('[data-coverage-fuel]').forEach((button) => {
+      const inspect = () => {
+        const detail = root.querySelector('#coverage-cell-detail');
+        if (detail) detail.textContent = button.dataset.coverageDetail;
+        root.querySelectorAll('.matrix td.is-inspected').forEach((cell) => cell.classList.remove('is-inspected'));
+        button.closest('td').classList.add('is-inspected');
+      };
+      button.addEventListener('focus', inspect);
+      button.addEventListener('mouseenter', inspect);
       button.addEventListener('click', () => {
         const family = FUEL_GROUPS[button.dataset.coverageFuel] || button.dataset.coverageFuel;
         const fuel = Store.valuesFor('fuel').filter((v) => (FUEL_GROUPS[v] || v) === family || v === family);

@@ -867,3 +867,20 @@ summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var
   .media-unavailable { padding: var(--sp-5); align-items: flex-start; }
   .schematic-disclosure summary > .muted { float: none; display: block; }
 }
+
+/* V2 coverage: discrete catalog counts with accessible inspection details. */
+#coverage-panel { padding: var(--panel-padding); margin-bottom: var(--sp-6); }
+.coverage-matrices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--sp-6); }
+.coverage-matrices > div { min-width: 0; padding: var(--sp-4); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-inset); }
+.coverage-matrices h3 { font-size: var(--fs-15); }
+.matrix-axis-note { font-size: var(--fs-12); color: var(--tx-3); margin-bottom: var(--sp-3); }
+.coverage-matrices .matrix th[scope="row"] { background: var(--bg-inset); }
+.coverage-matrices .matrix th { text-transform: none; letter-spacing: 0; font-size: var(--fs-12); }
+.coverage-matrices .matrix td { min-width: 44px; }
+.matrix td.is-inspected { outline: 1px solid var(--teal-400); outline-offset: -1px; }
+.coverage-cell-inspector { padding: var(--sp-4); margin-top: var(--sp-5); border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg-inset); min-height: 90px; }
+.coverage-cell-inspector .research-label { font-size: var(--fs-12); }
+.coverage-cell-inspector p { font-size: var(--fs-13); color: var(--tx-2); margin-top: var(--sp-2); overflow-wrap: anywhere; }
+#coverage-panel .cov-0 { border: 1px dashed var(--line-strong); }
+@media (max-width: 1100px) { .coverage-matrices { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .coverage-matrices > div { padding: var(--sp-3); } #coverage-panel { padding: var(--sp-4); } }
