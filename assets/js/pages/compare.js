@@ -79,7 +79,7 @@ const ComparePage = (function () {
       '<button type="button" class="btn btn-sm" data-action="swap-pair">' + UI.icon('compare',14) + ' Swap A and B</button>' +
       '<button type="button" class="btn btn-sm btn-ghost" data-action="clear-pair">Clear selection</button></div></div>' +
       (evidence.canCompare ? '' : '<div class="notice notice-warn mb-4">' + UI.icon('alert',16) + '<p><strong>No suggested pair on ' + UI.esc(Matcher.factorLabel(c.factor)) + '.</strong> ' + UI.esc(evidence.reason) + '</p></div>') +
-      '<div class="pair-grid">' + slotHTML('Test A',c.a,'Select a record using the catalog control above.') + slotHTML('Test B',c.b,'Select a distinct record to compare against A.') + '</div>' +
+      '<div class="comparison-stage">' + slotHTML('Test A',c.a,'Select a record using the catalog control above.') + stepThree() + slotHTML('Test B',c.b,'Select a distinct record to compare against A.') + '</div>' +
       (numeric && c.a && c.b ? '<p class="setting-caption">Bars show recorded settings relative to the larger value in this pair. They do not show flame response or scientific confidence.</p>' : '') +
       '<details class="pair-suggestions" id="pair-suggestions"><summary>Suggested pairs <span class="badge">' + suggestions.length + ' shown</span><span class="muted">Deterministic ranking</span></summary>' +
       (suggestions.length ? '<div class="suggest-list">' + suggestions.map(suggestItem).join('') + '</div>' : UI.state({dashed:true,inline:true,icon:'layersOff',title:'No suggested pair for '+Matcher.factorLabel(c.factor).toLowerCase(),message:UI.esc(evidence.reason)})) +
@@ -284,7 +284,7 @@ const ComparePage = (function () {
         '<div class="compare-header-result"><span>Current check</span>' + UI.verdictBadge(Matcher.pairVerdict(Store.byId(Store.state.compare.a), Store.byId(Store.state.compare.b), Store.state.compare.factor).verdict) + '<span class="muted">Unvalidated prototype rules</span><button type="button" class="btn btn-sm btn-ghost" data-action="jump-analysis">Review condition analysis ' + UI.icon('chevron',14) + '</button></div>' +
       '</div></div>' +
       '<div class="wrap"><div class="compare-workspace">' +
-        '<div>' + (!Store.records().length ? UI.emptyDataState() : '') + (invalid.length ? '<div class="notice notice-warn mb-4" role="status">' + UI.esc(invalid.join(' ')) + '</div>' : '') + stepOne() + stepTwo() + stepThree() + '</div>' +
+        '<div>' + (!Store.records().length ? UI.emptyDataState() : '') + (invalid.length ? '<div class="notice notice-warn mb-4" role="status">' + UI.esc(invalid.join(' ')) + '</div>' : '') + stepOne() + stepTwo() + '</div>' +
         '<details class="workspace-reference" id="workspace-reference"><summary>Matching rules &amp; background references</summary>' + sidePanel() + '</details>' +
       '</div></div>';
 
