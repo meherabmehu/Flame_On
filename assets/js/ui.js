@@ -28,6 +28,7 @@ const UI = (function () {
     close: '<path d="m6 6 12 12M18 6 6 18"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.1"/>',
     grid: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.2"/>',
+    menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
     external: '<path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H10"/>',
     videoOff: '<path d="M4 6.5h11v11H4z"/><path d="m15 11 5-3v8l-5-3"/><path d="M2.5 2.5 21.5 21.5"/>',
     layersOff: '<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/><path d="M3 3l18 18"/>',

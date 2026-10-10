@@ -411,7 +411,7 @@
   .example-panel { grid-template-columns: minmax(0, 1fr); padding: var(--sp-5); gap: var(--sp-5); }
   .final-cta { padding: var(--sp-6); }
   .final-cta .btn { width: 100%; }
-  .selection-tray { position: static; flex-wrap: wrap; }
+  .selection-tray { flex-wrap: wrap; }
   .page-head-inner > .stack-sm { width: 100%; min-width: 0 !important; }
   .factor-grid { grid-template-columns: minmax(0, 1fr); }
   .cond-label, .badge, .matrix th[scope="row"] { font-size: var(--fs-12); }
@@ -426,4 +426,32 @@
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+
+/* V2 responsive finish; these rules follow the original phone overrides. */
+@media (max-width: 900px) {
+  .nav { left: auto; right: var(--sp-3); top: calc(100% + var(--sp-2)); width: min(400px,calc(100vw - 24px)); max-height: calc(100dvh - var(--h-header) - 24px); padding: var(--sp-3); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg-shell); box-shadow: var(--sh-3); }
+  .nav-mobile-heading { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-2) var(--sp-3) var(--sp-3); border-bottom: 1px solid var(--line); margin-bottom: var(--sp-2); font-size: var(--fs-13); color: var(--tx-3); }
+  .nav-link { gap: var(--sp-4); padding: var(--sp-3); min-height: 64px; }
+  .nav-link > svg { display: block; flex-shrink: 0; color: var(--tx-3); }
+  .nav-link-description { display: block; margin-top: var(--sp-1); font-size: var(--fs-12); color: var(--tx-3); font-weight: 400; }
+  .nav-link[aria-current="page"] { background: var(--surface-selected); }
+  .nav-link[aria-current="page"]::after { left: 0; top: var(--sp-3); bottom: var(--sp-3); width: 2px; height: auto; right: auto; }
+  .nav-link[aria-current="page"] > svg { color: var(--teal-400); }
+  .evidence-grid .split-claim { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .selection-tray { position: fixed; bottom: max(var(--sp-3),env(safe-area-inset-bottom)); }
+  body:has(.explorer.has-selection) .footer { padding-bottom: 180px; }
+  .flow-step { border-right: 0; border-bottom: 1px solid var(--line); }
+  .flow-step:last-child { border-bottom: 0; }
+  .stat { border-right: 0; border-bottom: 1px solid var(--line); }
+  .stat:last-child { border-bottom: 0; }
+  .hero h1 { font-size: clamp(38px,10vw,56px); }
+  .chamber-visual .visual-label { font-size: 9px; letter-spacing: .05em; }
+  .brand-name { font-size: var(--fs-17); }
+  .header-inner { gap: var(--sp-2); }
+  .nav-toggle { margin-left: auto; }
+  .mode-chip { border-radius: var(--r-sm); }
+  .record-card .cond-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }

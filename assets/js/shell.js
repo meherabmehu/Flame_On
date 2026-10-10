@@ -3,13 +3,14 @@
    ========================================================================== */
 
 const Shell = (function () {
+  let releaseNavTrap = null;
 
   const NAV = [
-    { name: 'overview', label: 'Overview', path: '#/' },
-    { name: 'explorer', label: 'Explorer', path: '#/explorer' },
-    { name: 'compare', label: 'Compare', path: '#/compare' },
-    { name: 'coverage', label: 'Coverage', path: '#/explorer?coverage=1' },
-    { name: 'data-notes', label: 'Data notes', path: '#/data-notes' }
+    { name: 'overview', label: 'Overview', path: '#/', icon: 'layers', description: 'Start with the research workflow' },
+    { name: 'explorer', label: 'Explorer', path: '#/explorer', icon: 'search', description: 'Find and select experiment records' },
+    { name: 'compare', label: 'Compare', path: '#/compare', icon: 'compare', description: 'Check conditions across two tests' },
+    { name: 'coverage', label: 'Coverage', path: '#/explorer?coverage=1', icon: 'grid', description: 'Inspect catalog counts and gaps' },
+    { name: 'data-notes', label: 'Data notes', path: '#/data-notes', icon: 'book', description: 'Review sources, rules and limitations' }
   ];
 
   function headerHTML() {
@@ -22,10 +23,11 @@ const Shell = (function () {
         '</span>' +
       '</a>' +
       '<button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav" ' +
-        'aria-label="Show navigation">' + UI.icon('grid', 18) + '</button>' +
+        'aria-label="Show navigation">' + UI.icon('menu', 18) + '</button>' +
       '<nav class="nav" id="primary-nav" aria-label="Primary">' +
+        '<div class="nav-mobile-heading"><span>Research workspace</span><button class="btn-icon" id="nav-dismiss" aria-label="Close navigation">' + UI.icon('close', 18) + '</button></div>' +
         '<ul class="nav-list">' +
-          NAV.map((n) => '<li><a class="nav-link" data-nav="' + n.name + '" href="' + n.path + '">' + n.label + '</a></li>').join('') +
+          NAV.map((n) => '<li><a class="nav-link" data-nav="' + n.name + '" href="' + n.path + '">' + UI.icon(n.icon, 18) + '<span>' + n.label + '<span class="nav-link-description">' + n.description + '</span></span></a></li>').join('') +
         '</ul>' +
       '</nav>' +
       '<div class="header-actions">' +
@@ -42,7 +44,7 @@ const Shell = (function () {
       '<div class="footer-grid">' +
         '<div>' +
           '<div class="row" style="gap:10px">' + UI.brandMark(26) +
-            '<strong style="color:var(--tx-1);font-size:var(--fs-14)">Flame in Freefall</strong></div>' +
+            '<strong style="color:var(--tx-1);font-size:var(--fs-14)">CinderLens <span class="footer-brand-sub">Flame in Freefall</span></strong></div>' +
           '<p class="mt-3" style="max-width:44ch">' +
             'A question-led explorer across recorded microgravity combustion conditions. ' +
             'It shows what tests exist, what they recorded, and where the evidence stops.</p>' +
@@ -72,6 +74,7 @@ const Shell = (function () {
   }
 
   function render() {
+    closeMobileNav();
     document.getElementById('app-header').innerHTML = headerHTML();
     document.getElementById('app-footer').innerHTML = footerHTML();
     const strip = document.getElementById('app-strip');
@@ -83,18 +86,30 @@ const Shell = (function () {
     const toggle = document.getElementById('nav-toggle');
     const nav = document.getElementById('primary-nav');
     if (toggle && nav) {
-      toggle.addEventListener('click', () => {
-        const open = nav.classList.toggle('is-open');
-        toggle.setAttribute('aria-expanded', String(open));
-        toggle.setAttribute('aria-label', open ? 'Hide navigation' : 'Show navigation');
-        // Stop the page scrolling behind the open menu on a phone.
-        document.body.classList.toggle('no-scroll', open);
-        if (open) nav.querySelector('a').focus();
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (nav.classList.contains('is-open')) { closeMobileNav(); return; }
+        closeModePopover();
+        nav.classList.add('is-open');
+        nav.setAttribute('role', 'dialog');
+        nav.setAttribute('aria-modal', 'true');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Hide navigation');
+        toggle.innerHTML = UI.icon('close', 18);
+        document.body.classList.add('no-scroll');
+        const dismiss = () => { closeMobileNav(); toggle.focus(); };
+        const backdrop = document.createElement('div');
+        backdrop.className = 'nav-backdrop';
+        backdrop.addEventListener('click', dismiss);
+        document.body.appendChild(backdrop);
+        releaseNavTrap = UI.trapFocus(nav, dismiss);
+        nav.querySelector('a').focus();
       });
+      document.getElementById('nav-dismiss').addEventListener('click', () => { closeMobileNav(); toggle.focus(); });
     }
 
     const chip = document.getElementById('mode-chip');
-    if (chip) chip.addEventListener('click', (e) => { e.stopPropagation(); toggleModePopover(chip); });
+    if (chip) chip.addEventListener('click', (e) => { e.stopPropagation(); closeMobileNav(); toggleModePopover(chip); });
 
     const stripBtn = document.getElementById('strip-dismiss');
     if (stripBtn) stripBtn.addEventListener('click', () => {
@@ -159,12 +174,17 @@ const Shell = (function () {
   }
 
   function closeMobileNav() {
+    if (releaseNavTrap) { releaseNavTrap(); releaseNavTrap = null; }
+    document.querySelector('.nav-backdrop')?.remove();
     const nav = document.getElementById('primary-nav');
     const toggle = document.getElementById('nav-toggle');
     if (nav && nav.classList.contains('is-open')) {
       nav.classList.remove('is-open');
+      nav.removeAttribute('role');
+      nav.removeAttribute('aria-modal');
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-label', 'Show navigation');
+      toggle.innerHTML = UI.icon('menu', 18);
     }
     document.body.classList.remove('no-scroll');
   }

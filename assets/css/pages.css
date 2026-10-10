@@ -763,7 +763,7 @@ summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var
 .advanced-filters { border-top: 1px solid var(--line); padding-top: var(--sp-2); }
 .advanced-filters summary { font-size: var(--fs-13); }
 .advanced-filters[open] summary { margin-bottom: var(--sp-3); }
-.selection-tray { border-color: var(--border-selected); background: var(--bg-panel-2); box-shadow: var(--shadow-md); }
+.selection-tray { border-color: var(--border-selected); background: var(--bg-panel-2); box-shadow: var(--sh-2); }
 .tray-count { margin-left: var(--sp-2); font-family: var(--font-mono); color: var(--teal-300); }
 .tray-slot { display: grid; place-items: center; width: 20px; height: 20px; background: var(--surface-selected); border-radius: 3px; color: var(--teal-300); font-size: var(--fs-12); }
 @media (max-width: 640px) {

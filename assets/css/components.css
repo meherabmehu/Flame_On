@@ -844,3 +844,12 @@ details > summary { font-size: var(--fs-14); }
 details[open] > summary { margin-bottom: var(--sp-4); }
 .table th { color: var(--tx-3); font-size: var(--fs-12); font-weight: 550; }
 .table td { line-height: 1.55; }
+
+/* V2 navigation: restrained desktop landmarks and a focused mobile drawer. */
+.nav-mobile-heading, .nav-link-description, .nav-link > svg { display: none; }
+.nav-link { position: relative; padding-block: var(--sp-3); border-color: transparent; }
+.nav-link[aria-current="page"] { background: transparent; border-color: transparent; color: var(--teal-300); }
+.nav-link[aria-current="page"]::after { content: ''; position: absolute; bottom: 0; left: var(--sp-3); right: var(--sp-3); height: 2px; border-radius: 2px; background: var(--teal-400); }
+.footer-brand-sub { display: block; color: var(--tx-3); font-weight: 400; font-size: var(--fs-12); margin-top: var(--sp-1); }
+.footer h4 { text-transform: none; letter-spacing: 0; font-size: var(--fs-13); color: var(--tx-2); }
+.nav-backdrop { position: fixed; inset: var(--h-header) 0 0; z-index: 35; background: rgba(3,8,18,.7); }
