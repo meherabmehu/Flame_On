@@ -247,24 +247,15 @@ const ExplorerPage = (function () {
     return '<option value="' + value + '"' + (value === current ? ' selected' : '') + '>' + label + '</option>';
   }
 
+  function searchHTML() {
+    return '<div class="explorer-search"><label class="sr-only" for="explorer-search">Search demonstration records</label><div class="search-field"><span class="search-icon">' + UI.icon('search',18) + '</span><input class="input" id="explorer-search" type="search" placeholder="Search experiments, materials or test IDs…" aria-describedby="search-help" value="' + UI.esc(Store.state.filters.q) + '"><button class="btn-icon btn-clear" id="search-clear" type="button" aria-label="Clear search">' + UI.icon('close',16) + '</button></div><button class="btn btn-primary" type="button" data-action="submit-search">Search</button><span class="sr-only" id="search-help">Searches existing IDs, titles, materials, geometry, flow direction and session metadata.</span></div>';
+  }
+
   function shellHTML() {
-    return '<div class="page-head"><div class="wrap page-head-inner">' +
-      '<div>' +
-        '<p class="eyebrow">Experiment explorer</p>' +
-        '<h1>' + (showCoverage ? 'Catalog &amp; Data Coverage' : 'Explore Experiments') + '</h1>' +
-        '<p class="lead">' + (showCoverage ? 'Explore recorded condition combinations and catalog gaps. Counts describe demonstration rows, not the NASA archive.' : 'Find illustrative records by their indexed conditions. Select two tests to compare, or open a record to inspect its evidence and limitations.') + '</p>' +
-      '</div>' +
-      '<div class="row row-wrap" style="gap:8px">' +
-        '<a class="btn" href="#/compare">' + UI.icon('compare', 15) + ' Comparison workspace</a>' +
-      '</div>' +
-    '</div></div>' +
-    '<div class="wrap ' + (showCoverage ? 'coverage-workspace' : 'catalog-workspace') + '"><div id="catalog-stats"></div><div class="explorer-search"><label class="field-label" for="explorer-search">Search demonstration records</label><div class="search-field"><span class="search-icon">' + UI.icon('search', 18) + '</span><input class="input" id="explorer-search" type="search" placeholder="Search by test ID, material or shape…" aria-describedby="search-help" value="' + UI.esc(Store.state.filters.q) + '"><button class="btn-icon btn-clear" id="search-clear" type="button" aria-label="Clear search">' + UI.icon('close', 16) + '</button></div><p class="filter-sub" id="search-help">Searches IDs, titles, materials, geometry, flow direction and session metadata.</p></div><div class="explorer">' +
-      filtersHTML() +
-      '<section aria-label="Matching records">' +
-        '<div id="coverage-slot"></div>' +
-        '<div id="results-slot"></div>' +
-      '</section>' +
-    '</div></div>';
+    return '<div class="page-head"><div class="wrap page-head-inner"><div><h1>' + (showCoverage ? 'Catalog &amp; Data Coverage' : 'Explore Experiments') + '</h1><p class="lead">' + (showCoverage ? 'Explore indexed conditions, catalog coverage and the gaps in our demonstration records.' : 'Search recorded combustion conditions, inspect illustrative observations, and choose two experiments to compare.') + '</p></div><span class="badge badge-ember">Demo data</span></div></div>' +
+      '<div class="wrap ' + (showCoverage ? 'coverage-workspace' : 'catalog-workspace') + '"><div id="catalog-stats"></div>' +
+      (showCoverage ? '<div class="coverage-stage" id="coverage-slot"></div>' : '') +
+      '<div class="explorer">' + filtersHTML() + '<section class="catalog-results" aria-label="Matching records">' + searchHTML() + '<div id="results-slot"></div></section></div></div>';
   }
 
   /* ---------------------------------------------------------------- wiring */
@@ -501,7 +492,9 @@ const ExplorerPage = (function () {
         button.closest('td').classList.add('is-inspected');
       };
       button.addEventListener('focus', inspect);
-      button.addEventListener('mouseenter', inspect);
+      button.addEventListener('mouseenter', () => {
+        if (!document.activeElement?.matches('[data-coverage-detail]') || document.activeElement === button) inspect();
+      });
       button.addEventListener('click', () => {
         const patch = {};
         [['row', 'rowValue'], ['col', 'colValue']].forEach(([axis, valueKey]) => {
@@ -526,7 +519,9 @@ const ExplorerPage = (function () {
         button.closest('td').classList.add('is-inspected');
       };
       button.addEventListener('focus', inspect);
-      button.addEventListener('mouseenter', inspect);
+      button.addEventListener('mouseenter', () => {
+        if (!document.activeElement?.matches('[data-coverage-detail]') || document.activeElement === button) inspect();
+      });
       button.addEventListener('click', () => {
         const family = FUEL_GROUPS[button.dataset.coverageFuel] || button.dataset.coverageFuel;
         const fuel = Store.valuesFor('fuel').filter((v) => (FUEL_GROUPS[v] || v) === family || v === family);
@@ -564,6 +559,7 @@ const ExplorerPage = (function () {
 
   /* Actions delegated from main.js (data-action attributes). */
   const actions = {
+    'submit-search': () => { clearTimeout(searchTimer); Store.setFilter({ q: root.querySelector('#explorer-search').value }); refresh(); },
     'toggle-filters': () => {
       if (filtersOpen) { closeFilters(); return; }
       filtersOpen = true;

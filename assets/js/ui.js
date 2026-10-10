@@ -174,37 +174,22 @@ const UI = (function () {
 
   const CARD_KEYS = ['fuel', 'geometry', 'thickness_mm', 'oxygen_pct', 'airflow_cms', 'flow_direction'];
 
+  function recordThumbnail(record) {
+    const geometry = String(record.geometry || '').toLowerCase();
+    const shape = geometry.includes('sphere') ? '<circle cx="40" cy="32" r="18"/>' : geometry.includes('cylinder') ? '<path d="M22 20q18-12 36 0v28q-18 12-36 0Z"/><ellipse cx="40" cy="20" rx="18" ry="7"/>' : '<path d="M13 34 47 17 68 30 34 49Z"/><path d="M13 34v9l21 13 34-17v-9M34 49v7"/>';
+    return '<div class="sample-thumbnail" title="Sample geometry schematic; not experiment imagery"><svg viewBox="0 0 80 64" aria-hidden="true"><g fill="#163c60" stroke="#7dc5ff" stroke-width="1.4">' + shape + '</g></svg><span>Schematic</span></div>';
+  }
+
   function recordCard(record, opts) {
     const o = opts || {};
     const selected = (Store.state.picked || []).includes(record.id);
-    return '<article class="record-card' + (selected ? ' is-selected' : '') + '" data-record="' + esc(record.id) + '" ' +
-      'aria-labelledby="title-' + esc(record.id) + '">' +
-      '<div class="record-symbol" aria-hidden="true">' + icon('layers', 24) + '</div><div class="record-card-top">' +
-        '<div>' +
-          '<div class="record-identity-line"><span class="record-id">' + esc(record.id) + '</span><span class="badge badge-ember">Demonstration</span></div>' +
-          '<h3 id="title-' + esc(record.id) + '">' +
-            '<a href="#/record/' + esc(record.id) + '">' + esc(record.title) + '</a>' +
-          '</h3>' +
-          '<p class="record-sub">Session ' + esc(record.session) + ' · ' + esc(record.run) + '</p>' +
-        '</div>' +
-        '<div class="tag-row" style="justify-content:flex-end">' +
-          (record.outcomes || []).slice(0, 2).map((oc) => outcomeBadge(oc.type)).join('') +
-        '</div>' +
-      '</div>' +
-      '<details class="record-conditions"><summary>Recorded conditions <span class="muted">' + esc(Matcher.displayValue('oxygen_pct', record.oxygen_pct) || 'Oxygen not recorded') + ' · ' + esc(Matcher.displayValue('airflow_cms', record.airflow_cms) || 'Airflow not recorded') + '</span></summary><div class="cond-grid">' + ['oxygen_pct', 'airflow_cms', 'thickness_mm', 'fuel', 'geometry', 'flow_direction'].map((k) => condValue(record, k)).join('') + '</div></details>' +
-      '<p class="observation-preview"><span>Illustrative observation</span> · ' + esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p>' +
-      '<div class="record-foot">' +
-        '<div class="tag-row record-metadata-status">' + missingCount(record) + reviewedBadge(record) + '</div>' +
-        '<div class="record-actions">' +
-          (o.hidePick ? '' :
-            '<button class="btn btn-sm" data-pick="' + esc(record.id) + '" aria-pressed="' + selected + '">' +
-              icon(selected ? 'check' : 'compare', 14) + (selected ? 'Selected · remove' : 'Select to compare') +
-            '</button>') +
-          '<a class="btn btn-sm" href="#/record/' + esc(record.id) + '">View record ' + icon('chevron', 14) + '</a>' +
-          '<a class="btn btn-sm btn-ghost" href="#/evidence/' + esc(record.id) + '">Inspect evidence</a>' +
-        '</div>' +
-      '</div>' +
-    '</article>';
+    return '<article class="record-card' + (selected ? ' is-selected' : '') + '" data-record="' + esc(record.id) + '" aria-labelledby="title-' + esc(record.id) + '">' +
+      '<a class="record-thumb-link" href="#/record/' + esc(record.id) + '" aria-label="View record ' + esc(record.id) + '">' + recordThumbnail(record) + '</a>' +
+      '<div class="record-card-top"><div class="record-identity-line"><span class="record-id">' + esc(record.id) + '</span><span class="badge badge-ember">Demo</span></div><h3 id="title-' + esc(record.id) + '"><a href="#/record/' + esc(record.id) + '">' + esc(record.title) + '</a></h3><div class="tag-row">' +
+      '<span class="badge">' + esc(Matcher.displayValue('fuel',record.fuel)) + '</span><span class="badge">' + esc(Matcher.displayValue('geometry',record.geometry)) + '</span></div><p class="observation-preview">' + esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p></div>' +
+      '<div class="record-row-status">' + reviewedBadge(record) + '<span class="record-sub">' + esc(record.session) + '</span>' +
+      (o.hidePick ? '' : '<button class="btn btn-sm" data-pick="' + esc(record.id) + '" aria-pressed="' + selected + '">' + icon(selected ? 'check' : 'compare',14) + (selected ? 'Selected · remove' : 'Select') + '</button>') + '</div>' +
+      '<details class="record-conditions"><summary>Conditions &amp; evidence ' + missingCount(record) + '</summary><div class="cond-grid">' + CARD_KEYS.map(k=>condValue(record,k)).join('') + '</div><div class="record-actions"><a class="btn btn-sm" href="#/record/' + esc(record.id) + '">Full record</a><a class="btn btn-sm" href="#/evidence/' + esc(record.id) + '">Inspect evidence</a></div></details></article>';
   }
 
   /* --------------------------------------------------------- state blocks */
@@ -348,7 +333,7 @@ const UI = (function () {
   }
 
   return {
-    esc, icon, brandMark, mediaPlaceholder, evidenceSummary, conditionStrip, outcomeBadge, verdictBadge, missingCount,
+    esc, icon, brandMark, recordThumbnail, mediaPlaceholder, evidenceSummary, conditionStrip, outcomeBadge, verdictBadge, missingCount,
     reviewedBadge, completeness, recordCard, condValue, state, emptyDataState,
     noResultsState, skeletonList, toast, dataCaveatStrip,
     factorChips, interpretationBlock, trapFocus, copyText, CARD_KEYS, OUTCOME_STYLE
