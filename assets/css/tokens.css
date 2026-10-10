@@ -9,20 +9,20 @@
   --bg-app: #0a1120;
   --bg-shell: #0d1626;
   --bg-panel: #111b2e;
-  --bg-panel-2: #16223a;
+  --bg-panel-2: #16243a;
   --bg-inset: #0b1424;
   --bg-hover: #182742;
 
   /* --- Lines ------------------------------------------------------------- */
   --line-soft: #1e2b45;
-  --line: #253352;
-  --line-strong: #35496e;
+  --line: #2a3950;
+  --line-strong: #586d89;
 
   /* --- Text: high contrast for long reading sessions ---------------------- */
-  --tx-1: #e9eff8;   /* headings, primary text      ~15.6:1 on --bg-app */
+  --tx-1: #f3f7fc;   /* headings, primary text */
   --tx-2: #b3c1d8;   /* body copy                   ~9.1:1             */
-  --tx-3: #8593ab;   /* meta, captions              ~5.2:1             */
-  --tx-4: #64718a;   /* disabled / placeholder      (large text only)   */
+  --tx-3: #a0afc5;   /* readable metadata on elevated surfaces */
+  --tx-4: #95a5bd;   /* placeholders and supporting labels */
 
   /* --- Teal: interaction -------------------------------------------------- */
   --teal-300: #7ff0e2;
@@ -43,13 +43,13 @@
   --st-warn: #e8b055;        /* caution / partial                */
   --st-risk: #e5796b;        /* unsuitable / extinction          */
   --st-info: #7ba6f2;        /* informational                    */
-  --st-unknown: #6d7b93;     /* not recorded / no evidence       */
+  --st-unknown: #a0afc5;     /* not recorded / no evidence */
 
   /* --- Typography --------------------------------------------------------- */
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
-  --fs-11: 0.6875rem;  /* micro labels      */
+  --fs-11: 0.75rem;  /* micro labels */
   --fs-12: 0.75rem;    /* badges, meta      */
   --fs-13: 0.8125rem;  /* dense table text  */
   --fs-14: 0.875rem;   /* secondary body    */
@@ -101,5 +101,16 @@
   /* --- Layout ------------------------------------------------------------- */
   --w-max: 1240px;
   --w-prose: 68ch;
-  --h-header: 60px;
+  --h-header: 72px;
+  --fs-hero: clamp(2.7rem, 4.5vw, 4.5rem);
+  --control-height: 44px;
+  --background-primary: var(--bg-app);
+  --surface-primary: var(--bg-panel);
+  --surface-elevated: var(--bg-panel-2);
+  --text-primary: var(--tx-1);
+  --text-secondary: var(--tx-2);
+  --text-muted: var(--tx-3);
+  --border-default: var(--line);
+  --accent-primary: var(--teal-400);
+  --status-error: var(--st-risk);
 }

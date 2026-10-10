@@ -381,3 +381,49 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Narrow screens use a real modal filter drawer; search stays on the page. */
+@media (max-width: 1100px) {
+  .hero-inner { gap: var(--sp-6); }
+  .hero h1 { font-size: clamp(2.7rem, 5vw, 3.6rem); }
+}
+@media (max-width: 900px) {
+  :root { --h-header: 64px; }
+  .header-inner { justify-content: space-between; }
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero { padding-block: var(--sp-12); }
+  .hero-copy { max-width: 650px; }
+  .research-visual { max-width: 620px; width: 100%; }
+  .explorer { grid-template-columns: minmax(0, 1fr); }
+  .filter-dismiss { display: inline-flex; }
+  .filters.is-open { position: fixed; inset: var(--sp-3) var(--sp-3) var(--sp-3) auto; width: min(380px, calc(100vw - 24px)); z-index: 50; max-height: calc(100dvh - 24px); box-shadow: var(--sh-3); }
+  .filters.is-open .filters-scroll { overflow-y: auto; min-height: 0; }
+  .filters .panel-foot { position: static; flex-shrink: 0; }
+  .prototype-note { flex-wrap: wrap; }
+  .prototype-note p { flex-basis: calc(100% - 40px); }
+  .prototype-note a { margin-left: 34px; }
+  .workspace-card { padding: var(--sp-6); }
+}
+@media (max-width: 640px) {
+  .hero h1 { font-size: clamp(2.6rem, 10vw, 3.5rem); }
+  .hero-inner { gap: var(--sp-8); }
+  .visual-label { font-size: .68rem; gap: var(--sp-2); padding: var(--sp-3); }
+  .example-panel { grid-template-columns: minmax(0, 1fr); padding: var(--sp-5); gap: var(--sp-5); }
+  .final-cta { padding: var(--sp-6); }
+  .final-cta .btn { width: 100%; }
+  .selection-tray { position: static; flex-wrap: wrap; }
+  .page-head-inner > .stack-sm { width: 100%; min-width: 0 !important; }
+  .factor-grid { grid-template-columns: minmax(0, 1fr); }
+  .cond-label, .badge, .matrix th[scope="row"] { font-size: var(--fs-12); }
+  .check-cell-label { color: var(--tx-3); letter-spacing: .03em; }
+  .brand-name { font-size: var(--fs-20); }
+  .mode-chip .mode-text { display: inline; }
+  .mode-chip { padding-inline: var(--sp-2); }
+  .brand { gap: var(--sp-2); }
+  .brand-mark { width: 26px; height: 26px; }
+  .breadcrumb, .source-ref { white-space: normal; overflow-wrap: anywhere; }
+  .record-actions { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}

@@ -104,7 +104,7 @@ const UI = (function () {
       '<span class="badge badge-ember media-badge">' + esc(COPY.demoTag) + ' SCHEMATIC</span>' +
       (o.showPlay
         ? '<span class="badge media-badge" style="left:auto;right:12px;top:12px">' +
-          icon('videoOff', 12) + ' video not streamed locally</span>'
+          icon('videoOff', 12) + ' original media unavailable</span>'
         : '') +
       '</div>';
   }
@@ -143,8 +143,8 @@ const UI = (function () {
 
   function reviewedBadge(record) {
     return record.metadataReviewed
-      ? '<span class="badge badge-teal">' + icon('check', 12) + ' metadata reviewed</span>'
-      : '<span class="badge badge-warn">' + icon('alert', 12) + ' review pending</span>';
+      ? '<span class="badge badge-teal">' + icon('check', 12) + ' demo metadata checked</span>'
+      : '<span class="badge badge-warn">' + icon('alert', 12) + ' demo review pending</span>';
   }
 
   function completeness(record) {
@@ -187,10 +187,12 @@ const UI = (function () {
           '<p class="record-sub">' + esc(record.run) + ' · ignition: ' + esc(record.ignition) + '</p>' +
         '</div>' +
         '<div class="tag-row" style="justify-content:flex-end">' +
+          '<span class="badge badge-ember">Demonstration</span>' +
           (record.outcomes || []).slice(0, 2).map((oc) => outcomeBadge(oc.type)).join('') +
         '</div>' +
       '</div>' +
       '<div class="cond-grid">' + CARD_KEYS.map((k) => condValue(record, k)).join('') + '</div>' +
+      '<p class="observation-preview"><span>Illustrative observation</span> · ' + esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p>' +
       '<div class="record-foot">' +
         '<div class="tag-row">' + completeness(record) + missingCount(record) + reviewedBadge(record) + '</div>' +
         '<div class="record-actions">' +
@@ -199,6 +201,7 @@ const UI = (function () {
               icon('compare', 14) + (selected ? 'Selected for comparison' : 'Select to compare') +
             '</button>') +
           '<a class="btn btn-sm btn-ghost" href="#/record/' + esc(record.id) + '">Open record ' + icon('chevron', 14) + '</a>' +
+          '<a class="btn btn-sm btn-ghost" href="#/evidence/' + esc(record.id) + '">Inspect evidence</a>' +
         '</div>' +
       '</div>' +
     '</article>';
@@ -235,7 +238,7 @@ const UI = (function () {
       title: 'No records match the current filters',
       message:
         (chips.length ? 'Active filters: ' + esc(chips.map((c) => c.label).join(' · ')) + '. ' : '') +
-        'Coverage across BASS-II conditions is uneven, so an empty result can itself be a finding: no indexed test sits in that corner of the matrix.',
+        'Try removing a condition or resetting your filters. This gap describes only the illustrative catalog; it is not a finding about NASA research.',
       action: '<div class="row row-wrap" style="justify-content:center">' +
         '<button class="btn btn-sm" data-action="widen">Widen the filters</button>' +
         '<button class="btn btn-sm btn-ghost" data-action="clear-filters">Clear all filters</button></div>'
@@ -278,16 +281,35 @@ const UI = (function () {
 
   /* -------------------------------------------------------------- helpers */
 
-  /** Deterministic short delay so loading states are demonstrable. */
-  function simulateLoad(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms === undefined ? 220 : ms));
-  }
-
   function dataCaveatStrip() {
     return '<div class="notice-bar"><div class="wrap"><div class="notice">' +
       '<span class="dot dot-ember"></span>' +
-      '<p><strong>Demonstration data.</strong> ' + esc(COPY.datasetCaveat) + '</p>' +
+      '<p><strong>Demonstration data.</strong> Illustrative records. NASA experiment data is not yet integrated. <a href="#/data-notes">Review data status</a></p>' +
       '</div></div></div>';
+  }
+
+  /** One focus trap for transient overlays. Returns a cleanup function. */
+  function trapFocus(panel, dismiss) {
+    function keydown(e) {
+      if (e.key === 'Escape') { e.preventDefault(); dismiss(); return; }
+      if (e.key !== 'Tab') return;
+      const items = [...panel.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex="0"]')]
+        .filter((el) => el.getClientRects().length && el.getAttribute('aria-disabled') !== 'true');
+      if (!items.length) { e.preventDefault(); panel.focus(); return; }
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    }
+    document.addEventListener('keydown', keydown);
+    return () => document.removeEventListener('keydown', keydown);
+  }
+
+  async function copyText(value, success) {
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(value);
+      toast(success || 'Copied.');
+    } catch (e) { toast('Clipboard access is unavailable. Select and copy the visible text instead.', 'warn'); }
   }
 
   function factorChips(record) {
@@ -313,7 +335,7 @@ const UI = (function () {
   return {
     esc, icon, brandMark, mediaPlaceholder, outcomeBadge, verdictBadge, missingCount,
     reviewedBadge, completeness, recordCard, condValue, state, emptyDataState,
-    noResultsState, skeletonList, toast, simulateLoad, dataCaveatStrip,
-    factorChips, interpretationBlock, CARD_KEYS, OUTCOME_STYLE
+    noResultsState, skeletonList, toast, dataCaveatStrip,
+    factorChips, interpretationBlock, trapFocus, copyText, CARD_KEYS, OUTCOME_STYLE
   };
 })();
