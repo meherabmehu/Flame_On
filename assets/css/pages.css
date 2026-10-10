@@ -780,3 +780,46 @@ summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var
   .selection-tray > .row { width: 100%; }
   .selection-tray [data-action="compare-picked"] { flex: 1; }
 }
+
+/* V2 overview: a quiet chamber illustration and a connected research journey. */
+.hero { padding-block: clamp(48px,7vw,96px); background: radial-gradient(ellipse at 80% 30%,rgba(237,170,74,.045),transparent 50%); }
+.hero-inner { grid-template-columns: 1.05fr 1fr; gap: clamp(32px,6vw,88px); }
+.hero h1 { font-size: var(--fs-display); }
+.hero-meta { gap: var(--sp-4); font-size: var(--fs-12); }
+.chamber-visual { position: relative; border-color: var(--line-soft); background: linear-gradient(145deg,var(--bg-panel),var(--bg-inset)); border-radius: var(--r-lg); }
+.chamber-visual svg { width: 100%; display: block; }
+.chamber-visual .visual-label { font-size: 9px; letter-spacing: .09em; }
+.prototype-note { border-block: 1px solid var(--line); padding-block: var(--sp-4); background: transparent; border-radius: 0; }
+.workspace-card { padding: var(--sp-6); background: var(--bg-panel); box-shadow: none; }
+.workspace-card .card-icon { width: 42px; height: 42px; margin-bottom: var(--sp-5); }
+.flow-steps { gap: 0; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.flow-step { border: 0; border-right: 1px solid var(--line); border-radius: 0; padding: var(--sp-5); background: transparent; }
+.flow-step:last-child { border-right: 0; }
+.flow-step:hover { background: var(--bg-panel); transform: none; }
+.flow-step-num { color: var(--teal-400); background: transparent; border: 0; justify-content: start; font-size: var(--fs-20); }
+.example-panel { margin-top: var(--sp-6); padding: var(--sp-6); border-color: var(--line); background: var(--bg-panel); }
+.stat-strip { gap: 0; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.stat { border: 0; border-right: 1px solid var(--line); border-radius: 0; background: transparent; padding: var(--sp-5); }
+.stat:last-child { border-right: 0; }
+.stat-value { font-size: var(--fs-38); color: var(--tx-1); }
+.readiness-section { padding-block: 0 var(--section-gap); }
+.readiness-heading { display: flex; gap: var(--sp-5); align-items: baseline; margin-bottom: var(--sp-5); flex-wrap: wrap; }
+.readiness-heading h2 { font-size: var(--fs-20); }
+.readiness-section .card { background: transparent; padding: var(--sp-5); }
+.readiness-section h3 { font-size: var(--fs-15); }
+.readiness-section p { font-size: var(--fs-13); }
+.source-item h3 { font-size: var(--fs-15); }
+.source-item .btn { border-color: transparent; color: var(--teal-300); }
+.final-cta { background: var(--bg-panel); border-color: var(--line); padding: var(--sp-6); }
+@media (max-width: 900px) { .hero-inner { grid-template-columns: 1fr; } .chamber-visual { max-width: 560px; width: 100%; margin-inline: auto; } }
+@media (max-width: 640px) {
+  .hero { padding-block: var(--sp-10); }
+  .hero h1 { font-size: clamp(38px,10vw,56px); }
+  .hero-meta { gap: var(--sp-3); }
+  .chamber-visual svg { max-height: 280px; }
+  .flow-step:nth-child(2) { border-right: 0; }
+  .flow-step:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .stat:nth-child(2) { border-right: 0; }
+  .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .example-panel { padding: var(--sp-5); }
+}
