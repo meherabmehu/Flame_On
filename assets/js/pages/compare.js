@@ -24,11 +24,19 @@ const ComparePage = (function () {
     };
   }
 
+  function selectorHTML() {
+    const c = Store.state.compare;
+    return '<section class="compare-selector" aria-label="Choose comparison records">' + ['a','b'].map((slot) => {
+      const r = Store.byId(c[slot]);
+      return '<div class="selector-chip">' + (r ? UI.recordThumbnail(r) : UI.icon('layers',24)) + '<div><label for="pick-' + slot + '">Experiment ' + slot.toUpperCase() + '</label><select class="select experiment-select" id="pick-' + slot + '">' + recordOptions(c[slot]) + '</select></div></div>';
+    }).join('<button class="btn-icon" type="button" data-action="swap-pair" aria-label="Swap experiments">' + UI.icon('compare',18) + '</button>') + '<a class="btn btn-primary" href="#/explorer">Browse experiments</a></section>';
+  }
+
   function stepOne() {
     const current = Store.state.compare.factor;
     const selected = Matcher.factor(current);
     return '<section class="step factor-section" aria-labelledby="step1-title"><div class="step-head">' +
-      '<span class="step-num">1</span><h2 id="step1-title">Choose the factor to compare</h2><span class="step-hint">One recorded condition at a time</span></div>' +
+      '<span class="step-num">1</span><h2 id="step1-title">Vary one condition</h2><span class="step-hint">One recorded condition at a time</span></div>' +
       '<div class="step-body"><div class="factor-grid">' + FACTORS.map((f) => {
         const evidence = factorEvidenceLine(f.key);
         return '<button type="button" class="radio-card factor-radio" data-factor="' + f.key + '" aria-pressed="' + (current === f.key) + '">' +
@@ -56,9 +64,8 @@ const ComparePage = (function () {
     const ratio = scale === null ? null : scale === 0 ? 0 : Math.abs(value) / scale * 100;
     return '<article class="pair-slot' + (r ? ' is-filled' : '') + '" aria-label="Experiment ' + slot.toUpperCase() + '">' +
       '<div class="pair-slot-top"><span class="experiment-marker">' + slot.toUpperCase() + '</span><span class="pair-slot-label">Experiment ' + slot.toUpperCase() + '</span>' +
-      '<span class="badge badge-ember">Demonstration</span></div><label class="sr-only" for="pick-' + slot + '">' + label + '</label>' +
-      '<select class="select experiment-select" id="pick-' + slot + '">' + recordOptions(id) + '</select>' +
-      (r ? '<div class="pair-identity"><div class="record-id">' + UI.esc(r.id) + '</div><h3>' + UI.esc(r.title) + '</h3></div>' +
+      '<span class="badge badge-ember">Demonstration</span></div>' +
+      (r ? '<div class="pair-identity">' + UI.recordThumbnail(r) + '<div class="pair-identity-copy"><div class="record-id">' + UI.esc(r.id) + '</div><h3>' + UI.esc(r.title) + '</h3><div class="tag-row"><span class="badge">' + UI.esc(Matcher.displayValue('fuel',r.fuel)) + '</span><span class="badge">' + UI.esc(Matcher.displayValue('geometry',r.geometry)) + '</span></div></div></div>' +
         '<div class="pair-factor"><span class="research-label">' + UI.esc(Matcher.factorLabel(factor)) + ' · varied factor</span>' +
         '<strong class="research-number">' + UI.esc(Matcher.displayValue(factor, value) || 'Not recorded') + '</strong>' +
         (ratio === null ? '' : '<div class="setting-track" aria-hidden="true"><span style="width:' + ratio + '%"></span></div>') + '</div>' +
@@ -284,7 +291,7 @@ const ComparePage = (function () {
         '<div class="compare-header-result"><span>Current check</span>' + UI.verdictBadge(Matcher.pairVerdict(Store.byId(Store.state.compare.a), Store.byId(Store.state.compare.b), Store.state.compare.factor).verdict) + '<span class="muted">Unvalidated prototype rules</span><button type="button" class="btn btn-sm btn-ghost" data-action="jump-analysis">Review condition analysis ' + UI.icon('chevron',14) + '</button></div>' +
       '</div></div>' +
       '<div class="wrap"><div class="compare-workspace">' +
-        '<div>' + (!Store.records().length ? UI.emptyDataState() : '') + (invalid.length ? '<div class="notice notice-warn mb-4" role="status">' + UI.esc(invalid.join(' ')) + '</div>' : '') + stepOne() + stepTwo() + '</div>' +
+        '<div>' + (!Store.records().length ? UI.emptyDataState() : '') + (invalid.length ? '<div class="notice notice-warn mb-4" role="status">' + UI.esc(invalid.join(' ')) + '</div>' : '') + selectorHTML() + stepOne() + stepTwo() + '</div>' +
         '<details class="workspace-reference" id="workspace-reference"><summary>Matching rules &amp; background references</summary>' + sidePanel() + '</details>' +
       '</div></div>';
 
