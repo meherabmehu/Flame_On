@@ -199,3 +199,15 @@ retain a static SVG fallback. Phones and low-power devices have smaller renderin
 
 See [the hero implementation report](docs/cinematic-hero.md) for controls, cleanup, performance bounds,
 browser verification and remaining hardware-testing limits.
+
+### Seven-page design reference
+
+Overview, Explorer, Compare, Coverage, Evidence, Experiment Details and Data Notes now share the
+reference's navy surfaces, cyan lighting and amber accents. Coverage adds three computed axis views;
+Compare places condition analysis between the experiment cards on desktop. Responsive layouts retain
+the existing mobile drawers, selection tray, scientific disclosures and genuine interactive WebGL hero.
+Catalog records and comparison rules are unchanged.
+
+See [the seven-page implementation report](docs/seven-page-reference.md) for screen changes and checks.
+`node tools/reference-test.js` additionally verifies heatmap filtering, live totals, document navigation
+and seven desktop/mobile screen previews using the same temporary QA dependencies as the other tests.

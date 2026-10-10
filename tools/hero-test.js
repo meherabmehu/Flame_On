@@ -109,6 +109,7 @@ const path = require('node:path');
     assert.deepEqual(await shaderFailure.evaluate(() => shaderResources), {created: 2, deleted: 2});
     await shaderFailure.evaluate(() => { window.failedContext = document.querySelector('canvas').getContext('webgl'); });
     await shaderFailure.locator('.hero-actions [href="#/explorer"]').click();
+    await shaderFailure.waitForFunction(() => failedContext.isContextLost());
     assert.equal(await shaderFailure.evaluate(() => failedContext.isContextLost()),true);
     const low = await browser.newPage({viewport:{width:390,height:844}});
     await low.addInitScript(() => Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>2}));
