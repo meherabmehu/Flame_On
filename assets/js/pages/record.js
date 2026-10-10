@@ -59,7 +59,7 @@ const RecordPage = (function () {
       { label: 'Instrumented measurements', available: false, note: 'not produced in this prototype' },
       { label: 'Verified labels', available: false, note: 'requires a human review pass' }
     ];
-    return '<section class="card card-lg">' +
+    return '<details class="card card-lg record-media"><summary>Media inventory <span class="badge badge-unknown">No original files supplied</span></summary>' +
       '<div class="card-title"><h2 style="font-size:var(--fs-20)">Media inventory</h2>' +
         '<span class="badge ' + (kind === 'none' ? 'badge-unknown' : 'badge-teal') + '">' +
           UI.esc(kind === 'none' ? 'no media indexed' : kind === 'video' ? 'video described only' : 'frames described only') + '</span></div>' +
@@ -78,7 +78,7 @@ const RecordPage = (function () {
       '</div>' +
       '<p class="muted mt-3" style="font-size:var(--fs-12)">' +
         'No original video or frame files are supplied. Media descriptors are illustrative metadata, not verified NASA assets.</p>' +
-    '</section>';
+    '</details>';
   }
 
   function usedInComparisons(record) {
@@ -132,7 +132,7 @@ const RecordPage = (function () {
             '<a href="#/explorer">Explorer</a><span aria-hidden="true">/</span>' +
             '<span>' + UI.esc(record.id) + '</span>' +
           '</nav>' +
-          '<p class="eyebrow">Experiment detail</p>' +
+          '<p class="eyebrow">Experiment detail <span class="dossier-id">' + UI.esc(record.id) + '</span></p>' +
           '<h1>' + UI.esc(record.title) + '</h1>' +
           '<p class="lead">The catalog row as indexed: what was set, what was recorded, what is missing and where the record came from.</p>' +
           '<div class="tag-row mt-4">' +
@@ -147,16 +147,18 @@ const RecordPage = (function () {
         '</div>' +
       '</div></div>' +
 
-      '<div class="wrap"><div class="detail-grid">' +
+      '<div class="wrap record-workspace">' + UI.conditionStrip(record) +
+        '<div class="record-provenance-note">' + UI.icon('book', 17) + '<p><strong>Source extraction unverified.</strong> Conditions and observations are team-authored demonstration content. NASA reports provide background references only.</p></div>' +
+      '<div class="detail-grid">' +
         '<div class="stack-lg">' +
 
           '<section class="card card-lg">' +
-            FIELD_GROUPS.map((g) =>
-              '<div class="' + (g.title === 'Test conditions' ? 'mt-6' : '') + '">' +
-                '<div class="card-title"><h2 style="font-size:var(--fs-17)">' + g.title + '</h2>' +
+            FIELD_GROUPS.map((g, i) =>
+              '<section class="metadata-group' + (i ? ' mt-6' : '') + '">' +
+                '<div class="card-title"><h2 style="font-size:var(--fs-17)"><span class="section-marker">0' + (i + 1) + '</span>' + g.title + '</h2>' +
                   '<span class="badge">' + g.fields.filter((f) => !Store.isMissing(record, f.key)).length + '/' + g.fields.length + ' recorded</span></div>' +
                 '<dl class="def-list">' + g.fields.map((f) => fieldHTML(record, f)).join('') + '</dl>' +
-              '</div>').join('') +
+              '</section>').join('') +
             '<p class="muted mt-6" style="font-size:var(--fs-13)">' +
               'Empty fields are shown as “not recorded” and never as zero. In the finished product this grid is rendered from the reviewed catalog table, ' +
               'with each value traceable to the PSI file or report it came from.</p>' +
@@ -200,11 +202,11 @@ const RecordPage = (function () {
 
           '<div class="card">' +
             '<div class="card-title"><h3 style="font-size:var(--fs-15)">Provenance</h3>' +
-              '<span class="badge badge-unknown">placeholder</span></div>' +
+              '<span class="badge badge-unknown">Unverified extraction</span></div>' +
             '<dl class="kv">' +
               '<dt>Catalog row</dt><dd>' + UI.esc(record.id) + '</dd>' +
               '<dt>PSI collection</dt><dd>' + UI.esc(record.source.psi) + '</dd>' +
-              '<dt>Report</dt><dd>' + UI.esc(record.source.report) + ' (' + UI.esc(record.source.ntrs) + ')</dd>' +
+              '<dt>Background report</dt><dd><a href="https://ntrs.nasa.gov/citations/' + UI.esc(record.source.ntrs) + '" target="_blank" rel="noopener">' + UI.esc(record.source.report) + ' (' + UI.esc(record.source.ntrs) + ') ' + UI.icon('external', 12) + '</a></dd>' +
               '<dt>Extraction</dt><dd>Not run — demonstration row</dd>' +
               '<dt>Demo metadata check</dt><dd>' + (record.metadataReviewed ? 'Interface review only; source unverified' : 'Pending; source unverified') + '</dd>' +
             '</dl>' +

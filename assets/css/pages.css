@@ -884,3 +884,23 @@ summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var
 #coverage-panel .cov-0 { border: 1px dashed var(--line-strong); }
 @media (max-width: 1100px) { .coverage-matrices { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .coverage-matrices > div { padding: var(--sp-3); } #coverage-panel { padding: var(--sp-4); } }
+
+/* V2 record dossier: key settings above grouped metadata and provenance. */
+.record-workspace { padding-top: var(--sp-4); }
+.dossier-id { display: inline-block; margin-left: var(--sp-3); padding-left: var(--sp-3); border-left: 1px solid var(--line-strong); color: var(--tx-3); font-family: var(--font-mono); letter-spacing: 0; }
+.record-provenance-note { display: flex; gap: var(--sp-3); align-items: flex-start; padding-top: var(--sp-4); font-size: var(--fs-13); color: var(--tx-3); }
+.record-provenance-note svg { flex-shrink: 0; color: var(--tx-3); margin-top: 2px; }
+.record-provenance-note strong { color: var(--tx-2); font-weight: 500; }
+.detail-grid { padding-top: var(--sp-5); }
+.metadata-group .card-title { padding-bottom: var(--sp-4); border-bottom: 1px solid var(--line); }
+.metadata-group .card-title h2 { display: flex; align-items: center; gap: var(--sp-3); }
+.metadata-group .def-list { gap: 0 var(--sp-6); }
+.metadata-group .def-list > div { padding-block: var(--sp-4); border-bottom: 1px solid var(--line-soft); min-width: 0; }
+.def-term { text-transform: none; letter-spacing: 0; font-size: var(--fs-12); }
+.def-val { margin-top: var(--sp-2); font-size: var(--fs-15); }
+.record-media > summary { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-3); flex-wrap: wrap; font-size: var(--fs-15); }
+.record-media[open] > summary { margin-bottom: var(--sp-5); }
+.record-media .media-canvas { max-height: 240px; border: 1px solid var(--line); border-radius: var(--r-sm); }
+.detail-grid .side-panel { position: static; }
+.detail-grid .kv dd { overflow-wrap: anywhere; }
+@media (max-width: 640px) { .dossier-id { display: block; margin: var(--sp-2) 0 0; padding: 0; border: 0; } }
