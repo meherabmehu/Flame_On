@@ -13,9 +13,9 @@ const DataNotesPage = (function () {
       ['Visual measurements', 'None produced. The measurement panel states that computer vision is proposed, not implemented.', 'Add verified measurements only after a human review pass.'],
       ['Retrieval ranking', 'A transparent rule-based match check. The suggested pairs carry a “fit” indicator derived from matched conditions, not from a trained model.', 'Swap in the ML retrieval step and compare it against the keyword baseline, as the build guide describes.'],
       ['Predictions and scores', 'No fire-risk prediction, no accuracy figure, no confidence percentage is displayed anywhere.', 'Only published if verified labels and coverage support it, and only with its uncertainty stated.'],
-      ['Abstention', 'Any pair that differs in too many conditions, or whose factor is not recorded, returns “Not enough comparable tests.”', 'Keep this behaviour: it is the scientific contribution of the product.']
+      ['Abstention', 'Any pair that differs in too many conditions, or whose factor is not recorded, returns “Not enough comparable tests.”', 'Keep the explicit rejection and its condition-specific reasons.']
     ];
-    return '<div class="table-wrap"><table class="table">' +
+    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table class="table">' +
       '<thead><tr><th scope="col">Area</th><th scope="col">What this prototype does</th><th scope="col">What replaces it</th></tr></thead><tbody>' +
       rows.map((r) => '<tr><td class="tx-1"><strong>' + r[0] + '</strong></td><td>' + r[1] + '</td><td class="muted">' + r[2] + '</td></tr>').join('') +
       '</tbody></table></div>';
@@ -30,7 +30,7 @@ const DataNotesPage = (function () {
       { m: 'GET', p: '/api/compare/?a=ID&b=ID&factor=KEY', d: 'Server-side verdict so the same rules are authoritative in one place, and the match check can be tested directly.', f: 'Replaces <code>Matcher.pairVerdict()</code>' },
       { m: 'GET', p: '/api/records/{id}/neighbours/?factor=KEY', d: 'Suggested comparable tests for one record.', f: 'Replaces <code>Matcher.suggestPairs()</code>' }
     ];
-    return '<div class="table-wrap"><table class="table">' +
+    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table class="table">' +
       '<thead><tr><th scope="col">Endpoint</th><th scope="col">Purpose</th><th scope="col">Frontend hook</th></tr></thead><tbody>' +
       endpoints.map((e) =>
         '<tr><td class="nowrap"><span class="badge badge-teal">' + e.m + '</span> <code class="mono">' + e.p + '</code></td>' +
@@ -39,7 +39,7 @@ const DataNotesPage = (function () {
   }
 
   function structureBlock() {
-    return '<pre class="card" style="overflow:auto;font-size:var(--fs-12);line-height:1.7;color:var(--tx-2)">' +
+    return '<pre tabindex="0" aria-label="Scrollable code example" class="card" style="overflow:auto;font-size:var(--fs-12);line-height:1.7;color:var(--tx-2)">' +
 UI.esc(
 `flame-on/
 ├── index.html                  single entry point, hash-routed
@@ -67,11 +67,11 @@ UI.esc(
       '<div class="card-title"><h3>Running the prototype locally</h3><span class="badge badge-teal">no build step</span></div>' +
       '<p class="muted" style="font-size:var(--fs-13)">The frontend is plain HTML, CSS and JavaScript with no dependencies.</p>' +
       '<ol class="mt-4" style="display:flex;flex-direction:column;gap:14px">' +
-        '<li><strong class="tx-1">1. Clone the repository</strong><pre class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">git clone https://github.com/meherabmehu/Flame_On.git\ncd Flame_On</pre></li>' +
+        '<li><strong class="tx-1">1. Clone the repository</strong><pre tabindex="0" aria-label="Scrollable code example" class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">git clone https://github.com/meherabmehu/Flame_On.git\ncd Flame_On</pre></li>' +
         '<li><strong class="tx-1">2. Serve the folder</strong>' +
-          '<pre class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">python3 -m http.server 8000</pre>' +
+          '<pre tabindex="0" aria-label="Scrollable code example" class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">python3 -m http.server 8000</pre>' +
           '<p class="muted mt-2" style="font-size:var(--fs-13)">Opening <code>index.html</code> directly also works, but a local server keeps navigation and clipboard behaviour consistent.</p></li>' +
-        '<li><strong class="tx-1">3. Open the app</strong><pre class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">http://localhost:8000</pre></li>' +
+        '<li><strong class="tx-1">3. Open the app</strong><pre tabindex="0" aria-label="Scrollable code example" class="mono mt-2" style="font-size:var(--fs-12);background:var(--bg-inset);padding:12px;border-radius:6px;overflow:auto">http://localhost:8000</pre></li>' +
       '</ol>' +
       '<hr>' +
       '<h4>Demonstration walkthrough (about one minute)</h4>' +
@@ -92,7 +92,7 @@ UI.esc(
         '<div>' +
           '<p class="eyebrow">Data notes</p>' +
           '<h1>What is real here, what is not, and where the backend connects</h1>' +
-          '<p class="lead">Written for two readers: a reviewer checking the honesty of the demo, and the developer who will wire this frontend to a Django service.</p>' +
+          '<p class="lead">Understand the demonstration data, what the prototype rules check, and why a match is not scientific validation.</p>' +
         '</div>' +
       '</div></div>' +
       '<div class="wrap section-sm stack-lg">' +
@@ -111,28 +111,29 @@ UI.esc(
           honestyBlock() +
         '</section>' +
 
-        '<section class="card card-lg">' +
-          '<div class="card-title"><h2 style="font-size:var(--fs-20)">Backend connection points</h2>' +
-            '<span class="badge badge-teal">Django-ready</span></div>' +
+        '<details class="card card-lg"><summary>Developer reference: future integration contracts</summary>' +
+          '<div class="card-title mt-4"><h2 style="font-size:var(--fs-20)">Future integration contracts</h2>' +
+            '<span class="badge badge-teal">Not implemented</span></div>' +
           '<p style="font-size:var(--fs-14);max-width:78ch">The frontend never computes science it cannot see: every rule lives in <code>matcher.js</code> and every field name comes from the catalog. ' +
             'The endpoints below are the only places that need to change when the reviewed dataset replaces the demonstration rows.</p>' +
           '<div class="mt-4">' + connectionBlock() + '</div>' +
-          '<p class="muted mt-4" style="font-size:var(--fs-13)">Response shapes are documented in <code>docs/design-notes.md</code>. ' +
+          '<p class="muted mt-4" style="font-size:var(--fs-13)">Response shapes are documented in <code>docs/backend-notes.md</code>. ' +
             'If the backend omits a field, the interface keeps showing “not recorded” rather than assuming a value.</p>' +
-        '</section>' +
+        '</details>' +
 
         '<section class="card card-lg">' +
           '<div class="card-title"><h2 style="font-size:var(--fs-20)">Matching rules used by this build</h2></div>' +
+          '<p class="notice notice-warn mb-4">Prototype heuristics, not scientifically validated. The six checked fields exclude ignition, pressure and duration. A comparable verdict is not evidence of causation.</p>' +
           '<div class="grid grid-2" style="gap:20px">' +
             '<div>' +
               '<h4 class="tx-1">Hard conditions</h4>' +
               '<p class="mt-2" style="font-size:var(--fs-14)">Fuel family, sample geometry and flow direction must be identical. A different flow direction changes the physics, so the pair is rejected rather than annotated.</p>' +
               '<h4 class="tx-1 mt-5">Tolerance</h4>' +
-              '<p class="mt-2" style="font-size:var(--fs-14)">Numeric conditions may differ by up to ' + Math.round(MATCH_RULES.numericTolerance * 100) + '% of the higher value. Every difference is still listed in the check table, so a user can judge it.</p>' +
+              '<p class="mt-2" style="font-size:var(--fs-14)">An approximate numeric match uses a tolerance of ' + Math.round(MATCH_RULES.numericTolerance * 100) + '% of the higher value. Larger differences can still produce a caveated verdict under the existing rules. These are prototype heuristics, not scientifically validated thresholds.</p>' +
             '</div>' +
             '<div>' +
               '<h4 class="tx-1">Missing values</h4>' +
-              '<p class="mt-2" style="font-size:var(--fs-14)">An empty field is unknown. It is never treated as equal to a recorded value, and a comparison needing it returns “not enough comparable data”.</p>' +
+              '<p class="mt-2" style="font-size:var(--fs-14)">An empty field is unknown. A missing varied value stops the comparison. Missing supporting conditions produce caveats; they never establish a match.</p>' +
               '<h4 class="tx-1 mt-5">Abstention</h4>' +
               '<p class="mt-2" style="font-size:var(--fs-14)">More than ' + MATCH_RULES.maxDiffering + ' differing conditions, an identical varied value, or a missing varied value all stop the comparison.</p>' +
             '</div>' +
