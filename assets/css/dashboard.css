@@ -284,3 +284,53 @@
 }
 @media (forced-colors: active) { .internal-dashboard .sample-thumbnail { border-color: CanvasText; } }
 @media print { .internal-dashboard .app { border: 0; margin: 0; } .internal-dashboard .record-section-nav, .internal-dashboard .viewer-tabs { display: none; } .internal-dashboard .catalog-workspace .results-list { max-height: none; overflow: visible; } }
+
+/* Continuous cosmic canvas and compact, expandable workspaces. */
+body[data-screen="overview"] { background: linear-gradient(90deg,#020912eb,#02091288),url('../artwork/explorer-cosmic.jpg') center / cover fixed; }
+body[data-screen="overview"] .cinematic-overview { background: linear-gradient(#030c1788,#030c1744); }
+.internal-dashboard { background-image: linear-gradient(90deg,#020912ed,#020912a6),var(--space-art); background-size: cover; background-position: center; background-attachment: fixed; }
+.internal-dashboard .app { background: transparent; }
+.internal-dashboard #main { background-image: linear-gradient(90deg,#020912de,#02091266),var(--space-art); background-size: cover; background-position: center; background-attachment: fixed; background-color: transparent; }
+.internal-dashboard .page-head-inner { display: grid; grid-template-columns: minmax(0,1fr) 180px; gap: 12px 24px; align-items: center; }
+.internal-dashboard .page-head-inner > :not(:first-child):not(.dashboard-scene) { grid-column: 1; grid-row: 2; justify-self: start; }
+.internal-dashboard .dashboard-scene { grid-column: 2; grid-row: 1 / span 2; width: 180px; align-self: start; }
+.dashboard-scene .hero-renderer { aspect-ratio: 1.65; }
+.dashboard-scene::after { display: none; }
+.dashboard-scene figcaption { display: flex; flex-direction: column; gap: 4px; padding: 0; margin: 0; background: none; border: 0; text-align: center; }
+.dashboard-scene figcaption span { font-size: 9px; margin: 0; }
+.dashboard-scene .hero-motion { font-size: 10px; min-height: 28px; padding: 3px 8px; }
+.compact-disclosure { min-width: 0; margin-block: 8px; border: 1px solid #2b4963; border-radius: 8px; background: #03101dcc; }
+.compact-disclosure > summary { cursor: pointer; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #c5e1fa; min-height: 44px; }
+.compact-disclosure > :not(summary) { margin: 0; }
+.compact-disclosure[open] > summary { border-bottom: 1px solid #2b4963; }
+.internal-dashboard .pair-slot > .compact-disclosure { width: 100%; }
+.internal-dashboard .pair-slot > .compact-disclosure .cond-grid { padding: 8px 12px; }
+.internal-dashboard .filters-scroll { max-height: min(560px,65dvh); scrollbar-gutter: stable; }
+.internal-dashboard .catalog-workspace .results-list { max-height: min(560px,65dvh); overflow-y: auto; scrollbar-gutter: stable; padding-right: 4px; }
+.internal-dashboard .coverage-workspace > .compact-disclosure { margin-bottom: 22px; }
+.internal-dashboard .coverage-workspace > .compact-disclosure .explorer { padding: 16px; }
+.internal-dashboard .record-profile .factor-chip { padding: 5px 8px; }
+.internal-dashboard .record-profile .compact-disclosure .tag-row { padding: 10px; }
+.internal-dashboard .viewer-schematic .media-canvas { aspect-ratio: 1.8; }
+.notes-content > [hidden] { display: none !important; }
+.footer { background: #03101dbb; padding-block: 20px; margin-top: 24px; }
+.footer .compact-disclosure { background: transparent; margin: 0; }
+.footer .compact-disclosure > summary { padding: 12px; }
+.footer .compact-disclosure > .footer-grid { padding: 18px; }
+.footer .footer-inner { padding-block: 18px; }
+.cinematic-overview > .compact-disclosure { max-width: 1240px; margin: 12px auto; }
+@media (max-width: 640px) {
+  .internal-dashboard .page-head-inner { grid-template-columns: minmax(0,1fr) 100px; gap: 10px; }
+  .internal-dashboard .page-head-inner > :first-child { grid-column: 1 / -1; }
+  .internal-dashboard .dashboard-scene { grid-column: 2; grid-row: 2; width: 100px; }
+  .internal-dashboard .page-head-inner > .page-head-actions { min-width: 0; width: 100%; }
+  .internal-dashboard .page-head-actions .btn { font-size: 11px; padding-inline: 8px; }
+  .internal-dashboard .record-profile { display: block; }
+  .internal-dashboard .record-profile > .sample-thumbnail { float: left; margin: 0 12px 10px 0; }
+  .internal-dashboard .record-profile .tag-row { gap: 4px; }
+  .internal-dashboard .record-profile .factor-chip { font-size: 10px; padding: 4px 6px; }
+  .internal-dashboard .notes-nav { display: flex; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; gap: 6px; padding: 6px; }
+  .internal-dashboard .notes-nav .btn { flex-shrink: 0; width: auto; white-space: nowrap; }
+  .cinematic-overview > .compact-disclosure { margin-inline: 14px; }
+}
+@media print { .dashboard-scene { display: none; } .compact-disclosure > :not(summary) { display: block !important; } }
