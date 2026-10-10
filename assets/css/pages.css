@@ -904,3 +904,9 @@ summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var
 .detail-grid .side-panel { position: static; }
 .detail-grid .kv dd { overflow-wrap: anywhere; }
 @media (max-width: 640px) { .dossier-id { display: block; margin: var(--sp-2) 0 0; padding: 0; border: 0; } }
+
+/* Status counts describe six compared fields, rather than all record metadata. */
+.evidence-grid .card-title:has(.completeness) { flex-wrap: wrap; }
+.evidence-grid .completeness { white-space: normal; }
+.evidence-grid .completeness .meter { flex-shrink: 0; }
+.page-head-actions .btn-block { width: auto; }

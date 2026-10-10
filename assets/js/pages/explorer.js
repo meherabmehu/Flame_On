@@ -403,7 +403,10 @@ const ExplorerPage = (function () {
     if (clearPick) clearPick.addEventListener('click', () => { Store.set({ picked: [] }); refresh(); });
 
     const sort = root.querySelector('#explorer-sort');
-    if (sort) sort.addEventListener('change', () => { Store.set({ sort: sort.value }); refresh(); });
+    if (sort) sort.addEventListener('change', () => {
+      Store.set({ sort: sort.value }); refresh();
+      root.querySelector('#explorer-sort')?.focus({ preventScroll: true });
+    });
 
     slot.querySelectorAll('[data-chip-clear]').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -411,6 +414,8 @@ const ExplorerPage = (function () {
         const chip = chips[Number(btn.dataset.chipClear)];
         if (chip) Store.setFilter(chip.clear);
         refresh({ rebuildFilters: true });
+        const next = root.querySelector('[data-chip-clear="' + btn.dataset.chipClear + '"]') || root.querySelector('#explorer-search');
+        next?.focus({ preventScroll: true });
       });
     });
   }
@@ -460,7 +465,8 @@ const ExplorerPage = (function () {
         const value = button.dataset.coverageValue;
         Store.setFilter({ fuel, ...(value === 'null' ? { missingData: 'only' } : { [key]: { min: Number(value), max: Number(value) } }) });
         refresh({ rebuildFilters: true });
-        root.querySelector('.result-count')?.scrollIntoView({ block: 'center', behavior: 'auto' });
+        const count = root.querySelector('.result-count');
+        if (count) { count.tabIndex = -1; count.scrollIntoView({ block: 'center', behavior: 'auto' }); count.focus({ preventScroll: true }); }
       });
     });
   }

@@ -138,8 +138,8 @@ const UI = (function () {
 
   function missingCount(record) {
     const n = Store.countMissing(record);
-    if (n === 0) return '<span class="badge badge-ok">' + icon('check', 12) + ' all fields recorded</span>';
-    return '<span class="badge badge-unknown">' + n + ' field' + (n > 1 ? 's' : '') + ' missing</span>';
+    if (n === 0) return '<span class="badge badge-ok">' + icon('check', 12) + ' comparison fields recorded</span>';
+    return '<span class="badge badge-unknown">' + n + ' comparison field' + (n > 1 ? 's' : '') + ' missing</span>';
   }
 
   function reviewedBadge(record) {
@@ -155,7 +155,7 @@ const UI = (function () {
     const cls = pct >= 90 ? '' : pct >= 60 ? 'meter-fill-warn' : 'meter-fill-risk';
     return '<div class="completeness" title="Comparable fields recorded for this test">' +
       '<div class="meter" style="width:64px"><div class="meter-fill ' + cls + '" style="width:' + pct + '%"></div></div>' +
-      '<span>' + (total - missing) + ' of ' + total + ' fields</span></div>';
+      '<span>' + (total - missing) + '/' + total + ' comparison fields</span></div>';
   }
 
   /* ---------------------------------------------------------- record card */

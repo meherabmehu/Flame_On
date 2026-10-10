@@ -140,7 +140,7 @@ const RecordPage = (function () {
             UI.reviewedBadge(record) + UI.missingCount(record) +
           '</div>' +
         '</div>' +
-        '<div class="stack-sm" style="min-width:230px">' +
+        '<div class="stack-sm page-head-actions">' +
           '<button class="btn btn-primary btn-block" data-action="use-in-compare">' + UI.icon('compare', 15) + ' Use in a comparison</button>' +
           '<button class="btn btn-block" data-action="copy-id">Copy experiment ID</button>' +
           '<a class="btn btn-block" href="#/evidence/' + UI.esc(record.id) + '">Open evidence view</a>' +
