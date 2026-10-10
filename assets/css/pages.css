@@ -646,3 +646,100 @@
 dl { margin: 0; }
 dd { margin-left: 0; }
 summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var(--control-height); padding-block: var(--sp-2); }
+
+/* V2 comparison: prioritize the pair and the decision over setup prose. */
+.compare-workspace { padding-block: var(--sp-6) var(--sp-12); }
+.compare-workspace > div { min-width: 0; }
+.compare-header-result { display: flex; width: 100%; align-items: center; gap: var(--sp-3); padding-top: var(--sp-4); border-top: 1px solid var(--line); font-size: var(--fs-13); flex-wrap: wrap; }
+.compare-header-result > .btn { margin-left: auto; }
+.compare-workspace .step { border-color: var(--line); }
+.factor-section .step-body { padding: var(--sp-4) var(--sp-5); }
+.factor-section .factor-grid { grid-template-columns: repeat(6,minmax(0,1fr)); gap: var(--sp-2); }
+.factor-section .factor-radio { min-width: 0; padding: var(--sp-3); border-radius: var(--r-sm); gap: var(--sp-2); background: var(--bg-inset); }
+.factor-section .factor-radio[aria-pressed="true"] { background: var(--surface-selected); border-color: var(--border-selected); }
+.factor-section .radio-card-title { font-size: var(--fs-14); }
+.factor-section .radio-card-desc { font-size: var(--fs-12); line-height: 1.5; }
+.factor-section .radio-mark { width: 12px; height: 12px; flex-shrink: 0; }
+.factor-context { font-size: var(--fs-13); margin-top: var(--sp-3); color: var(--tx-2); }
+.factor-context strong { color: var(--tx-1); }
+.factor-context > span { color: var(--tx-3); }
+.workspace-section-head { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4); flex-wrap: wrap; margin-block: var(--sp-6) var(--sp-4); }
+.workspace-section-head h2 { font-size: var(--fs-20); }
+.pair-section .pair-grid { gap: var(--sp-5); }
+.pair-section .pair-slot { display: flex; flex-direction: column; min-width: 0; padding: var(--panel-padding); background: var(--bg-panel); border-color: var(--line); border-radius: var(--r-lg); }
+.pair-slot-top { display: flex; gap: var(--sp-3); align-items: center; margin-bottom: var(--sp-4); }
+.pair-slot-top .badge { margin-left: auto; }
+.pair-slot-top .pair-slot-label { margin: 0; }
+.experiment-marker { height: 28px; width: 28px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: var(--r-sm); font: 600 var(--fs-14) var(--font-mono); color: var(--tx-1); }
+.experiment-select { background-color: var(--bg-inset); font-size: var(--fs-13); }
+.pair-identity { margin-top: var(--sp-5); min-height: 75px; }
+.pair-identity h3 { font-size: var(--fs-20); margin-top: var(--sp-2); line-height: var(--lh-snug); }
+.pair-section .pair-factor { background: transparent; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; padding: var(--sp-5) 0; margin-top: var(--sp-4); }
+.pair-factor .research-number { font-size: clamp(1.9rem,3vw,2.6rem); line-height: 1.25; margin-top: var(--sp-2); }
+.setting-track { background: var(--line-soft); border-radius: var(--r-full); height: 4px; margin-top: var(--sp-4); overflow: hidden; }
+.setting-track span { display: block; height: 100%; background: var(--teal-400); border-radius: inherit; }
+.pair-section .pair-slot .cond-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--sp-4); margin-top: var(--sp-5); }
+.pair-section .pair-observation { margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--line); }
+.pair-observation p { margin-top: var(--sp-2); color: var(--ember-300); font-size: var(--fs-15); }
+.pair-actions { display: flex; gap: var(--sp-2); margin-top: auto; padding-top: var(--sp-5); flex-wrap: wrap; }
+.pair-actions > .btn-icon { margin-left: auto; }
+.pair-empty { padding: var(--sp-12) var(--sp-4); min-height: 270px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); }
+.pair-empty > svg { color: var(--tx-3); }
+.pair-empty p { color: var(--tx-3); max-width: 35ch; }
+.setting-caption { color: var(--tx-3); font-size: var(--fs-12); margin-top: var(--sp-3); }
+.pair-suggestions { margin-block: var(--sp-5) var(--sp-6); padding: var(--sp-3) var(--sp-5); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-inset); }
+.pair-suggestions summary .badge { margin-left: var(--sp-3); }
+.pair-suggestions summary .muted { margin-left: var(--sp-3); font-size: var(--fs-12); font-weight: 400; }
+.analysis-section { scroll-margin-top: calc(var(--h-header) + var(--sp-4)); }
+.analysis-section .step-body { padding: var(--panel-padding); }
+.analysis-section .verdict { display: flex; gap: var(--sp-4); padding: var(--sp-5); background: var(--bg-inset); }
+.verdict-symbol { width: 44px; height: 44px; display: grid; place-items: center; flex-shrink: 0; border: 1px solid var(--line); border-radius: var(--r-md); color: var(--tx-3); }
+.verdict-ok .verdict-symbol { color: var(--st-ok); border-color: var(--st-ok); }
+.verdict-warn .verdict-symbol { color: var(--st-warn); border-color: var(--st-warn); }
+.verdict-risk .verdict-symbol { color: var(--st-risk); border-color: var(--st-risk); }
+.verdict-content { min-width: 0; flex: 1; }
+.verdict-content .research-label { margin: 0 0 var(--sp-2); font-size: var(--fs-12); }
+.verdict-content h3 { font-size: var(--fs-20); }
+.verdict-content details { margin-top: var(--sp-3); }
+.verdict-content summary { padding: var(--sp-2) 0; }
+.verdict-content summary .muted { margin-left: var(--sp-2); font-size: var(--fs-12); }
+.condition-totals { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: var(--sp-5); border: 1px solid var(--line); border-radius: var(--r-md); }
+.condition-totals > div { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-2); padding: var(--sp-4); border-right: 1px solid var(--line); }
+.condition-totals > div:last-child { border-right: 0; }
+.condition-totals svg { align-self: center; color: var(--tx-3); }
+.condition-totals strong { font-size: var(--fs-24); color: var(--tx-1); font-variant-numeric: tabular-nums; line-height: 1; }
+.condition-totals span { grid-column: 1/-1; color: var(--tx-3); font-size: var(--fs-12); }
+.comparison-reading { margin-top: var(--sp-4); color: var(--tx-2); font-size: var(--fs-14); }
+.analysis-section .check-row { grid-template-columns: 1fr 1.15fr 1.15fr 1.5fr; padding: var(--sp-4); gap: var(--sp-4); font-size: var(--fs-14); }
+.analysis-section .check-row.is-head { font-size: var(--fs-12); background: var(--bg-inset); }
+.comparison-outcomes { padding: var(--sp-5) 0 0; border-top: 1px solid var(--line); }
+.comparison-outcomes .card-title h3 { font-size: var(--fs-20); }
+.workspace-reference { padding: var(--sp-4) var(--sp-5); border: 1px solid var(--line); border-radius: var(--r-md); }
+.workspace-reference .side-panel { position: static; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+@media (max-width: 1024px) {
+  .factor-section .factor-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 900px) {
+  .analysis-section .check-row { grid-template-columns: 1fr 1fr; }
+  .analysis-section .check-row.is-head { display: none; }
+}
+@media (max-width: 640px) {
+  .factor-section .factor-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .factor-section .step-body { padding: var(--sp-3); }
+  .factor-section .factor-radio { padding: var(--sp-2) var(--sp-3); }
+  .factor-context { font-size: var(--fs-12); }
+  .pair-section .pair-grid, .workspace-reference .side-panel { grid-template-columns: minmax(0,1fr); }
+  .pair-section .pair-slot .cond-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .pair-identity { min-height: 0; }
+  .workspace-section-head { gap: var(--sp-3); }
+  .condition-totals { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .condition-totals > div:nth-child(2) { border-right: 0; }
+  .condition-totals > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .analysis-section .check-row { grid-template-columns: 1fr; padding-inline: var(--sp-3); }
+  .analysis-section .verdict { padding: var(--sp-4); gap: var(--sp-3); }
+  .verdict-symbol { width: 34px; height: 34px; }
+  .analysis-section .step-body { padding: var(--sp-4); }
+  .pair-suggestions { padding-inline: var(--sp-3); }
+  .pair-suggestions summary .muted { display: block; margin-left: var(--sp-5); }
+  .pair-actions .btn { flex: 1; }
+}
