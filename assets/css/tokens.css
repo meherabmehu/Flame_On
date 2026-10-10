@@ -59,6 +59,9 @@
   --fs-24: 1.5rem;     /* section titles    */
   --fs-30: 1.875rem;   /* page titles       */
   --fs-38: 2.375rem;   /* hero              */
+  --fs-display: clamp(2.8rem, 4.3vw, 4.3rem);
+  --fs-page: clamp(1.65rem, 2.5vw, 2.3rem);
+  --fs-section: clamp(1.2rem, 1.7vw, 1.6rem);
 
   --lh-tight: 1.22;
   --lh-snug: 1.4;
@@ -79,6 +82,9 @@
   --sp-12: 48px;
   --sp-16: 64px;
   --sp-20: 80px;
+  --page-gutter: clamp(16px, 3vw, 32px);
+  --panel-padding: clamp(20px, 2.2vw, 28px);
+  --section-gap: clamp(40px, 5vw, 64px);
 
   /* --- Radii -------------------------------------------------------------- */
   --r-xs: 4px;
@@ -101,7 +107,7 @@
   /* --- Layout ------------------------------------------------------------- */
   --w-max: 1240px;
   --w-prose: 68ch;
-  --h-header: 72px;
+  --h-header: 64px;
   --fs-hero: clamp(2.7rem, 4.5vw, 4.5rem);
   --control-height: 44px;
   --background-primary: var(--bg-app);
@@ -113,4 +119,8 @@
   --border-default: var(--line);
   --accent-primary: var(--teal-400);
   --status-error: var(--st-risk);
+  --surface-sheen: linear-gradient(145deg, rgba(179,193,216,.035), transparent 65%);
+  --surface-selected: rgba(62,214,196,.07);
+  --border-selected: rgba(62,214,196,.6);
+  --rule-width: 3px;
 }
