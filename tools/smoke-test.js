@@ -32,7 +32,7 @@ const { document } = window;
 window.scrollTo = () => {};
 
 // Load the scripts manually in document order (jsdom won't fetch local files).
-const scripts = [...document.querySelectorAll('script[src]')].map((s) => s.getAttribute('src'));
+const scripts = [...document.querySelectorAll('script[src]')].map((s) => new URL(s.src).pathname.slice(1));
 scripts.forEach((src) => {
   const code = fs.readFileSync(path.join(ROOT, src), 'utf8');
   const el = document.createElement('script');

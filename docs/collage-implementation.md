@@ -29,4 +29,4 @@ Desktop keeps filters beside results, experiment panels beside each other, and t
 
 Validation uses the existing smoke, browser, accessibility, reference and hero scripts. Smoke checks preserve all 4,056 catalog comparison verdicts. Browser checks cover eight routes at nineteen widths from 320 to 2560 pixels. Accessibility checks cover seventeen default and expanded-control states. Reference checks capture seven pages at desktop and phone widths and exercise the new controls. Hero checks verify rendering, animation, pointer interaction, reduced motion and fallback behavior.
 
-Vercel now revalidates assets whose filenames are not versioned. The previous one-year immutable cache was inappropriate for CSS and JavaScript changed at the same URLs.
+Vercel now revalidates assets whose filenames are not versioned. The previous one-year immutable cache was inappropriate for CSS and JavaScript changed at the same URLs. The entry page also uses a release query on every stylesheet and script, so browsers holding the older immutable responses request the updated files immediately.
