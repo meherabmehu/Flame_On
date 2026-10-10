@@ -1,3 +1,19 @@
+# Current implementation note
+
+The frontend refinement report in [frontend-report.md](frontend-report.md) records the current UI,
+verification and limitations. The screen walkthrough below also documents the original prototype.
+The overview has been simplified, search is always outside the filter drawer, and Coverage is a
+primary link to the Explorer coverage view. Mobile filters now use a modal focus trap. Comparison
+panels display conditions and illustrative observations; selections synchronize to the hash URL.
+Suggested pairs show counts, with no fit percentage. Source references do not verify invented rows,
+and media metadata does not establish that original files exist.
+
+The 10% numeric tolerance and all catalog pair verdicts are preserved. Missing supporting fields or
+numeric differences beyond tolerance may produce a caveated verdict under these existing rules.
+Only the six comparable fields are checked. These heuristics are not scientifically validated.
+
+---
+
 # Design notes — Flame in Freefall (Team CinderLens)
 
 Written for a reviewer or judge who wants the reasoning behind the interface, in the order the
@@ -30,7 +46,7 @@ The concept guide is explicit: *"If the tests do not match closely enough: 'Not 
 tests.'"* A tool that always produces an answer would be more impressive and less useful. So step 3 of
 the comparison workspace is designed to be able to say **no**, and the "no" is given the same visual
 weight as a positive result: a bordered verdict panel, an itemised list of reasons, and a route out
-("Find a fairer pair", "Inspect coverage"). The demo can therefore be driven to a clean rejection in
+("Find a fairer pair", "Inspect coverage"). The demo can therefore be driven to a rejection in
 one click (`#/compare?a=BASS2-T101&b=BASS2-T137&factor=airflow_cms`).
 
 ---
@@ -70,7 +86,7 @@ Three numbered steps, with a sticky side panel.
 1. **Choose the factor** — six factor cards, each showing how many records carry that field and how
    many usable pairs exist. A factor with no fair pair says so on the card, before the user commits.
 2. **Pick two tests** — two slots fed by dropdowns or by "Select to compare" in the explorer. Suggested
-   pairs are ranked by a transparent rule ("what matches"), each labelled with a **fit** indicator that
+   pairs are ranked by a transparent rule ("what matches"), each labelled with a **matched-condition count** that
    is explicitly described as *how many conditions match exactly — not a confidence score*.
 3. **Check the remaining conditions** — a condition-by-condition table (matches / differs / not
    recorded / varied factor), a verdict panel, and either the recorded difference in plain English or
@@ -178,7 +194,7 @@ Notable mechanics:
 1. **Demonstration content is labelled everywhere.** A persistent strip under the header, an ember
    `DEMONSTRATION` badge on every record, an ember badge on every schematic, and a console notice.
 2. **No invented measurements, predictions, accuracy or NASA findings.** The interface never renders a
-   numeric model output. The only "score" shown is a *fit* description of matched conditions, with a
+   numeric model output. Suggested pairs display a count of matched conditions, with a
    "watch out" note directly underneath.
 3. **Not-implemented features get concept states, not fake output.** Dashed panels labelled
    *Proposed interpretation (not implemented)* and *Not implemented* sit exactly where the ML ranking

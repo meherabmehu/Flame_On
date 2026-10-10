@@ -3,8 +3,7 @@
 A **question-led explorer across recorded microgravity combustion conditions**, built as a frontend
 prototype for the 2026 NASA Space Apps Challenge ("Flame in Freefall").
 
-Explore how oxygen, airflow and fuel or sample shape relate to flame behaviour — with every answer tied
-to matching NASA tests and clear evidence gaps.
+Explore how oxygen, airflow and fuel or sample shape relate to flame behaviour — with clear matching explanations and visible evidence gaps. The current catalog is illustrative.
 
 > **Demonstration build.** Every record in this repository is an *illustrative demonstration row*
 > written by the team to exercise the interface. Test IDs, values, outcomes and timings are invented.
@@ -127,7 +126,6 @@ Quick version: `GET /api/records/`, `/api/records/{id}/`, `/api/factors/`, `/api
 - NASA BASS-II results overview — NTRS [20160000593](https://ntrs.nasa.gov/citations/20160000593)
 - NASA BASS-II summary report — NTRS [20210011385](https://ntrs.nasa.gov/citations/20210011385)
 - NASA Physical Sciences Informatics — [BASS-II investigation](https://www.nasa.gov/physical-sciences-informatics-psi/)
-- 2026 Flame in Freefall challenge page
 
 ## Status
 
@@ -137,3 +135,37 @@ Backend, verified data extraction and ML retrieval are out of scope for this bui
 as such in the interface.
 
 Team CinderLens · 2026 NASA Space Apps Challenge
+
+
+## Frontend refinement and verification
+
+CinderLens retains its buildless, dependency-free architecture and existing Vercel configuration.
+The overview now introduces the research workflow with a labeled SVG illustration. Explorer has
+page-level search, individually removable filter chips, a modal mobile filter drawer, honest record
+cards and a persistent two-record selection tray. Coverage cells filter the corresponding fuel family
+and recorded value; their counts describe the full demonstration catalog, regardless of active filters.
+Comparison panels show the varied value, supporting conditions, illustrative observations and evidence
+links. Comparison changes synchronize to the hash URL, including explicit empty slots on reset.
+
+All data remains illustrative. Media descriptors do not establish that original files exist. NASA
+references provide background context and do not verify any demonstration record. The current matcher
+uses six fields and a 10% numeric tolerance; these heuristics have not been scientifically validated.
+Supporting numeric differences beyond tolerance or missing fields can still yield a caveated verdict
+under the preserved rules. Ignition, pressure and duration are displayed but are not checked.
+
+No build command or package.json exists. Validate JavaScript with `node --check` and use the QA scripts:
+
+```powershell
+# Optional QA dependencies only; keep them outside the repository.
+npm.cmd install --prefix "$env:TEMP/cinderlens-qa" --cache "$env:TEMP/cinderlens-npm-cache" --no-audit --no-fund jsdom playwright-core axe-core
+$env:NODE_PATH = "$env:TEMP/cinderlens-qa/node_modules"
+node tools/smoke-test.js
+# In another terminal: python -m http.server 8000 --bind 127.0.0.1
+node tools/browser-test.js
+node tools/accessibility-test.js
+```
+
+Browser scripts use installed Microsoft Edge on Windows and a local server on port 8000. They do not
+install a browser or ship dependencies with the app. Screenshots are saved in TEMP. The smoke suite
+also checks every catalog pair and factor against the committed baseline to preserve existing verdicts.
+See [the implementation report](docs/frontend-report.md) for the completed checks and limitations.

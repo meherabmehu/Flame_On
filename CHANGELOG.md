@@ -21,3 +21,13 @@ human note rather than a conventional commit log, so a reader can follow the bui
 - Making the layout responsive for tablet and mobile and adding the print stylesheet
 - Writing the design notes for screen structure and visual direction
 - Documenting the backend endpoints the frontend expects
+
+## Frontend refinement — 10 October 2026
+
+- Refined CinderLens identity, shared tokens, research hero and all six screens.
+- Added visible Explorer search, modal mobile filters and a persistent comparison tray.
+- Corrected filter-chip removal, selection overflow, malformed coverage markup and invalid URL handling.
+- Added detailed comparison panels and accurate exact/approximate match explanations without changing verdicts.
+- Corrected media/provenance language and removed unsupported fit percentages.
+- Added browser and accessibility verification and preserved all 4,056 existing catalog verdicts.
+- See docs/frontend-report.md for verification evidence and remaining scientific limitations.
