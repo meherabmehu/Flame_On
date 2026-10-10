@@ -508,7 +508,7 @@ const ExplorerPage = (function () {
         Store.setFilter(patch);
         refresh({ rebuildFilters: true });
         const count = root.querySelector('.result-count');
-        if (count) { count.tabIndex = -1; count.scrollIntoView({ block: 'center' }); count.focus({ preventScroll: true }); }
+        if (count) { DashboardView.reveal(count); count.tabIndex = -1; count.scrollIntoView({ block: 'center' }); count.focus({ preventScroll: true }); }
       });
     });
     root.querySelectorAll('[data-coverage-fuel]').forEach((button) => {
@@ -531,7 +531,7 @@ const ExplorerPage = (function () {
         Store.setFilter({ fuel, ...(value === 'null' ? { missingData: 'only' } : { [key]: { min: Number(value), max: Number(value) } }) });
         refresh({ rebuildFilters: true });
         const count = root.querySelector('.result-count');
-        if (count) { count.tabIndex = -1; count.scrollIntoView({ block: 'center', behavior: 'auto' }); count.focus({ preventScroll: true }); }
+        if (count) { DashboardView.reveal(count); count.tabIndex = -1; count.scrollIntoView({ block: 'center', behavior: 'auto' }); count.focus({ preventScroll: true }); }
       });
     });
   }

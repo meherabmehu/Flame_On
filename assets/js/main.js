@@ -30,6 +30,7 @@ const App = (function () {
     const main = document.getElementById('main');
     const page = PAGES[r.name];
 
+    DashboardView.cleanup();
     if (currentPage?.cleanup) currentPage.cleanup();
     Shell.closeModePopover();
 
@@ -54,6 +55,7 @@ const App = (function () {
     const output = page.render(r, main);
     if (typeof output === 'string') main.innerHTML = output;
     else if (output && output.html) main.innerHTML = output.html;
+    DashboardView.mount(main, screen);
     Shell.setActiveNav(r.name);
     document.title = titleFor(r) + ' · Flame in Freefall';
 
