@@ -1,316 +1,48 @@
-/* ==========================================================================
-   pages/overview.js — project overview
-   Purpose: state the problem, the product purpose and the honest boundary,
-   then hand the user a single obvious action: start exploring experiments.
-   ========================================================================== */
-
+﻿/* Overview: clear entry points and a transparent demonstration boundary. */
 const OverviewPage = (function () {
-
-  function stats() {
-    const list = Store.records();
-    const missing = list.filter((r) => Store.countMissing(r) > 0).length;
-    const pairs = Matcher.suggestPairs('airflow_cms', list, 40);
-    const gaps = Matcher.gapStatements().length;
-    return [
-      { value: String(list.length), label: 'demonstration records indexed' },
-      { value: String(FACTORS.length), label: 'comparable factors modelled' },
-      { value: missing + ' of ' + list.length, label: 'records with an empty comparable field' },
-      { value: String(gaps), label: 'coverage gaps stated in plain English' },
-      { value: pairs.length + '+', label: 'airflow pairs the matcher can line up' }
-    ];
+  function section(kicker, title, body, subtitle) {
+    return '<section class="section"><div class="wrap"><div class="section-head"><div><p class="eyebrow">' + kicker + '</p><h2>' + title + '</h2>' + (subtitle ? '<p>' + subtitle + '</p>' : '') + '</div></div>' + body + '</div></section>';
   }
-
-  function exampleQuestion() {
-    return '<div class="card card-lg" style="border-left:3px solid var(--teal-500)">' +
-      '<div class="row-between row-top" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">' +
-        '<div style="max-width:62ch">' +
-          '<p class="eyebrow">The example question from the concept guide</p>' +
-          '<h3 class="mt-2" style="font-size:var(--fs-20)">' +
-            'For one recorded fuel and shape, what happened at low airflow versus a higher tested speed?' +
-          '</h3>' +
-          '<p class="mt-3">Airflow is the October 1 story, not the limit of the product. ' +
-            'Oxygen, fuel, thickness and geometry are all first-class comparison factors here — the same workspace handles each of them, ' +
-            'and says so plainly when a fair pair does not exist.</p>' +
-        '</div>' +
-        '<div class="stack-sm" style="min-width:230px">' +
-          '<button class="btn btn-primary btn-block" data-action="prefill" ' +
-            'data-a="BASS2-T101" data-b="BASS2-T102" data-factor="airflow_cms">' +
-            'Open this comparison ' + UI.icon('chevron', 15) + '</button>' +
-          '<button class="btn btn-block" data-action="prefill" ' +
-            'data-a="BASS2-T102" data-b="BASS2-T143" data-factor="oxygen_pct">' +
-            'Same idea for oxygen</button>' +
-          '<button class="btn btn-ghost btn-block" data-action="prefill" ' +
-            'data-a="BASS2-T121" data-b="BASS2-T145" data-factor="oxygen_pct">' +
-            'See a case with no fair match</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }
-
-  function problemSection() {
-    const items = [
-      {
-        icon: 'flame',
-        title: 'Fire behaves differently in very low gravity',
-        text: 'Physical Sciences Informatics lists BASS-II as complete, and the investigation examined how ambient oxygen, ventilation and fuel affect burning. ' +
-          'One striking reported behaviour is that a dim, stable flame at very low airflow can brighten quickly when airflow rises.'
-      },
-      {
-        icon: 'layers',
-        title: 'The records exist, but not as one table',
-        text: 'Experiment files, videos and published reports live in PSI, the NTRS and the mission logs. Each file has to be checked by hand before an observation can be tied to a test condition.'
-      },
-      {
-        icon: 'search',
-        title: 'Finding comparable tests is the hard part',
-        text: 'Two tests may share a fuel and a flow speed and still differ in thickness, mounting or flow direction. ' +
-          'A useful tool has to line them up carefully — and refuse to compare when it cannot.'
-      }
-    ];
-    return '<div class="grid grid-3">' + items.map((i) =>
-      '<div class="card">' +
-        '<div class="card-icon card-icon-ember">' + UI.icon(i.icon, 18) + '</div>' +
-        '<h3 class="mt-4" style="font-size:var(--fs-17)">' + i.title + '</h3>' +
-        '<p class="mt-2" style="font-size:var(--fs-14)">' + i.text + '</p>' +
-      '</div>').join('') + '</div>';
-  }
-
-  function workflowSection() {
-    const steps = [
-      { n: '01', t: 'Explore what was tested', d: 'Search and filter indexed records by fuel, geometry, oxygen, airflow and thickness. Records show which fields are recorded and which are empty.', a: '#/explorer', al: 'Open the explorer' },
-      { n: '02', t: 'Change one factor', d: 'Pick the factor to compare — airflow, oxygen, fuel, thickness or geometry. The interface only offers values that exist in the records.', a: '#/compare', al: 'Open the comparison workspace' },
-      { n: '03', t: 'Match the rest', d: 'The matcher checks the remaining conditions, tolerates small numeric differences, and lists every difference rather than hiding it.', a: '#/compare?factor=thickness_mm', al: 'See a robustness check' },
-      { n: '04', t: 'Read evidence or the gap', d: 'Every observation sits beside its recorded conditions, media status and original sources — or the interface abstains and says no fair pair exists.', a: '#/evidence/BASS2-T124', al: 'Open an evidence view' }
-    ];
-    return '<div class="flow-steps">' + steps.map((s) =>
-      '<a class="flow-step" href="' + s.a + '" style="text-decoration:none">' +
-        '<span class="flow-step-num">' + s.n + '</span>' +
-        '<h3>' + s.t + '</h3>' +
-        '<p>' + s.d + '</p>' +
-        '<p class="mt-3" style="color:var(--teal-300);font-size:var(--fs-13)">' + s.al + ' ' + UI.icon('chevron', 12) + '</p>' +
-      '</a>').join('') + '</div>';
-  }
-
-  function inputOutputSection() {
-    return '<div class="grid grid-2">' +
-      '<div class="card card-lg">' +
-        '<div class="card-title"><h3>What the user enters</h3><span class="badge badge-teal">Input</span></div>' +
-        '<div class="table-wrap"><table class="table"><tbody>' +
-          row('Explore filters', 'Recorded fuel, sample shape, oxygen and airflow ranges. Browse observations and coverage before comparing anything.') +
-          row('Change one factor', 'Compare two tested airflow speeds, two oxygen settings, two thicknesses or two geometries. Values come from the records, never invented.') +
-          row('Match the rest', 'Fuel, shape, thickness, flow direction and the other conditions stay as similar as the records allow.') +
-        '</tbody></table></div>' +
-      '</div>' +
-      '<div class="card card-lg">' +
-        '<div class="card-title"><h3>What the screen shows</h3><span class="badge badge-ember">Output</span></div>' +
-        '<div class="table-wrap"><table class="table"><tbody>' +
-          row('Test coverage', 'Which combinations of oxygen, airflow, fuel and shape appear in the records, and which combinations have no evidence at all.',
-            '#/compare', 'Open coverage') +
-          row('Evidence rows', 'For each comparable test: conditions, recorded spread or extinction, source report and whether media exists.',
-            '#/evidence/BASS2-T101', 'Open evidence') +
-          row('Comparison or gap', 'A plain-English statement of the recorded difference — or “Not enough comparable tests.”',
-            '#/compare?a=BASS2-T121&b=BASS2-T145&f=oxygen_pct', 'See the abstention') +
-        '</tbody></table></div>' +
-      '</div>' +
-    '</div>';
-
-    function row(a, b, href, linkLabel) {
-      return '<tr><td style="width:34%"><strong class="tx-1">' + a + '</strong>' +
-        (href ? '<div class="mt-2"><a href="' + href + '" style="font-size:var(--fs-12)">' + linkLabel + ' ' + UI.icon('chevron', 11) + '</a></div>' : '') +
-        '</td><td>' + b + '</td></tr>';
-    }
-  }
-
-  function honestySection() {
-    const does = [
-      'Indexes recorded conditions and shows exactly which fields are empty',
-      'Compares one factor at a time and states the recorded difference in plain English',
-      'Refuses to conclude when the tests are not matched closely enough',
-      'Links every observation back to its source report and media status',
-      'Keeps recorded behaviour visually separate from proposed machine interpretation',
-      'States uncertainty and coverage gaps in ordinary language'
-    ];
-    const doesNot = [
-      'Predict fire behaviour in any cabin, atmosphere or material',
-      'Report an accuracy, confidence score or model metric — none has been measured',
-      'Simulate arbitrary physical conditions; only recorded test values are offered',
-      'Reproduce NASA findings as results; the demonstration rows are clearly labelled',
-      'Claim that no similar tool already exists',
-      'Replace a reviewer: extraction and labels still need a human pass'
-    ];
-    return '<div class="honesty-grid">' +
-      '<div class="card card-lg">' +
-        '<div class="card-title"><h3>What this build does</h3>' + UI.icon('check', 18) + '</div>' +
-        '<div class="honesty-list">' + does.map((t) =>
-          '<div class="honesty-item">' + UI.icon('check', 16) + '<span>' + t + '</span></div>').join('') + '</div>' +
-      '</div>' +
-      '<div class="card card-lg">' +
-        '<div class="card-title"><h3>What it deliberately does not do</h3>' + UI.icon('alert', 18) + '</div>' +
-        '<div class="honesty-list">' + doesNot.map((t) =>
-          '<div class="honesty-item" style="color:var(--tx-3)">' + UI.icon('close', 16) + '<span>' + t + '</span></div>').join('') + '</div>' +
-      '</div>' +
-    '</div>';
-  }
-
-  function sourcesSection() {
-    const sources = [
-      { name: 'NASA BASS-II results overview', ref: 'NTRS 20160000593', desc: 'Published BASS-II methods and findings, including the variables tested and the low-airflow behaviour.', url: 'https://ntrs.nasa.gov/citations/20160000593' },
-      { name: 'NASA BASS-II summary report', ref: 'NTRS 20210011385', desc: 'Consolidated summary of the investigation and its test program.', url: 'https://ntrs.nasa.gov/citations/20210011385' },
-      { name: 'NASA Physical Sciences Informatics — BASS-II', ref: 'PSI · BASS-II', desc: 'BASS-II experiment files and videos. Each file’s contents must be checked before observations are linked to conditions.', url: 'https://www.nasa.gov/physical-sciences-informatics-psi/' },
-      { name: '2026 Flame in Freefall challenge page', ref: 'Challenge', desc: 'The challenge brief. Full details and suggested resources were scheduled to arrive on 28 October 2026 and may refine scope.', url: 'https://www.nasa.gov/' }
-    ];
-    return '<div class="card card-lg">' +
-      sources.map((s) =>
-        '<div class="source-item">' +
-          '<div>' +
-            '<h4>' + s.name + '</h4>' +
-            '<p>' + s.desc + '</p>' +
-          '</div>' +
-          '<div class="row" style="gap:10px">' +
-            '<span class="source-ref">' + s.ref + '</span>' +
-            '<a class="btn btn-sm btn-ghost" href="' + s.url + '" target="_blank" rel="noopener">' +
-              'Visit ' + UI.icon('external', 13) + '</a>' +
-          '</div>' +
-        '</div>').join('') +
-    '</div>';
-  }
-
-  function roadsSection() {
-    const roads = [
-      { t: 'Now', tag: 'Available today', cls: 'badge-ok', items: ['Public BASS-II reports and PSI materials', 'A hand-checked test catalog with source links', 'This traceable explorer and comparison interface'] },
-      { t: 'During the hackathon', tag: 'Build and test', cls: 'badge-teal', items: ['Extract the catalog across oxygen, airflow, fuel and geometry', 'Compare machine retrieval against a keyword baseline', 'Verify extracted labels against source records'] },
-      { t: 'Later, if labels allow', tag: 'Possible, not promised', cls: 'badge-warn', items: ['Computer-vision measurements on a selected video subset, human-verified', 'Additional NASA combustion studies once their fields are mapped', 'A predictive model only if verified labels and coverage support it'] }
-    ];
-    return '<div class="grid grid-3">' + roads.map((r) =>
-      '<div class="card">' +
-        '<div class="row-between" style="display:flex;justify-content:space-between;gap:12px;align-items:center">' +
-          '<h3 style="font-size:var(--fs-17)">' + r.t + '</h3>' +
-          '<span class="badge ' + r.cls + '">' + r.tag + '</span>' +
-        '</div>' +
-        '<ul class="mt-4 honesty-list" style="gap:10px">' + r.items.map((i) =>
-          '<li class="honesty-item">' + UI.icon('tag', 15) + '<span>' + i + '</span></li>').join('') + '</ul>' +
-      '</div>').join('') + '</div>';
-  }
-
   function render(route, container) {
-    const s = stats();
-    container.innerHTML = '' +
-    '<section class="hero">' +
-      '<div class="wrap hero-inner">' +
-        '<p class="eyebrow">NASA Space Apps Challenge 2026 · Combustion in microgravity</p>' +
-        '<h1>Flame in Freefall</h1>' +
-        '<p class="lead">Explore how oxygen, airflow and fuel or sample shape relate to flame behaviour, ' +
-          'with every answer tied to matching NASA tests and clear evidence gaps.</p>' +
-        '<p class="lead" style="color:var(--tx-3)">' +
-          'A question-led explorer across recorded combustion conditions. It shows what was tested, what each test recorded, ' +
-          'which tests can fairly be lined up — and it stops short of a conclusion when they cannot.' +
-        '</p>' +
-        '<div class="hero-actions">' +
-          '<a class="btn btn-primary btn-lg" href="#/explorer">' + UI.icon('search', 16) + ' Start exploring experiments</a>' +
-          '<a class="btn btn-lg" href="#/compare">' + UI.icon('compare', 16) + ' Open the comparison workspace</a>' +
-          '<a class="btn btn-lg btn-ghost" href="#/data-notes">Read the data notes</a>' +
-        '</div>' +
-        '<div class="hero-meta">' +
-          '<span><span class="dot dot-ember"></span> Demonstration dataset · ' + UI.esc(CATALOG_META.datasetVersion) + '</span>' +
-          '<span>' + UI.icon('clock', 13) + ' Primary workflow demonstrable in under a minute</span>' +
-          '<span>' + UI.icon('shield', 13) + ' Abstains when evidence is thin</span>' +
-        '</div>' +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section-sm">' +
-      '<div class="wrap">' +
-        UI.state({
-          role: 'note',
-          icon: 'info',
-          title: 'Read this first',
-          message: UI.esc(COPY.datasetCaveat) + ' ' +
-            'Team CinderLens has not yet published a verified extraction of PSI files, so this interface never presents an inverted or invented measurement as a NASA result. ' +
-            'Real catalog rows replace these through one documented connection point.',
-          action: '<a class="btn btn-sm" href="#/data-notes">See how to connect the backend</a>',
-          inline: true
-        }) +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head">' +
-          '<div>' +
-            '<p class="eyebrow">The problem</p>' +
-            '<h2>Why a comparison tool, and not another report</h2>' +
-            '<p>The science is published. The difficulty is knowing which tests can fairly be set beside each other, and where nothing was tested at all.</p>' +
-          '</div>' +
-        '</div>' +
-        problemSection() +
-        exampleQuestion() +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section" style="border-top:1px solid var(--line-soft);background:var(--bg-shell)">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head">' +
-          '<div>' +
-            '<p class="eyebrow">How the product works</p>' +
-            '<h2>Four steps, one factor at a time</h2>' +
-            '<p>Each step is a screen. The last one is allowed to end in “not enough comparable tests”.</p>' +
-          '</div>' +
-        '</div>' +
-        workflowSection() +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head"><div><p class="eyebrow">Scope</p><h2>Inputs and outputs, as described in the concept guide</h2></div></div>' +
-        inputOutputSection() +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section" style="border-top:1px solid var(--line-soft)">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head"><div><p class="eyebrow">Coverage at a glance</p><h2>What the demonstration catalog contains</h2>' +
-          '<p>Numbers describe the demonstration rows only. They exist to show the interface working, not to report science.</p></div>' +
-          '<a class="btn" href="#/explorer?coverage=1">' + UI.icon('grid', 15) + ' Open the coverage matrix</a></div>' +
-        '<div class="stat-strip">' + s.slice(0, 4).map((x) =>
-          '<div class="stat"><div class="stat-value">' + x.value + '</div><div class="stat-label">' + x.label + '</div></div>').join('') + '</div>' +
-        '<p class="muted" style="font-size:var(--fs-13)">' + s[4].value + ' ' + s[4].label + '.' +
-          ' The intended use is safety-oriented research and engineering, not flight operations.</p>' +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section" style="border-top:1px solid var(--line-soft);background:var(--bg-shell)">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head"><div><p class="eyebrow">Scientific honesty</p><h2>The boundary of every claim in this interface</h2>' +
-          '<p>Written so a reviewer can hold the prototype to it.</p></div></div>' +
-        honestySection() +
-        '<div class="grid grid-2 mt-6">' +
-          '<div class="card"><div class="card-title"><h3>Intended users</h3></div>' +
-            '<p style="font-size:var(--fs-14)">Researchers and safety-minded engineers who need to know what was actually observed under tested conditions — ' +
-            'and a competition reviewer checking whether the tool is honest about what it does not know.</p></div>' +
-          '<div class="card"><div class="card-title"><h3>Where this goes</h3></div>' +
-            '<p style="font-size:var(--fs-14)">BASS-II is the first collection, not the limit of the idea. ' +
-            'Other NASA combustion studies can follow once their fields are mapped to the same catalog shape.</p>' +
-            '<a class="btn btn-sm btn-ghost mt-3" href="#/data-notes">Read the data and backend notes ' + UI.icon('chevron', 13) + '</a></div>' +
-        '</div>' +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head"><div><p class="eyebrow">Roadmap</p><h2>What is available now, and what happens next</h2>' +
-          '<p>The 2026 build guide says full challenge details and suggested resources arrive on 28 October 2026. That may refine scope; it is not a promise of a clean training dataset.</p></div></div>' +
-        roadsSection() +
-      '</div>' +
-    '</section>' +
-
-    '<section class="section" style="border-top:1px solid var(--line-soft)">' +
-      '<div class="wrap stack-lg">' +
-        '<div class="section-head"><div><p class="eyebrow">Sources to revisit</p><h2>Every claim in this prototype is traceable to these</h2></div></div>' +
-        sourcesSection() +
-      '</div>' +
-    '</section>';
+    const rows = Store.records();
+    const paths = [
+      ['search', 'Explore experiments', 'Find records by material, shape, oxygen or airflow. See missing conditions before you compare.', '#/explorer', 'Browse the catalog'],
+      ['compare', 'Compare conditions', 'Choose two demonstration tests. Review the varied factor and every remaining difference.', '#/compare', 'Open the workspace'],
+      ['book', 'Inspect evidence', 'Review illustrative observations, media availability and the limits of their provenance.', '#/evidence', 'Review evidence']
+    ];
+    const workflow = [
+      ['01', 'Find relevant tests', 'Search and filter the demonstration catalog.', '#/explorer'],
+      ['02', 'Choose a pair', 'Select two distinct records and a factor to vary.', '#/compare'],
+      ['03', 'Check the conditions', 'Review exact matches, numeric tolerances and unknown fields.', '#/compare'],
+      ['04', 'Follow the evidence', 'Inspect the record and what remains unverified.', '#/evidence']
+    ];
+    const sources = [
+      ['BASS-II results overview', 'NTRS · 20160000593', 'https://ntrs.nasa.gov/citations/20160000593'],
+      ['BASS-II summary report', 'NTRS · 20210011385', 'https://ntrs.nasa.gov/citations/20210011385'],
+      ['Physical Sciences Informatics', 'NASA · reference resource', 'https://www.nasa.gov/physical-sciences-informatics-psi/']
+    ];
+    container.innerHTML = '<section class="hero"><div class="wrap hero-inner"><div class="hero-copy">' +
+      '<p class="eyebrow"><span class="dot dot-teal"></span> Microgravity combustion research</p>' +
+      '<h1>Understand fire<br><span>beyond gravity.</span></h1>' +
+      '<p class="lead">Explore experiment conditions, compare illustrative flame behavior, and see exactly where the evidence stops.</p>' +
+      '<div class="hero-actions"><a class="btn btn-primary btn-lg" href="#/explorer">Explore experiments ' + UI.icon('chevron', 17) + '</a><a class="btn btn-lg" href="#/compare">' + UI.icon('compare', 17) + ' Compare tests</a></div>' +
+      '<div class="hero-meta"><span>' + UI.icon('layers', 14) + ' ' + rows.length + ' demonstration records</span><span>' + UI.icon('shield', 14) + ' Evidence before conclusions</span></div></div>' +
+      '<figure class="research-visual"><div class="visual-label"><span>EXPERIMENT / SCHEMATIC</span><span>ILLUSTRATION ONLY</span></div>' +
+      '<svg viewBox="0 0 520 360" role="img" aria-label="Decorative flame in a research duct; not experiment footage"><defs><pattern id="research-grid" width="26" height="26" patternUnits="userSpaceOnUse"><path d="M26 0H0V26" fill="none" stroke="#2a3950" stroke-opacity=".45"/></pattern></defs><rect width="520" height="360" fill="url(#research-grid)"/>' +
+      '<g fill="none" stroke="#52647c"><path d="M52 76H468M52 286H468"/><path d="M62 67v18M458 67v18M62 277v18M458 277v18"/><path d="M260 50v255" stroke-dasharray="3 8" opacity=".4"/></g>' +
+      '<g fill="none" stroke="#3ed6c4" stroke-width="1.5"><path d="M62 155h94m-8-5 8 5-8 5M62 185h114m-8-5 8 5-8 5M62 215h94m-8-5 8 5-8 5" opacity=".7"/></g>' +
+      '<path d="M236 244c-38-34-44-74-11-110 21-24 27-44 29-65 45 30 72 69 64 108-4 29-29 43-33 67Z" fill="#edaa4a" fill-opacity=".10" stroke="#edaa4a" stroke-width="2"/><path d="M253 244c-18-24-24-45-8-70 10-15 17-23 17-39 27 25 34 45 26 67-4 13-16 24-17 42" fill="#edaa4a" fill-opacity=".22" stroke="#f7c982"/>' +
+      '<rect x="205" y="248" width="136" height="10" rx="3" fill="#52647c"/><path d="M347 235h49v-21M322 121h74v-18" stroke="#8593ab" fill="none"/><g fill="#b3c1d8" font-family="monospace" font-size="11"><text x="63" y="133">FLOW →</text><text x="354" y="202">FLAME</text><text x="355" y="97">O₂ SETTING</text><text x="205" y="279">SAMPLE GEOMETRY</text></g></svg>' +
+      '<figcaption>Conditions → comparison → evidence<span>Concept diagram. No measured flame data.</span></figcaption></figure></div></section>' +
+      '<div class="wrap prototype-note">' + UI.icon('info', 18) + '<p><strong>Interactive prototype.</strong> Illustrative experiment records only. Verified NASA experiment data has not yet been integrated.</p><a href="#/data-notes">Data notes ' + UI.icon('chevron', 14) + '</a></div>' +
+      section('Your research workspace', 'Start with a question. Follow the record.', '<div class="grid grid-3">' + paths.map((p) => '<a class="workspace-card" href="' + p[3] + '"><span class="card-icon">' + UI.icon(p[0], 22) + '</span><h3>' + p[1] + '</h3><p>' + p[2] + '</p><span class="workspace-action">' + p[4] + ' ' + UI.icon('chevron', 15) + '</span></a>').join('') + '</div>') +
+      section('A transparent workflow', 'One factor at a time.', '<div class="flow-steps">' + workflow.map((w) => '<a class="flow-step" href="' + w[3] + '"><span class="flow-step-num">' + w[0] + '</span><h3>' + w[1] + '</h3><p>' + w[2] + '</p></a>').join('') + '</div>' +
+      '<div class="example-panel"><div><p class="eyebrow">Try a demonstration</p><h3>For one fuel and shape, what happened at low airflow versus a higher tested speed?</h3><p>The workspace explains which conditions match and which differences limit the comparison.</p></div><div class="stack-sm"><button class="btn btn-primary" data-action="prefill" data-a="BASS2-T101" data-b="BASS2-T102" data-factor="airflow_cms">Open this comparison ' + UI.icon('chevron', 15) + '</button><button class="btn" data-action="prefill" data-a="BASS2-T101" data-b="BASS2-T137" data-factor="airflow_cms">See a rejected pair</button></div></div>') +
+      section('Catalog coverage', 'See what is represented. Know what is missing.', '<div class="stat-strip">' + [[rows.length, 'illustrative records'], [FACTORS.length, 'comparison factors'], [rows.filter((r) => Store.countMissing(r)).length, 'records with missing conditions'], [new Set(rows.map((r) => r.geometry)).size, 'sample geometries']].map((s) => '<div class="stat"><div class="stat-value">' + s[0] + '</div><div class="stat-label">' + s[1] + '</div></div>').join('') + '</div><div class="row mt-6"><a class="btn" href="#/explorer?coverage=1">' + UI.icon('grid', 16) + ' Inspect demo coverage</a><p class="muted">A missing combination is a catalog gap, never a physical result.</p></div>', 'Counts describe the demonstration catalog, not the full NASA archive.') +
+      section('Scientific transparency', 'The limits belong beside the result.', '<div class="honesty-grid"><div class="card card-lg"><h3>What this build does</h3><ul class="honesty-list mt-4">' + ['Filters existing illustrative records by indexed conditions.', 'Checks records using deterministic prototype rules.', 'Lists condition differences and missing fields.', 'Presents observation structure and reference resources.'].map((t) => '<li class="honesty-item">' + UI.icon('check', 16) + '<span>' + t + '</span></li>').join('') + '</ul></div><div class="card card-lg"><h3>What it deliberately does not do</h3><ul class="honesty-list mt-4">' + ['Predict fire risk in untested conditions.', 'Present demo observations as verified NASA findings.', 'Produce ML or computer-vision measurements.', 'Treat a rule-based match as scientific validation.'].map((t) => '<li class="honesty-item">' + UI.icon('alert', 16) + '<span>' + t + '</span></li>').join('') + '</ul><a class="btn btn-sm mt-5" href="#/data-notes">Read the matching rules</a></div></div>') +
+      section('Product roadmap', 'Available today. Clear about what comes next.', '<div class="grid grid-3">' + [['Available', 'badge-teal', 'Frontend prototype', 'Demonstration catalog, Explorer, rule-based comparison, evidence layouts and demo coverage.'], ['Not integrated', 'badge-warn', 'Verified catalog', 'NASA extraction, provenance checks and quantitative scientific validation remain future work.'], ['Not implemented', 'badge-unknown', 'Model capabilities', 'ML retrieval and computer vision are planned concepts. No model has been trained or evaluated.']].map((r) => '<div class="card"><span class="badge ' + r[1] + '">' + r[0] + '</span><h3 class="mt-4">' + r[2] + '</h3><p class="mt-3">' + r[3] + '</p></div>').join('') + '</div>') +
+      section('Reference library', 'Explore the published research.', '<div class="card card-lg">' + sources.map((s) => '<div class="source-item"><div><h3>' + s[0] + '</h3><p>' + s[1] + '</p></div><a class="btn btn-sm" href="' + s[2] + '" target="_blank" rel="noopener">Open NASA reference ' + UI.icon('external', 14) + '</a></div>').join('') + '</div>', 'Background references only. These reports do not verify the invented records or observations in this prototype.') +
+      '<section class="section"><div class="wrap"><div class="final-cta"><div><p class="eyebrow">CinderLens / Flame in Freefall</p><h2>Your next question starts with a record.</h2></div><a class="btn btn-primary btn-lg" href="#/explorer">Explore experiments ' + UI.icon('chevron', 16) + '</a></div></div></section>';
   }
-
   return { render };
 })();
