@@ -25,8 +25,22 @@ const path = require('node:path');
     await page.goto(base + routes.explorer);
     assert.equal(await page.locator('.catalog-stats strong').nth(0).innerText(), '26');
     await page.locator('#explorer-search').fill('nomex');
-    await page.waitForTimeout(250);
+    await page.locator('[data-action="submit-search"]').click();
     assert.equal(Number(await page.locator('.catalog-stats strong').nth(1).innerText()), await page.locator('.record-card').count());
+    assert.equal(await page.locator('.record-card').count(), 1, 'Search button applies the current query');
+    await page.goto(base + routes.evidence);
+    await page.locator('[data-view="unavailable"]').click();
+    assert.equal(await page.locator('.viewer-unavailable').isVisible(), true);
+    assert.equal(await page.locator('.viewer-schematic').isVisible(), false);
+    await page.locator('[data-view="schematic"]').click();
+    assert.equal(await page.locator('.viewer-schematic').isVisible(), true);
+    await page.goto(base + routes.details);
+    for (const target of ['record-observations','record-media','record-provenance','record-metadata']) {
+      await page.locator(`[data-target="${target}"]`).click();
+      assert.equal(await page.evaluate(() => document.activeElement.id), target);
+      assert.equal(await page.locator(`[data-target="${target}"]`).getAttribute('aria-current'), 'location');
+      assert.equal(await page.locator('#' + target).isVisible(), true);
+    }
     await page.goto(base + routes.coverage);
     for (const key of ['oxygen-airflow', 'fuel-shape', 'thickness-airflow']) {
       await page.locator(`[data-coverage-view="${key}"]`).click();
@@ -39,6 +53,9 @@ const path = require('node:path');
       assert.equal(await page.locator('.record-card').count(), expected, key + ': Heatmap filters both axes to the indexed count');
     }
     await page.goto(base + routes.notes);
+    assert.equal(await page.locator('.source-card').count(), 3);
+    await page.locator('[data-notes-section="notes-sources"]').click();
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'notes-sources');
     await page.locator('[data-notes-section="notes-developer"]').click();
     assert.equal(await page.locator('#notes-developer').getAttribute('open'), '');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'notes-developer');
@@ -53,12 +70,12 @@ const path = require('node:path');
       await page.goto(base + routes[name]);
       assert.equal(await page.locator('body').evaluate(el => el.classList.contains('internal-dashboard')), true);
       const image = await page.locator('#main').evaluate(el => getComputedStyle(el).backgroundImage);
-      assert.match(image, /space\.svg/);
+      assert.match(image, /cosmic\.jpg/);
       backgrounds.add(image);
     }
     assert.equal(backgrounds.size, 6, 'Each internal screen has distinct decorative space art');
     await page.goto(base);
     assert.equal(await page.locator('body').evaluate(el => el.classList.contains('internal-dashboard')), false);
-    console.log('PASS seven desktop/mobile screenshots, live totals, three heatmap filters, notes focus, side-by-side comparison, six distinct backgrounds and unmodified hero styling');
+    console.log('PASS seven desktop/mobile screenshots, search submission, viewer modes, four record sections, sources, live totals, three heatmap filters, notes focus, side-by-side comparison, six distinct backgrounds and unmodified hero styling');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
