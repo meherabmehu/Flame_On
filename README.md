@@ -1,4 +1,4 @@
-# Flame in Freefall — Team CinderLens
+# CinderLens / Flame in Freefall — Team CinderLens
 
 A **question-led explorer across recorded microgravity combustion conditions**, built as a frontend
 prototype for the 2026 NASA Space Apps Challenge ("Flame in Freefall").
@@ -169,3 +169,17 @@ Browser scripts use installed Microsoft Edge on Windows and a local server on po
 install a browser or ship dependencies with the app. Screenshots are saved in TEMP. The smoke suite
 also checks every catalog pair and factor against the committed baseline to preserve existing verdicts.
 See [the implementation report](docs/frontend-report.md) for the completed checks and limitations.
+
+### UI/UX refinement V2
+
+Compare now puts the experiment pair and condition analysis first, with prominent varied settings,
+actual match counts and collapsible supporting explanations. Explorer prioritizes oxygen, airflow and
+thickness, groups advanced filters, and keeps a fixed two-record tray on phones. The homepage includes
+a clearly labeled research-chamber illustration and a connected workflow. Evidence leads with media
+availability and source status; optional schematics and future measurements are disclosed separately.
+Records group metadata around their key conditions and provenance. Coverage labels both axes and
+reveals indexed record IDs on hover or keyboard focus. Mobile navigation uses a focused drawer.
+
+The V2 checks cover 152 route/viewport layouts and 17 automated accessibility scans, including expanded
+controls. Catalog values, matching rules, ranking and verdicts are unchanged from the preceding build.
+See [the V2 refinement report](docs/ui-refinement-v2.md) for page changes, validation and limitations.

@@ -1,5 +1,8 @@
 # CinderLens frontend implementation report
 
+This report records the original refinement. The subsequent visual transformation, current validation
+results and feature commits are documented in [the V2 report](ui-refinement-v2.md).
+
 Implemented in the existing repository on 10 October 2026. No framework, runtime dependency,
 backend, environment variable or deployment configuration was replaced. The implementation did not
 deploy the application. Subsequent feature commits and Git publishing are recorded in repository history.

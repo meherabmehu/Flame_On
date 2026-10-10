@@ -4,13 +4,14 @@ const path = require('path');
 const assert = require('node:assert/strict');
 (async () => {
   const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
+  try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   const base = 'http://127.0.0.1:8000/';
   const routes = ['#/', '#/explorer', '#/explorer?coverage=1', '#/compare?a=BASS2-T101&b=BASS2-T102&factor=airflow_cms', '#/compare?a=BASS2-T101&b=BASS2-T137&factor=airflow_cms', '#/evidence/BASS2-T124', '#/record/BASS2-T133', '#/data-notes'];
   let layouts = 0;
-  for (const width of [320,375,390,430,768,1024,1280,1440,1920]) {
+  for (const width of [320,360,375,390,412,430,480,568,640,740,768,820,834,1024,1180,1280,1440,1920,2560]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const route of routes) {
       await page.goto(base + route);
@@ -84,6 +85,7 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#coverage-cell-detail').innerText(), await coverageCell.getAttribute('data-coverage-detail'));
   await page.locator('[data-coverage-fuel]').first().click();
   assert.ok((await page.evaluate(() => CinderLens.Store.activeFilterChips().length)) >= 2);
+  assert.equal(await page.evaluate(() => document.activeElement.classList.contains('result-count')), true);
   await page.goto(base + '#/compare?a=UNKNOWN&b=&factor=bad-key');
   await page.getByText(/Unknown comparison factor/).waitFor();
   await page.goto(base + '#/evidence/BASS2-T137');
@@ -92,6 +94,22 @@ const assert = require('node:assert/strict');
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('#mode-chip').getAttribute('aria-expanded'), 'false');
   console.log('PASS coverage filter, invalid URL, missing media and popover Escape');
+  await page.goto(base + '#/evidence/BASS2-T101');
+  assert.equal(await page.locator('.schematic-disclosure').evaluate(el => el.open), false);
+  await page.locator('.schematic-disclosure > summary').click();
+  assert.equal(await page.locator('.schematic-disclosure').evaluate(el => el.open), true);
+  await page.locator('.schematic-disclosure svg').first().waitFor({state: 'visible'});
+  await page.locator('[data-section="trace-title"]').click();
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'trace-title');
+  assert.match(page.url(), /#\/evidence\/BASS2-T101$/);
+  await page.locator('.planned-measurements > summary').click();
+  assert.equal(await page.locator('.planned-measurements').evaluate(el => el.open), true);
+  assert.match(await page.locator('.planned-measurements').innerText(), /No value is produced/);
+  await page.goto(base + '#/record/BASS2-T133');
+  await page.locator('.record-media > summary').click();
+  assert.equal(await page.locator('.record-media').evaluate(el => el.open), true);
+  assert.match(await page.locator('.record-media').innerText(), /no video file supplied/);
+  console.log('PASS evidence disclosures, section focus and record media inventory');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.btn')).transitionDuration), '0s');
   assert.deepEqual(errors, []);
@@ -105,5 +123,5 @@ const assert = require('node:assert/strict');
   await page.evaluate(() => { CinderLens.Store.resetFilters(); CinderLens.App.renderRoute(CinderLens.Router.current()); });
   await page.screenshot({path: path.join(process.env.TEMP, 'cinderlens-mobile.png'), fullPage: true});
   console.log('PASS reduced motion and no browser JavaScript errors; screenshots saved to TEMP');
-  await browser.close();
+  } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exit(1); });
