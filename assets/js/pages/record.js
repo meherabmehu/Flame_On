@@ -133,7 +133,7 @@ const RecordPage = (function () {
             '<span>' + UI.esc(record.id) + '</span>' +
           '</nav>' +
           '<p class="eyebrow">Experiment detail <span class="dossier-id">' + UI.esc(record.id) + '</span></p>' +
-          '<h1>' + UI.esc(record.title) + '</h1>' +
+          '<h1>Experiment Details — ' + UI.esc(record.id) + '</h1>' +
           '<p class="lead">The catalog row as indexed: what was set, what was recorded, what is missing and where the record came from.</p>' +
           '<div class="tag-row mt-4">' +
             '<span class="badge badge-ember">' + UI.esc(COPY.demoTag) + '</span>' +
@@ -147,7 +147,7 @@ const RecordPage = (function () {
         '</div>' +
       '</div></div>' +
 
-      '<div class="wrap record-workspace">' + UI.conditionStrip(record) +
+      '<div class="wrap record-workspace"><section class="record-profile" aria-label="Record identity"><div class="record-symbol" aria-hidden="true">' + UI.icon('layers', 38) + '</div><div><span class="record-id">' + UI.esc(record.id) + '</span><h2>' + UI.esc(record.title) + '</h2><div class="tag-row">' + UI.factorChips(record) + '</div><p><span class="research-label">Illustrative observation</span> · ' + UI.esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p></div></section>' + UI.conditionStrip(record) +
         '<div class="record-provenance-note">' + UI.icon('book', 17) + '<p><strong>Source extraction unverified.</strong> Conditions and observations are team-authored demonstration content. NASA reports provide background references only.</p></div>' +
       '<div class="detail-grid">' +
         '<div class="stack-lg">' +
