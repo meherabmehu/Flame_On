@@ -79,7 +79,7 @@ const ComparePage = (function () {
       '<button type="button" class="btn btn-sm" data-action="swap-pair">' + UI.icon('compare',14) + ' Swap A and B</button>' +
       '<button type="button" class="btn btn-sm btn-ghost" data-action="clear-pair">Clear selection</button></div></div>' +
       (evidence.canCompare ? '' : '<div class="notice notice-warn mb-4">' + UI.icon('alert',16) + '<p><strong>No suggested pair on ' + UI.esc(Matcher.factorLabel(c.factor)) + '.</strong> ' + UI.esc(evidence.reason) + '</p></div>') +
-      '<div class="comparison-stage">' + slotHTML('Test A',c.a,'Select a record using the catalog control above.') + stepThree() + slotHTML('Test B',c.b,'Select a distinct record to compare against A.') + '</div>' +
+      '<div class="comparison-stage">' + slotHTML('Test A',c.a,'Select a record using the catalog control above.') + slotHTML('Test B',c.b,'Select a distinct record to compare against A.') + stepThree() + '</div>' +
       (numeric && c.a && c.b ? '<p class="setting-caption">Bars show recorded settings relative to the larger value in this pair. They do not show flame response or scientific confidence.</p>' : '') +
       '<details class="pair-suggestions" id="pair-suggestions"><summary>Suggested pairs <span class="badge">' + suggestions.length + ' shown</span><span class="muted">Deterministic ranking</span></summary>' +
       (suggestions.length ? '<div class="suggest-list">' + suggestions.map(suggestItem).join('') + '</div>' : UI.state({dashed:true,inline:true,icon:'layersOff',title:'No suggested pair for '+Matcher.factorLabel(c.factor).toLowerCase(),message:UI.esc(evidence.reason)})) +
@@ -276,7 +276,7 @@ const ComparePage = (function () {
       '<div class="page-head"><div class="wrap page-head-inner">' +
         '<div>' +
           '<p class="eyebrow">Comparison workspace</p>' +
-          '<h1>Compare two experiments</h1>' +
+          '<h1>Compare Experiments</h1>' +
           '<p class="lead">Review recorded settings, supporting conditions and the limits of a one-factor comparison.</p>' +
           '<div class="comparison-context"><span class="badge badge-ember">Demonstration data</span><span class="badge badge-teal">Varied factor: ' + UI.esc(Matcher.factorLabel(Store.state.compare.factor)) + '</span><span class="badge">' + UI.esc(Store.state.compare.a || 'Choose Test A') + ' / ' + UI.esc(Store.state.compare.b || 'Choose Test B') + '</span></div>' +
         '</div>' +
