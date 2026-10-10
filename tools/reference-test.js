@@ -76,6 +76,6 @@ const path = require('node:path');
     assert.equal(backgrounds.size, 6, 'Each internal screen has distinct decorative space art');
     await page.goto(base);
     assert.equal(await page.locator('body').evaluate(el => el.classList.contains('internal-dashboard')), false);
-    console.log('PASS seven desktop/mobile screenshots, search submission, viewer modes, four record sections, sources, live totals, three heatmap filters, notes focus, side-by-side comparison, six distinct backgrounds and unmodified hero styling');
+    console.log('PASS seven desktop/mobile screenshots, search submission, viewer modes, four record sections, sources, live totals, three heatmap filters, notes focus, side-by-side comparison, six distinct backgrounds and Overview owning its hero scene');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

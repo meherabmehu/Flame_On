@@ -30,3 +30,11 @@ Desktop keeps filters beside results, experiment panels beside each other, and t
 Validation uses the existing smoke, browser, accessibility, reference and hero scripts. Smoke checks preserve all 4,056 catalog comparison verdicts. Browser checks cover eight routes at nineteen widths from 320 to 2560 pixels. Accessibility checks cover seventeen default and expanded-control states. Reference checks capture seven pages at desktop and phone widths and exercise the new controls. Hero checks verify rendering, animation, pointer interaction, reduced motion and fallback behavior.
 
 Vercel now revalidates assets whose filenames are not versioned. The previous one-year immutable cache was inappropriate for CSS and JavaScript changed at the same URLs. The entry page also uses a release query on every stylesheet and script, so browsers holding the older immutable responses request the updated files immediately.
+
+## Compact pages and continuous 3D views
+
+The follow-up replaces the header-only backdrops with continuous, fixed cosmic backgrounds, including Overview and the footer. Every internal page mounts the same procedural WebGL flame renderer used by Overview, with gentle motion, orbital glow, pointer response, pause/resume and reduced-motion fallback. Only one scene owns a WebGL context at a time; route changes and comparison rerenders dispose the old scene. All scenes are labeled illustrative concept artwork.
+
+Long record conditions, match tables, observations, source sections and lower Overview sections are expandable disclosures. Existing section shortcuts reveal their containing disclosures before focusing the requested section. Coverage keeps the heatmap visible and folds its record browser; selecting a cell opens that browser. Explorer keeps records and desktop filters within bounded scrolling areas. Data Notes shows one selected section at a time. Footer navigation and research references are also expandable.
+
+`tools/compact-test.js` verifies animated scenes on all seven pages at desktop and mobile widths, continuous backgrounds, context disposal on comparison changes, pointer response, pause, disclosure shortcuts, one visible notes panel and reduced motion. Set `CINDERLENS_BASE_URL` to check a deployed site with the same test.
