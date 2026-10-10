@@ -184,8 +184,10 @@ const EvidencePage = (function () {
 
         '<section class="card card-flush" aria-labelledby="media-title">' +
           '<figure class="media-frame" style="border:0;border-radius:0">' +
-            '<div class="media-unavailable">' + UI.icon('videoOff', 28) + '<div><strong>No original experiment footage</strong><p>This prototype provides metadata and illustrative observations only.</p></div></div>' +
-            (record.media.kind === 'none' ? UI.mediaPlaceholder(record, { showPlay: false }) :
+            '<div class="viewer-toolbar"><h2>Media Viewer</h2><div class="viewer-tabs"><button class="btn" type="button" data-action="evidence-view" data-view="schematic" aria-pressed="true">Schematic</button><button class="btn" type="button" data-action="evidence-view" data-view="unavailable" aria-pressed="false">Footage status</button></div></div>' +
+            '<div class="viewer-schematic">' + UI.mediaPlaceholder(record, { showPlay:false }) + '</div>' +
+            '<div class="media-unavailable viewer-unavailable" hidden>' + UI.icon('videoOff', 28) + '<div><strong>No original experiment footage</strong><p>This prototype provides metadata and illustrative observations only.</p></div></div>' +
+            (record.media.kind === 'none' ? '' :
               '<details class="schematic-disclosure"><summary>View illustrative schematic <span class="muted">Not source footage</span></summary>' +
               UI.mediaPlaceholder(record, { showPlay: false }) + '</details>') +
             '<figcaption>' +
@@ -252,6 +254,8 @@ const EvidencePage = (function () {
       '</div>' +
 
       '<aside class="side-panel" aria-label="Evidence summary">' +
+
+        '<section class="card observation-identity"><h2>Observation Details</h2><div class="observation-record-title">' + UI.recordThumbnail(record) + '<div><h3>' + UI.esc(record.title) + '</h3><span class="record-id">' + UI.esc(record.id) + '</span></div></div><dl class="kv"><dt>Session</dt><dd>' + UI.esc(record.session) + '</dd><dt>Material</dt><dd>' + UI.esc(Matcher.displayValue('fuel',record.fuel)) + '</dd><dt>Sample geometry</dt><dd>' + UI.esc(Matcher.displayValue('geometry',record.geometry)) + '</dd><dt>Source extraction</dt><dd>Unverified demonstration row</dd></dl><a class="btn btn-primary" href="#/record/' + UI.esc(record.id) + '">View full record ' + UI.icon('chevron',14) + '</a></section>' +
 
         '<div class="split-claim">' +
           '<div class="claim claim-observed">' +
@@ -324,6 +328,12 @@ const EvidencePage = (function () {
   }
 
   const actions = {
+    'evidence-view': (button) => {
+      const schematic = button.dataset.view === 'schematic';
+      root.querySelector('.viewer-schematic').hidden = !schematic;
+      root.querySelector('.viewer-unavailable').hidden = schematic;
+      root.querySelectorAll('[data-action="evidence-view"]').forEach((tab) => tab.setAttribute('aria-pressed', String(tab === button)));
+    },
     'inspect-section': (button) => {
       const heading = root.querySelector('#' + button.dataset.section);
       if (!heading) return;
