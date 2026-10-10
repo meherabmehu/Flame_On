@@ -179,7 +179,7 @@ const UI = (function () {
     const selected = (Store.state.picked || []).includes(record.id);
     return '<article class="record-card' + (selected ? ' is-selected' : '') + '" data-record="' + esc(record.id) + '" ' +
       'aria-labelledby="title-' + esc(record.id) + '">' +
-      '<div class="record-card-top">' +
+      '<div class="record-symbol" aria-hidden="true">' + icon('layers', 24) + '</div><div class="record-card-top">' +
         '<div>' +
           '<div class="record-identity-line"><span class="record-id">' + esc(record.id) + '</span><span class="badge badge-ember">Demonstration</span></div>' +
           '<h3 id="title-' + esc(record.id) + '">' +

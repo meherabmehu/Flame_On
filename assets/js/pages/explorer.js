@@ -11,6 +11,29 @@ const ExplorerPage = (function () {
   let releaseTrap = null;
   let showCoverage = false;
   let filtersOpen = false;   // mobile filter drawer
+  let coverageView = 'oxygen-airflow';
+
+  const COVERAGE_VIEWS = {
+    'oxygen-airflow': ['oxygen_pct', 'airflow_cms', 'Oxygen vs Airflow'],
+    'fuel-shape': ['fuel', 'geometry', 'Fuel vs Shape'],
+    'thickness-airflow': ['thickness_mm', 'airflow_cms', 'Thickness vs Airflow']
+  };
+
+  function referenceHeatmap() {
+    const [rowKey, colKey, title] = COVERAGE_VIEWS[coverageView];
+    const grid = Matcher.coverageGrid(rowKey, colKey);
+    const label = (key, value) => value === null ? 'Not recorded' : Matcher.displayValue(key, value);
+    return '<div class="coverage-display"><nav class="coverage-views" aria-label="Coverage axes"><span class="research-label">View by</span>' +
+      Object.entries(COVERAGE_VIEWS).map(([key, view]) => '<button type="button" class="btn" data-coverage-view="' + key + '" aria-pressed="' + (key === coverageView) + '">' + UI.icon('grid', 15) + UI.esc(view[2]) + '</button>').join('') +
+      '<p class="notice notice-ember">Demonstration data only. A missing catalog combination does not mean NASA never performed such tests.</p></nav>' +
+      '<section class="coverage-chart" aria-labelledby="coverage-chart-title"><h3 id="coverage-chart-title">' + title + ' Coverage</h3><p class="matrix-axis-note">Counts of existing repository records with both axis values recorded. Unknown axis values are excluded.</p>' +
+      '<div class="matrix-scroll"><table class="matrix" aria-label="' + title + ' indexed record counts"><thead><tr><th scope="col">' + UI.esc(CONDITION_LABELS[rowKey]) + '</th>' +
+      grid.cols.map((value) => '<th scope="col">' + UI.esc(label(colKey, value)) + '</th>').join('') + '</tr></thead><tbody>' +
+      grid.grid.map((row) => '<tr><th scope="row">' + UI.esc(label(rowKey, row.value)) + '</th>' + row.cells.map((cell) => {
+        const detail = label(rowKey, row.value) + ' / ' + label(colKey, cell.value) + ': ' + cell.count + ' indexed demonstration records' + (cell.ids.length ? ' — ' + cell.ids.join(', ') : '. Catalog gap; not a zero experimental result');
+        return '<td class="cov-' + Math.min(cell.count, 3) + '"><button type="button" data-heatmap-row="' + rowKey + '" data-heatmap-col="' + colKey + '" data-heatmap-row-value="' + UI.esc(row.value) + '" data-heatmap-col-value="' + UI.esc(cell.value) + '" data-coverage-detail="' + UI.esc(detail) + '" aria-label="' + UI.esc(detail + '. Filter this combination.') + '" aria-describedby="coverage-cell-detail">' + (cell.count || '—') + '</button></td>';
+      }).join('') + '</tr>').join('') + '</tbody></table></div></section></div>';
+  }
 
   /* ------------------------------------------------------------------ view */
 
@@ -158,7 +181,7 @@ const ExplorerPage = (function () {
         '<span class="legend-item"><span class="legend-swatch cov-2"></span> 2 records</span>' +
         '<span class="legend-item"><span class="legend-swatch cov-3"></span> 3 or more</span>' +
       '</div>' +
-      '<div class="coverage-matrices mt-6">' +
+      referenceHeatmap() + '<div class="coverage-matrices mt-6">' +
         '<div><h3 class="mb-2">Fuel family × oxygen</h3><p class="matrix-axis-note">Columns: oxygen (% by volume). Rows: fuel families.</p>' + table(oxy, 'Oxygen', '% O₂', 'oxygen') + '</div>' +
         '<div><h3 class="mb-2">Fuel family × airflow</h3><p class="matrix-axis-note">Columns: airflow (cm/s). Rows: fuel families.</p>' + table(air, 'Airflow', ' cm/s', 'airflow') + '</div>' +
       '</div>' +
@@ -217,14 +240,14 @@ const ExplorerPage = (function () {
     return '<div class="page-head"><div class="wrap page-head-inner">' +
       '<div>' +
         '<p class="eyebrow">Experiment explorer</p>' +
-        '<h1>Explore experiment conditions</h1>' +
+        '<h1>' + (showCoverage ? 'Experimental Coverage' : 'Experiment Explorer') + '</h1>' +
         '<p class="lead">Find illustrative records by their indexed conditions. Select two tests to compare, or open a record to inspect its evidence and limitations.</p>' +
       '</div>' +
       '<div class="row row-wrap" style="gap:8px">' +
         '<a class="btn" href="#/compare">' + UI.icon('compare', 15) + ' Comparison workspace</a>' +
       '</div>' +
     '</div></div>' +
-    '<div class="wrap"><div class="explorer-search"><label class="field-label" for="explorer-search">Search demonstration records</label><div class="search-field"><span class="search-icon">' + UI.icon('search', 18) + '</span><input class="input" id="explorer-search" type="search" placeholder="Search by test ID, material or shape…" aria-describedby="search-help" value="' + UI.esc(Store.state.filters.q) + '"><button class="btn-icon btn-clear" id="search-clear" type="button" aria-label="Clear search">' + UI.icon('close', 16) + '</button></div><p class="filter-sub" id="search-help">Searches IDs, titles, materials, geometry, flow direction and session metadata.</p></div><div class="explorer">' +
+    '<div class="wrap ' + (showCoverage ? 'coverage-workspace' : 'catalog-workspace') + '"><div id="catalog-stats"></div><div class="explorer-search"><label class="field-label" for="explorer-search">Search demonstration records</label><div class="search-field"><span class="search-icon">' + UI.icon('search', 18) + '</span><input class="input" id="explorer-search" type="search" placeholder="Search by test ID, material or shape…" aria-describedby="search-help" value="' + UI.esc(Store.state.filters.q) + '"><button class="btn-icon btn-clear" id="search-clear" type="button" aria-label="Clear search">' + UI.icon('close', 16) + '</button></div><p class="filter-sub" id="search-help">Searches IDs, titles, materials, geometry, flow direction and session metadata.</p></div><div class="explorer">' +
       filtersHTML() +
       '<section aria-label="Matching records">' +
         '<div id="coverage-slot"></div>' +
@@ -245,6 +268,11 @@ const ExplorerPage = (function () {
       const quickKey = focused?.dataset.quickband;
       const quickValue = focused?.dataset.value;
       const filterAction = focused?.closest('#filters') ? focused.dataset.action : null;
+      const stats = root.querySelector('#catalog-stats');
+      if (stats) stats.innerHTML = '<div class="catalog-stats" aria-label="Catalog summary">' +
+        [[Store.records().length, 'Demonstration records', 'layers'], [Store.results().length, 'Matching results', 'search'],
+         [Store.state.picked.length, 'Selected for comparison', 'compare'], [Store.activeFilterChips().length, 'Active filters', 'filter']]
+        .map((s) => '<div>' + UI.icon(s[2], 19) + '<strong>' + s[0] + '</strong><span>' + s[1] + '</span></div>').join('') + '</div>';
       resultsSlot.innerHTML = resultsHTML();
       root.querySelector('.explorer')?.classList.toggle('has-selection', Store.state.picked.length > 0);
       root.querySelector('.explorer-search')?.classList.toggle('is-searching', !!Store.state.filters.q);
@@ -448,6 +476,37 @@ const ExplorerPage = (function () {
   }
 
   function bindCoverage() {
+    root.querySelectorAll('[data-coverage-view]').forEach((button) => {
+      button.addEventListener('click', () => {
+        coverageView = button.dataset.coverageView;
+        refresh();
+        root.querySelector('[data-coverage-view="' + coverageView + '"]')?.focus({ preventScroll: true });
+      });
+    });
+    root.querySelectorAll('[data-heatmap-row]').forEach((button) => {
+      const inspect = () => {
+        root.querySelector('#coverage-cell-detail').textContent = button.dataset.coverageDetail;
+        root.querySelectorAll('.matrix td.is-inspected').forEach((cell) => cell.classList.remove('is-inspected'));
+        button.closest('td').classList.add('is-inspected');
+      };
+      button.addEventListener('focus', inspect);
+      button.addEventListener('mouseenter', inspect);
+      button.addEventListener('click', () => {
+        const patch = {};
+        [['row', 'rowValue'], ['col', 'colValue']].forEach(([axis, valueKey]) => {
+          const key = button.dataset['heatmap' + axis[0].toUpperCase() + axis.slice(1)];
+          const value = button.dataset['heatmap' + valueKey[0].toUpperCase() + valueKey.slice(1)];
+          const band = { oxygen_pct: 'oxygen', airflow_cms: 'airflow', thickness_mm: 'thickness' }[key];
+          if (band) patch[band] = { min: Number(value), max: Number(value) };
+          else patch[key] = key === 'fuel' ? Store.valuesFor('fuel').filter((v) => (FUEL_GROUPS[v] || v) === (FUEL_GROUPS[value] || value)) : [value];
+        });
+        Store.resetFilters();
+        Store.setFilter(patch);
+        refresh({ rebuildFilters: true });
+        const count = root.querySelector('.result-count');
+        if (count) { count.tabIndex = -1; count.scrollIntoView({ block: 'center' }); count.focus({ preventScroll: true }); }
+      });
+    });
     root.querySelectorAll('[data-coverage-fuel]').forEach((button) => {
       const inspect = () => {
         const detail = root.querySelector('#coverage-cell-detail');
