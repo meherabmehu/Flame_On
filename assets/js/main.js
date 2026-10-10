@@ -27,6 +27,9 @@ const App = (function () {
     const main = document.getElementById('main');
     const page = PAGES[r.name];
 
+    if (currentPage?.cleanup) currentPage.cleanup();
+    Shell.closeModePopover();
+
     Shell.closeMobileNav();
 
     if (!page) {
@@ -53,6 +56,7 @@ const App = (function () {
 
     const heading = main.querySelector('h1');
     if (heading) { heading.setAttribute('tabindex', '-1'); }
+    if (heading) heading.focus({ preventScroll: true });
   }
 
   function titleFor(r) {
@@ -70,6 +74,11 @@ const App = (function () {
   /* -------------------------------------------------------- delegated UX */
 
   function bindGlobalActions() {
+    document.querySelector('.skip-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const main = document.getElementById('main');
+      main.focus(); main.scrollIntoView({ block: 'start', behavior: 'auto' });
+    });
     document.addEventListener('click', (e) => {
       const el = e.target.closest('[data-action]');
       if (!el) return;
@@ -87,6 +96,7 @@ const App = (function () {
         case 'load-demo':
           e.preventDefault();
           Store.set({ dataMode: 'demo' });
+          Shell.render();
           renderRoute(route);
           UI.toast('Demonstration records loaded.');
           break;
@@ -96,7 +106,7 @@ const App = (function () {
           const mode = el.dataset.mode;
           Store.set({ dataMode: mode });
           const pop = document.getElementById('mode-popover');
-          if (pop) pop.remove();
+          if (pop) Shell.closeModePopover();
           Shell.render();
           renderRoute(route);
           UI.toast(mode === 'empty'
@@ -128,7 +138,7 @@ const App = (function () {
     // Keyboard: "/" focuses the explorer search field.
     document.addEventListener('keydown', (e) => {
       const tag = (e.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable || e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === '/') {
         if (route.name !== 'explorer') {
           e.preventDefault();
@@ -144,7 +154,7 @@ const App = (function () {
       }
       if (e.key === 'Escape') {
         const pop = document.getElementById('mode-popover');
-        if (pop) pop.remove();
+        if (pop) Shell.closeModePopover();
       }
     });
   }

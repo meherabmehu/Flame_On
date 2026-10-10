@@ -7,8 +7,8 @@ const Shell = (function () {
   const NAV = [
     { name: 'overview', label: 'Overview', path: '#/' },
     { name: 'explorer', label: 'Explorer', path: '#/explorer' },
-    { name: 'compare', label: 'Comparison', path: '#/compare' },
-    { name: 'evidence', label: 'Evidence', path: '#/evidence' },
+    { name: 'compare', label: 'Compare', path: '#/compare' },
+    { name: 'coverage', label: 'Coverage', path: '#/explorer?coverage=1' },
     { name: 'data-notes', label: 'Data notes', path: '#/data-notes' }
   ];
 
@@ -17,8 +17,8 @@ const Shell = (function () {
       '<a class="brand" href="#/" aria-label="Flame in Freefall, Team CinderLens — back to overview">' +
         UI.brandMark(30) +
         '<span class="brand-text">' +
-          '<span class="brand-name">Flame in Freefall</span>' +
-          '<span class="brand-sub">Team CinderLens</span>' +
+          '<span class="brand-name">CinderLens</span>' +
+          '<span class="brand-sub">Flame in Freefall</span>' +
         '</span>' +
       '</a>' +
       '<button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav" ' +
@@ -29,7 +29,7 @@ const Shell = (function () {
         '</ul>' +
       '</nav>' +
       '<div class="header-actions">' +
-        '<button class="mode-chip" id="mode-chip" aria-expanded="false" aria-haspopup="dialog">' +
+        '<button class="mode-chip" id="mode-chip" aria-label="Demonstration data status" aria-expanded="false" aria-haspopup="dialog">' +
           '<span class="dot ' + (Store.state.dataMode === 'demo' ? 'dot-ember' : 'dot-warn') + '"></span>' +
           '<span class="mode-text">' + (Store.state.dataMode === 'demo' ? 'Demo data' : 'No data') + '</span>' +
         '</button>' +
@@ -61,8 +61,6 @@ const Shell = (function () {
               'BASS-II summary report · NTRS 20210011385 ' + UI.icon('external', 12) + '</a></li>' +
             '<li><a href="https://www.nasa.gov/physical-sciences-informatics-psi/" target="_blank" rel="noopener">' +
               'NASA PSI · BASS-II investigation ' + UI.icon('external', 12) + '</a></li>' +
-            '<li><a href="https://www.nasa.gov/" target="_blank" rel="noopener">' +
-              '2026 Flame in Freefall challenge page ' + UI.icon('external', 12) + '</a></li>' +
           '</ul>' +
         '</div>' +
       '</div>' +
@@ -91,6 +89,7 @@ const Shell = (function () {
         toggle.setAttribute('aria-label', open ? 'Hide navigation' : 'Show navigation');
         // Stop the page scrolling behind the open menu on a phone.
         document.body.classList.toggle('no-scroll', open);
+        if (open) nav.querySelector('a').focus();
       });
     }
 
@@ -106,7 +105,7 @@ const Shell = (function () {
 
   function toggleModePopover(chip) {
     const existing = document.getElementById('mode-popover');
-    if (existing) { existing.remove(); chip.setAttribute('aria-expanded', 'false'); return; }
+    if (existing) { closeModePopover(); return; }
 
     const pop = document.createElement('div');
     pop.className = 'popover';
@@ -133,18 +132,27 @@ const Shell = (function () {
     document.getElementById('popover-close').addEventListener('click', close);
     document.getElementById('popover-close').focus();
 
-    function close() { pop.remove(); chip.setAttribute('aria-expanded', 'false'); chip.focus(); }
-    setTimeout(() => {
-      document.addEventListener('click', function onDoc(ev) {
-        if (!pop.contains(ev.target) && ev.target !== chip) { close(); document.removeEventListener('click', onDoc); }
-      });
-    }, 0);
+    function close() { closeModePopover(); }
+    const untrap = UI.trapFocus(pop, close);
+    function onDoc(ev) { if (!pop.contains(ev.target) && !chip.contains(ev.target)) close(); }
+    document.addEventListener('click', onDoc);
+    pop.cleanup = () => { untrap(); document.removeEventListener('click', onDoc); };
+  }
+
+  function closeModePopover() {
+    const pop = document.getElementById('mode-popover');
+    if (!pop) return;
+    if (pop.cleanup) pop.cleanup();
+    pop.remove();
+    const chip = document.getElementById('mode-chip');
+    if (chip) { chip.setAttribute('aria-expanded', 'false'); chip.focus(); }
   }
 
   function setActiveNav(name) {
+    const coverage = name === 'explorer' && Router.current().params.coverage === '1';
     document.querySelectorAll('.nav-link').forEach((a) => {
-      const isActive = a.dataset.nav === name ||
-        (name === 'record' && a.dataset.nav === 'explorer');
+      const isActive = a.dataset.nav === (coverage ? 'coverage' : name) ||
+        (['record', 'evidence'].includes(name) && a.dataset.nav === 'explorer');
       if (isActive) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
@@ -161,5 +169,14 @@ const Shell = (function () {
     document.body.classList.remove('no-scroll');
   }
 
-  return { render, setActiveNav, closeMobileNav, NAV };
+  document.addEventListener('keydown', (e) => {
+    const nav = document.getElementById('primary-nav');
+    if (e.key === 'Escape' && nav?.classList.contains('is-open')) { closeMobileNav(); document.getElementById('nav-toggle').focus(); }
+  });
+  document.addEventListener('click', (e) => {
+    const header = document.getElementById('app-header');
+    if (header && !header.contains(e.target)) closeMobileNav();
+  });
+  if (window.matchMedia) window.matchMedia('(max-width: 900px)').addEventListener('change', closeMobileNav);
+  return { render, setActiveNav, closeMobileNav, closeModePopover, NAV };
 })();

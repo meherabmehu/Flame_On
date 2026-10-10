@@ -26,10 +26,14 @@ const Router = (function () {
     const name = parts[0] || 'overview';
     return {
       name,
-      id: parts[1] ? decodeURIComponent(parts[1]) : null,
+      id: parts[1] ? safeDecode(parts[1]) : null,
       params,
       path: raw
     };
+  }
+
+  function safeDecode(value) {
+    try { return decodeURIComponent(value); } catch (e) { return value; }
   }
 
   function go(path) {
