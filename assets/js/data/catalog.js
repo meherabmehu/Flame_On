@@ -825,5 +825,5 @@ const COPY = {
   noProvenance:
     'The team has not yet published a verified extraction of PSI files, so the prototype does not display real NASA findings as results.',
   abstain:
-    'Not enough comparable tests. The records shown differ in more than one relevant condition, so this interface will not state a difference.'
+    'Not enough comparable tests. The current pair does not support a comparison on the selected factor.'
 };

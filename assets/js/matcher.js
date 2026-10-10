@@ -63,7 +63,13 @@ const Matcher = (function () {
       b: displayValue(key, bv),
       aMissing: missing(av),
       bMissing: missing(bv),
-      state
+      state,
+      approximate: state === 'match' && av !== bv,
+      explanation: state === 'varied' ? 'Selected comparison factor.'
+        : state === 'missing' ? 'Unknown values cannot establish a match.'
+        : state === 'match' && av !== bv ? 'Within the prototype ' + Math.round(MATCH_RULES.numericTolerance * 100) + '% tolerance; values are not identical.'
+        : state === 'match' ? 'Recorded values are identical.'
+        : 'Recorded values differ beyond the matching rule.'
     };
   }
 
@@ -169,15 +175,15 @@ const Matcher = (function () {
 
     softDiffers.forEach((r) => reasons.push({
       ok: false,
-      text: r.label + ' also differs (' + r.a + ' vs ' + r.b + '). The pair is inside the ' +
-        Math.round(MATCH_RULES.numericTolerance * 100) + '% tolerance band, but the difference is reported rather than hidden.'
+        text: r.label + ' also differs (' + r.a + ' vs ' + r.b + '), outside the ' +
+        Math.round(MATCH_RULES.numericTolerance * 100) + '% prototype tolerance. Existing rules permit this with caveats; the selected factor cannot be isolated.'
     }));
 
     softMissing.forEach(() => { /* already reported by the missing block above */ });
 
     rows.filter((r) => r.state === 'match').forEach((r) => reasons.push({
       ok: true,
-      text: r.label + ' matches exactly (' + r.a + ').'
+      text: r.label + (r.approximate ? ' is within prototype tolerance (' + r.a + ' vs ' + r.b + ').' : ' matches exactly (' + r.a + ').')
     }));
 
     if (!reasons.length) {
@@ -350,7 +356,7 @@ const Matcher = (function () {
     const fuels = uniqueFuelFamilies(Store.valuesFor('fuel'));
     const out = [];
     fuels.forEach((fuel) => {
-      const sub = list.filter((r) => r.fuel === fuel);
+      const sub = list.filter((r) => matchesFamily(r.fuel, fuel));
       const oxy = [...new Set(sub.map((r) => r.oxygen_pct).filter((v) => v !== null))].sort((a, b) => a - b);
       const flow = [...new Set(sub.map((r) => r.airflow_cms).filter((v) => v !== null))].sort((a, b) => a - b);
       const empties = [];

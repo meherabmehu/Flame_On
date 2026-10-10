@@ -33,7 +33,7 @@ const ComparePage = (function () {
       '</div>' +
       '<div class="step-body">' +
         '<p dir="auto" style="font-size:var(--fs-14);max-width:80ch">' +
-          'One factor at a time. The comparison holds every other recorded condition as close as the tests allow and varies exactly that factor. ' +
+          'Choose the factor of interest. The check reviews the other indexed conditions and exposes any remaining differences. ' +
           'Only values that exist in the indexed records are offered.</p>' +
         '<div class="factor-grid mt-4">' +
           FACTORS.map((f) => {
@@ -69,9 +69,14 @@ const ComparePage = (function () {
         ? '<div>' +
             '<div class="record-id">' + UI.esc(r.id) + '</div>' +
             '<h4 class="mt-1" style="color:var(--tx-1);font-size:var(--fs-15)">' + UI.esc(r.title) + '</h4>' +
+            '<span class="badge badge-ember mt-3">Demonstration record</span>' +
+            '<div class="pair-factor"><span>' + UI.esc(Matcher.factorLabel(Store.state.compare.factor)) + ' · varied factor</span><strong>' + UI.esc(Matcher.displayValue(Store.state.compare.factor, r[Store.state.compare.factor]) || 'Not recorded') + '</strong></div>' +
+            '<div class="cond-grid">' + UI.CARD_KEYS.filter((k) => k !== Store.state.compare.factor).map((k) => UI.condValue(r, k)).join('') + '</div>' +
+            '<p class="pair-observation"><span class="muted">Illustrative observation</span><br>' + UI.esc(r.outcomes?.[0]?.label || 'Not recorded') + '</p>' +
             '<div class="tag-row mt-3">' + UI.completeness(r) + UI.missingCount(r) + '</div>' +
             '<div class="row mt-3" style="gap:8px">' +
               '<a class="btn btn-sm btn-ghost" href="#/record/' + UI.esc(r.id) + '">Open record</a>' +
+              '<a class="btn btn-sm" href="#/evidence/' + UI.esc(r.id) + '">Inspect evidence</a>' +
               '<button class="btn btn-sm btn-ghost" data-action="clear-slot" data-slot="' + label + '">Remove</button>' +
             '</div>' +
           '</div>'
@@ -143,7 +148,7 @@ const ComparePage = (function () {
           ' · matched: ' + UI.esc(p.matched.slice(0, 3).join(', ') || 'none') + '</p>' +
       '</div>' +
       '<div class="row" style="gap:8px">' +
-        '<span class="score-chip">fit <strong>' + Math.round(Math.max(0, Math.min(1, p.score / 40)) * 100) + '%</strong></span>' +
+        '<span class="score-chip"><strong>' + p.matched.length + '</strong> matched conditions</span>' +
         UI.verdictBadge(p.verdict) +
         '<button class="btn btn-sm" data-pair="' + UI.esc(p.a.id) + '|' + UI.esc(p.b.id) + '"' +
           (active ? ' aria-disabled="true"' : '') + '>' + (active ? 'Loaded' : 'Use this pair') + '</button>' +
@@ -163,7 +168,7 @@ const ComparePage = (function () {
       '</div>' +
       verdict.rows.map((r) => {
         const cls = r.state === 'varied' ? 'is-varied' : r.state === 'differs' ? 'is-conflict' : '';
-        const badge = r.state === 'match' ? '<span class="badge badge-ok">matches</span>'
+        const badge = r.state === 'match' ? '<span class="badge badge-ok">' + (r.approximate ? 'Approximate match' : 'Exact match') + '</span>'
           : r.state === 'varied' ? '<span class="badge badge-teal">varied factor</span>'
           : r.state === 'differs' ? '<span class="badge badge-warn">differs</span>'
           : '<span class="badge badge-unknown">not recorded</span>';
@@ -175,7 +180,7 @@ const ComparePage = (function () {
           '<span class="check-val check-b' + (r.bMissing ? ' is-missing' : '') + '" role="cell">' +
             '<span class="check-cell-label">' + UI.esc(c.b || 'Test B') + '</span>' +
             UI.esc(r.b || 'not recorded') + '</span>' +
-          '<span class="check-assess" role="cell">' + badge + '</span>' +
+          '<span class="check-assess" role="cell">' + badge + '<span class="check-explanation">' + UI.esc(r.explanation) + '</span></span>' +
         '</div>';
       }).join('') +
     '</div></div>';
@@ -188,8 +193,8 @@ const ComparePage = (function () {
       : verdict.verdict === 'incomplete' ? '' : 'verdict-warn';
 
     const intro = {
-      comparable: 'Every other recorded condition agrees, so the pair supports a one-factor statement.',
-      caution: 'The pair can be used, but the caveats below must travel with any statement made from it.',
+      comparable: 'The pair passes the current prototype matching rules. This is not scientific verification or evidence of causation.',
+      caution: 'The existing rules accept this pair with limitations. Remaining differences or unknown fields prevent attributing the outcome to the selected factor alone.',
       unsuitable: 'These two tests differ in more than the chosen factor, so the interface does not describe a difference.',
       insufficient: 'A value needed for this comparison is not present in the records.',
       incomplete: 'Choose two tests above and the check runs automatically.'
@@ -220,7 +225,7 @@ const ComparePage = (function () {
     return '<section class="step" aria-labelledby="step3-title">' +
       '<div class="step-head">' +
         '<span class="step-num">3</span>' +
-        '<h2 id="step3-title">Check the remaining conditions</h2>' +
+        '<h2 id="step3-title">Condition match analysis</h2>' +
         '<span class="step-hint">Tolerance ±' + Math.round(MATCH_RULES.numericTolerance * 100) + '% on numeric conditions</span>' +
       '</div>' +
       '<div class="step-body">' +
@@ -230,7 +235,8 @@ const ComparePage = (function () {
         (described
           ? '<div class="card card-lg mt-5" style="border-left:3px solid var(--ember-400)">' +
               '<div class="card-title"><h3>Recorded difference, in plain English</h3>' +
-              '<span class="badge badge-ember">From records</span></div>' +
+              '<span class="badge badge-ember">Illustrative observations</span></div>' +
+              '<p class="muted mb-4">Demonstration content only. This description is not a verified NASA finding or a causal conclusion.</p>' +
               '<p style="font-size:var(--fs-15)">' + UI.esc(described.sentence) + '</p>' +
               '<p class="muted mt-3" style="font-size:var(--fs-13)">' + UI.esc(described.noClaim) + '</p>' +
               '<div class="row row-wrap mt-4" style="gap:8px">' +
@@ -273,17 +279,18 @@ const ComparePage = (function () {
         '<div class="card-title"><h3 style="font-size:var(--fs-15)">How matching works here</h3></div>' +
         '<ul class="honesty-list" style="gap:10px">' +
           '<li class="honesty-item">' + UI.icon('shield', 15) + '<span>Fuel family, geometry and flow direction must match exactly.</span></li>' +
-          '<li class="honesty-item">' + UI.icon('ruler', 15) + '<span>Thickness, oxygen and airflow may differ by up to ' +
-            Math.round(MATCH_RULES.numericTolerance * 100) + '%, and every difference is still reported.</span></li>' +
+          '<li class="honesty-item">' + UI.icon('ruler', 15) + '<span>Numeric matches use ' +
+            Math.round(MATCH_RULES.numericTolerance * 100) + '% of the higher value. Larger numeric differences may remain as caveats under existing rules.</span></li>' +
           '<li class="honesty-item">' + UI.icon('alert', 15) + '<span>An empty field is unknown, never treated as equal to a recorded value.</span></li>' +
           '<li class="honesty-item">' + UI.icon('close', 15) + '<span>More than ' + MATCH_RULES.maxDiffering + ' differing conditions means no claim at all.</span></li>' +
         '</ul>' +
+        '<p class="muted mt-4">Prototype heuristics, not scientifically validated. Ignition, pressure and duration are displayed in records but are not checked by this matcher.</p><a class="btn btn-sm mt-3" href="#/data-notes">Review rule limitations</a>' +
       '</div>' +
 
       UI.interpretationBlock() +
 
       '<div class="card">' +
-        '<div class="card-title"><h3 style="font-size:var(--fs-15)">Sources for the selected tests</h3></div>' +
+        '<div class="card-title"><h3 style="font-size:var(--fs-15)">Background references</h3></div>' +
         [a, b].filter(Boolean).map((r) =>
           '<div class="source-item" style="padding:12px 0">' +
             '<div><h4>' + UI.esc(r.id) + '</h4><p>' + UI.esc(r.source.report) + '</p></div>' +
@@ -292,7 +299,7 @@ const ComparePage = (function () {
               '<a class="btn btn-sm btn-ghost" href="https://ntrs.nasa.gov/citations/' + UI.esc(r.source.ntrs) + '" target="_blank" rel="noopener" aria-label="Open NTRS record ' + UI.esc(r.source.ntrs) + '">' + UI.icon('external', 13) + '</a>' +
             '</div>' +
           '</div>').join('') +
-        '<p class="muted mt-3" style="font-size:var(--fs-12)">In the finished product these links resolve to the PSI files themselves, not only to the report citation.</p>' +
+        '<p class="muted mt-3" style="font-size:var(--fs-12)">These reports provide research context. They do not verify the invented conditions or observations in either record.</p>' +
       '</div>' +
     '</aside>';
   }
@@ -300,23 +307,32 @@ const ComparePage = (function () {
   function render(route, container) {
     root = container;
     const p = (route && route.params) || {};
-    if (p.factor) Store.state.compare.factor = p.factor;
-    if (p.a) Store.state.compare.a = Store.byId(p.a) ? p.a : null;
-    if (p.b) Store.state.compare.b = Store.byId(p.b) ? p.b : null;
+    const invalid = [];
+    const requestedFactor = p.factor || p.f;
+    if (requestedFactor) {
+      if (Matcher.factor(requestedFactor)) Store.state.compare.factor = requestedFactor;
+      else { Store.state.compare.factor = 'airflow_cms'; invalid.push('Unknown comparison factor. Airflow is selected instead.'); }
+    }
+    ['a', 'b'].forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(p, key)) {
+        Store.state.compare[key] = Store.byId(p[key]) ? p[key] : null;
+        if (p[key] && !Store.byId(p[key])) invalid.push('Record ' + p[key] + ' is not in the catalog. Choose a replacement.');
+      }
+    });
     Store.setCompare({});
 
     container.innerHTML =
       '<div class="page-head"><div class="wrap page-head-inner">' +
         '<div>' +
           '<p class="eyebrow">Comparison workspace</p>' +
-          '<h1>Compare two recorded tests, one factor at a time</h1>' +
-          '<p class="lead">Choose the factor to vary, pick two indexed tests, and let the check decide whether everything else is close enough. ' +
-            'When it is not, this screen says so instead of describing a difference.</p>' +
+          '<h1>Compare two experiments</h1>' +
+          '<p class="lead">Choose a factor, select two records and inspect every condition. The prototype check lists differences and states when a comparison is unsupported.</p>' +
+          '<div class="comparison-context"><span class="badge badge-ember">Demonstration data</span><span class="badge badge-teal">Varied factor: ' + UI.esc(Matcher.factorLabel(Store.state.compare.factor)) + '</span><span class="badge">' + UI.esc(Store.state.compare.a || 'Choose Test A') + ' / ' + UI.esc(Store.state.compare.b || 'Choose Test B') + '</span></div>' +
         '</div>' +
         '<a class="btn" href="#/explorer">' + UI.icon('search', 15) + ' Back to the explorer</a>' +
       '</div></div>' +
       '<div class="wrap"><div class="compare-grid">' +
-        '<div>' + stepOne() + stepTwo() + stepThree() + '</div>' +
+        '<div>' + (!Store.records().length ? UI.emptyDataState() : '') + (invalid.length ? '<div class="notice notice-warn mb-4" role="status">' + UI.esc(invalid.join(' ')) + '</div>' : '') + stepOne() + stepTwo() + stepThree() + '</div>' +
         sidePanel() +
       '</div></div>';
 
@@ -325,8 +341,15 @@ const ComparePage = (function () {
 
   function rerender() {
     const scrollY = window.scrollY;
+    const active = document.activeElement;
+    const focusId = active?.id;
+    const focusFactor = active?.dataset.factor;
     render(null, root);
     Store.setCompare({});
+    const c = Store.state.compare;
+    history.replaceState(null, '', '#/compare?' + new URLSearchParams({ a: c.a || '', b: c.b || '', factor: c.factor }));
+    if (focusId) document.getElementById(focusId)?.focus({ preventScroll: true });
+    else if (focusFactor) root.querySelector('[data-factor="' + focusFactor + '"]')?.focus({ preventScroll: true });
     window.scrollTo({ top: scrollY, behavior: 'auto' });
   }
 
