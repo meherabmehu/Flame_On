@@ -24,6 +24,9 @@ const App = (function () {
 
   function renderRoute(r) {
     route = r;
+    const screen = r.name === 'explorer' && ['1', 'true'].includes(r.params?.coverage) ? 'coverage' : r.name;
+    document.body.dataset.screen = screen;
+    document.body.classList.toggle('internal-dashboard', r.name !== 'overview');
     const main = document.getElementById('main');
     const page = PAGES[r.name];
 
