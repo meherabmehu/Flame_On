@@ -1,0 +1,90 @@
+﻿/* Cinematic homepage. Local procedural artwork; all scientific labels remain explicit. */
+.cinematic-overview { background: radial-gradient(ellipse at 84% 3%,rgba(0,106,181,.11),transparent 27%),#050d19; }
+.cinematic-hero { padding-block: 36px 14px; overflow: hidden; border-bottom: 0; background: radial-gradient(ellipse at 78% 70%,rgba(0,106,181,.09),transparent 45%); }
+.cinematic-hero .hero-inner { grid-template-columns: .95fr 1.05fr; gap: 16px; }
+.cinematic-hero .hero-copy { position: relative; z-index: 2; }
+.cinematic-hero h1 { font-size: clamp(44px,4.9vw,76px); letter-spacing: -.05em; line-height: 1.07; font-weight: 700; }
+.cinematic-hero h1 span { color: #22d7d2; }
+.cinematic-hero .eyebrow { color: #72e5ff; font-size: var(--fs-12); letter-spacing: .16em; }
+.cinematic-hero .lead { font-size: clamp(16px,1.4vw,20px); line-height: 1.7; max-width: 46ch; margin-top: 24px; }
+.cinematic-hero .hero-actions { margin-top: 28px; }
+.cinematic-hero .btn-primary { background: #19d4cc; border-color: #6ef4ed; box-shadow: 0 0 25px rgba(19,212,204,.18),inset 0 1px rgba(255,255,255,.2); }
+.cinematic-hero .btn-primary:hover { box-shadow: 0 0 34px rgba(19,212,204,.28); background: #51e5dd; }
+.cinematic-hero .hero-actions > .btn:not(.btn-primary) { background: rgba(5,23,40,.65); border-color: #38789c; }
+.cinematic-hero .hero-meta { gap: 12px 20px; margin-top: 26px; color: #b6c8da; font-size: var(--fs-12); }
+.cinematic-hero .hero-meta svg { color: #7bc9f5; }
+.hero-scene { position: relative; min-width: 0; margin: 0; isolation: isolate; touch-action: pan-y; }
+.hero-scene .visual-label { position: relative; z-index: 2; display: flex; justify-content: space-between; padding: 8px 16px; color: #a6b9cc; border: 0; font: 9px var(--font-mono); letter-spacing: .1em; }
+.hero-renderer { position: relative; aspect-ratio: 1.16; }
+.hero-renderer canvas, .hero-fallback { width: 100%; height: 100%; display: block; }
+.hero-renderer canvas { position: absolute; inset: 0; mask-image: radial-gradient(ellipse at 50% 48%,black 44%,transparent 76%); }
+.hero-renderer canvas[hidden] { display: none; }
+.hero-scene[data-scene-state^="webgl"] .hero-fallback { visibility: hidden; }
+.hero-scene::after { content: ''; position: absolute; z-index: -1; width: 130%; height: 100px; left: -15%; bottom: 50px; border-radius: 50% 50% 0 0; border-top: 1px solid rgba(79,172,255,.45); box-shadow: 0 -10px 45px rgba(21,121,225,.10); background: radial-gradient(ellipse at 50% 0,rgba(49,121,182,.13),transparent 65%); transform: rotate(8deg); pointer-events: none; }
+.hero-hud { pointer-events: none; }
+.hero-hud > span { position: absolute; z-index: 2; color: #aabdd0; font: 11px/1.6 var(--font-mono); }
+.hero-hud b { display: block; font-size: 10px; color: #e2f6ff; font-weight: 500; text-transform: uppercase; letter-spacing: .09em; }
+.hero-hud > span::after { content: ''; display: block; width: 38px; height: 1px; margin-top: 8px; background: linear-gradient(90deg,#4de6f5,transparent); box-shadow: 0 0 9px #21b8e6; }
+.hud-oxygen { top: 21%; left: 3%; }.hud-fuel { top: 27%; right: 2%; }.hud-airflow { bottom: 24%; left: 1%; }.hud-geometry { bottom: 20%; right: 0; }
+.hero-scene figcaption { position: relative; z-index: 2; display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-top: 4px; padding: 12px 14px; border: 1px solid #1c3247; border-radius: 8px; background: rgba(6,17,30,.8); color: #b4c6d8; font-size: 11px; }
+.hero-scene figcaption strong { color: #cbdeee; font-size: 11px; font-weight: 500; }
+.hero-scene figcaption span { display: block; margin-top: 3px; font-size: 10px; }
+.hero-motion { flex-shrink: 0; min-height: 44px; padding: 6px 10px; border: 1px solid #365672; border-radius: 6px; background: #0a1c2e; color: #cbdeee; cursor: pointer; font-size: 11px; }
+.hero-motion[hidden] { display: none; }
+.workspace-section { padding-block: 24px 0; }
+.cinematic-cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.cinematic-cards .workspace-card { display: flex; gap: 16px; align-items: center; padding: 20px; border: 1px solid #203b51; border-radius: 12px; background: linear-gradient(120deg,rgba(8,28,44,.65),rgba(6,15,28,.8)); }
+.cinematic-cards .workspace-card:hover { border-color: #3c8b9d; transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,191,207,.06); }
+.cinematic-cards .card-icon { flex-shrink: 0; width: 54px; height: 64px; display: grid; place-items: center; margin: 0; border: 1px solid #16495f; border-radius: 12px; background: linear-gradient(140deg,#082b3c,#051825); color: #37e9ee; }
+.cinematic-cards .workspace-card-1 .card-icon,.cinematic-cards .workspace-card-2 .card-icon { color: #f7bd68; border-color: #614733; background: linear-gradient(140deg,#34291e,#1e1b19); }
+.cinematic-cards h3 { font-size: 16px; margin: 0; }
+.cinematic-cards p { margin-top: 8px; font-size: 13px; line-height: 1.65; color: #b3c7da; }
+.workspace-arrow { flex-shrink: 0; display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #25465e; border-radius: 50%; margin-left: auto; }
+.cinematic-overview > .section { padding-block: 38px; }
+.cinematic-overview > .section:nth-of-type(3) > .wrap { padding-top: 28px; border-top: 1px solid #1a3043; }
+.workflow-emphasis { color: #25d8d3; }
+.cinematic-overview .section-head { margin-bottom: 24px; }
+.cinematic-workflow { border: 0; overflow: visible; gap: 20px; }
+.cinematic-workflow .flow-step { display: flex; gap: 14px; padding: 0; border: 0; align-items: flex-start; }
+.cinematic-workflow .flow-step:hover { background: transparent; }
+.cinematic-workflow .flow-step-num { flex-shrink: 0; width: 52px; height: 52px; display: grid; place-items: center; border: 1px solid #215e7d; border-radius: 50%; color: #38e8ed; background: radial-gradient(circle at 30% 25%,#0a3f57,#071b2d); }
+.cinematic-workflow h3 { margin-top: 3px; font-size: 14px; }
+.cinematic-workflow p { font-size: 12px; }
+.cinematic-workflow .flow-step:nth-child(3) .flow-step-num { color: #f7c982; border-color: #67472b; background: #291f16; }
+.cinematic-overview .prototype-note { display: flex; align-items: center; gap: 16px; margin-top: 28px; border: 1px solid #243b50; border-radius: 10px; padding: 16px 20px; background: #071321; font-size: 13px; }
+.cinematic-overview .prototype-note > svg { color: #edaa4a; flex-shrink: 0; }
+.cinematic-overview .prototype-note a { margin-left: auto; flex-shrink: 0; }
+@media(max-width:1100px){.cinematic-cards .workspace-card { gap: 12px; padding: 16px; }.workspace-arrow{display:none;}.cinematic-cards .card-icon{width:44px;height:54px;}}
+@media(max-width:900px){
+ .cinematic-hero .hero-inner { grid-template-columns: 1fr; gap: 20px; }
+ .cinematic-hero .hero-copy { max-width: 660px; }
+ .cinematic-hero h1 { font-size: clamp(44px,7vw,66px); }
+ .hero-scene { width: 100%; max-width: 640px; margin-inline: auto; }
+ .cinematic-cards { grid-template-columns: 1fr; }
+ .cinematic-cards .workspace-card { padding: 20px; }
+ .workspace-arrow{display:grid;}
+ .cinematic-workflow { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+}
+@media(max-width:640px){
+ .cinematic-hero { padding-block: 32px 0; }
+ .cinematic-hero h1 { font-size: clamp(36px,10vw,52px); }
+ .cinematic-hero .hero-actions { margin-top: 24px; }
+ .cinematic-hero .hero-meta { margin-top: 20px; gap: 10px 16px; }
+ .hero-renderer { aspect-ratio: 1.06; }
+ .hero-hud > span { font-size: 9px; }.hero-hud b { font-size: 9px; }
+ .hud-fuel,.hud-geometry { display: none; }
+ .hud-oxygen { top: 20%; left: 0; }.hud-airflow { bottom: 26%; left: 0; }
+ .hero-scene figcaption { padding: 10px; gap: 6px; }
+ .hero-scene figcaption span { font-size: 9px; }
+ .hero-motion { font-size: 10px; padding-inline: 8px; }
+ .cinematic-cards { gap: 12px; }
+ .cinematic-cards .workspace-card { padding: 16px; }
+ .cinematic-cards h3 { font-size: 15px; }.cinematic-cards p { font-size: 12px; }
+ .cinematic-overview > .section { padding-block: 28px; }
+ .cinematic-workflow { grid-template-columns: 1fr; gap: 20px; }
+ .cinematic-overview .prototype-note { padding: 14px; flex-wrap: wrap; gap: 10px; }
+ .cinematic-overview .prototype-note p { flex: 1; min-width: 180px; }
+ .cinematic-overview .prototype-note a { margin-left: 28px; }
+}
+.cinematic-cards .workspace-card { flex-direction: row; }
+@media (min-width: 901px) { .hero-renderer { aspect-ratio: 1.42; } }
