@@ -191,7 +191,7 @@ const UI = (function () {
           (record.outcomes || []).slice(0, 2).map((oc) => outcomeBadge(oc.type)).join('') +
         '</div>' +
       '</div>' +
-      '<div class="cond-grid">' + ['oxygen_pct', 'airflow_cms', 'thickness_mm', 'fuel', 'geometry', 'flow_direction'].map((k) => condValue(record, k)).join('') + '</div>' +
+      '<details class="record-conditions"><summary>Recorded conditions <span class="muted">' + esc(Matcher.displayValue('oxygen_pct', record.oxygen_pct) || 'Oxygen not recorded') + ' · ' + esc(Matcher.displayValue('airflow_cms', record.airflow_cms) || 'Airflow not recorded') + '</span></summary><div class="cond-grid">' + ['oxygen_pct', 'airflow_cms', 'thickness_mm', 'fuel', 'geometry', 'flow_direction'].map((k) => condValue(record, k)).join('') + '</div></details>' +
       '<p class="observation-preview"><span>Illustrative observation</span> · ' + esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p>' +
       '<div class="record-foot">' +
         '<div class="tag-row record-metadata-status">' + missingCount(record) + reviewedBadge(record) + '</div>' +

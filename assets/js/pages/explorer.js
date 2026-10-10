@@ -141,6 +141,17 @@ const ExplorerPage = (function () {
     const oxy = Matcher.coverageGrid('fuel', 'oxygen_pct');
     const air = Matcher.coverageGrid('fuel', 'airflow_cms');
     const gaps = Matcher.gapStatements();
+    const records = Store.records();
+    const complete = records.filter((r) => Store.countMissing(r) === 0).length;
+    const checked = records.filter((r) => r.metadataReviewed).length;
+    const summary = '<aside class="coverage-summary" aria-label="Catalog coverage summary"><section class="card"><h3>Coverage Summary</h3>' +
+      [[records.length, 'Indexed demonstration records', 'layers'], [complete, 'Complete comparison metadata', 'check'], [records.length - complete, 'Records with condition gaps', 'alert'], [checked, 'Demo metadata checked', 'shield']]
+      .map((s) => '<div class="coverage-summary-row">' + UI.icon(s[2], 20) + '<div><strong>' + s[0] + '</strong><span>' + s[1] + '</span></div></div>').join('') +
+      '<p class="muted">Metadata checks are interface reviews, not source verification.</p></section><section class="card"><h3>Fuel families</h3>' +
+      Array.from(new Set(records.map((r) => FUEL_GROUPS[r.fuel] || r.fuel))).map((family) => {
+        const count = records.filter((r) => (FUEL_GROUPS[r.fuel] || r.fuel) === family).length;
+        return '<div class="coverage-family"><span>' + UI.esc(family) + '</span><strong>' + count + '</strong><div class="meter"><div class="meter-fill" style="width:' + (records.length ? count / records.length * 100 : 0) + '%"></div></div></div>';
+      }).join('') + '<p class="muted">Counts describe this catalog only.</p></section></aside>';
 
     function table(grid, colLabel, unit, columnKey) {
       const cols = grid.cols.slice().sort((a, b) => (a === null ? 1 : b === null ? -1 : a - b));
@@ -181,7 +192,7 @@ const ExplorerPage = (function () {
         '<span class="legend-item"><span class="legend-swatch cov-2"></span> 2 records</span>' +
         '<span class="legend-item"><span class="legend-swatch cov-3"></span> 3 or more</span>' +
       '</div>' +
-      referenceHeatmap() + '<div class="coverage-matrices mt-6">' +
+      '<div class="coverage-dashboard">' + referenceHeatmap() + summary + '</div><div class="coverage-matrices mt-6">' +
         '<div><h3 class="mb-2">Fuel family × oxygen</h3><p class="matrix-axis-note">Columns: oxygen (% by volume). Rows: fuel families.</p>' + table(oxy, 'Oxygen', '% O₂', 'oxygen') + '</div>' +
         '<div><h3 class="mb-2">Fuel family × airflow</h3><p class="matrix-axis-note">Columns: airflow (cm/s). Rows: fuel families.</p>' + table(air, 'Airflow', ' cm/s', 'airflow') + '</div>' +
       '</div>' +
@@ -240,8 +251,8 @@ const ExplorerPage = (function () {
     return '<div class="page-head"><div class="wrap page-head-inner">' +
       '<div>' +
         '<p class="eyebrow">Experiment explorer</p>' +
-        '<h1>' + (showCoverage ? 'Experimental Coverage' : 'Experiment Explorer') + '</h1>' +
-        '<p class="lead">Find illustrative records by their indexed conditions. Select two tests to compare, or open a record to inspect its evidence and limitations.</p>' +
+        '<h1>' + (showCoverage ? 'Catalog &amp; Data Coverage' : 'Explore Experiments') + '</h1>' +
+        '<p class="lead">' + (showCoverage ? 'Explore recorded condition combinations and catalog gaps. Counts describe demonstration rows, not the NASA archive.' : 'Find illustrative records by their indexed conditions. Select two tests to compare, or open a record to inspect its evidence and limitations.') + '</p>' +
       '</div>' +
       '<div class="row row-wrap" style="gap:8px">' +
         '<a class="btn" href="#/compare">' + UI.icon('compare', 15) + ' Comparison workspace</a>' +
