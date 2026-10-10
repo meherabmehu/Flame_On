@@ -75,7 +75,7 @@ const ExplorerPage = (function () {
       '<label class="check"><input type="radio" name="missing" data-missing="only"' +
         (f.missingData === 'only' ? ' checked' : '') + '><span>Only records with gaps</span></label>' +
       '<label class="check mt-2"><input type="checkbox" id="reviewed-only"' +
-        (f.reviewedOnly ? ' checked' : '') + '><span>Metadata review finished only</span></label>' +
+        (f.reviewedOnly ? ' checked' : '') + '><span>Demo metadata checked only</span></label>' +
     '</div>';
 
     return '<form class="filters' + (filtersOpen ? ' is-open' : '') + '" id="filters" aria-label="Experiment filters">' +
@@ -83,11 +83,11 @@ const ExplorerPage = (function () {
         '<div class="filter-group-title">Recorded conditions<button type="button" class="btn-icon filter-dismiss" data-action="close-filters" aria-label="Close filters">' + UI.icon('close', 18) + '</button></div>' +
         checkGroup('fuel', 'Fuel / material', Store.valuesFor('fuel'), Store.facetCounts('fuel'), f.fuel) +
         checkGroup('geometry', 'Sample geometry', Store.valuesFor('geometry'), Store.facetCounts('geometry'), f.geometry) +
-        checkGroup('flow_direction', 'Flow direction', Store.valuesFor('flow_direction'), Store.facetCounts('flow_direction'), f.flow_direction) +
         rangeField('oxygen', 'Oxygen', f.oxygen, oxyBounds, '% O₂', Store.valuesFor('oxygen_pct')) +
         rangeField('airflow', 'Airflow', f.airflow, airBounds, 'cm/s', Store.valuesFor('airflow_cms')) +
         rangeField('thickness', 'Thickness', f.thickness, thBounds, 'mm', Store.valuesFor('thickness_mm')) +
-        missingValue +
+        '<details class="advanced-filters"' + (f.flow_direction.length || f.missingData !== 'include' || f.reviewedOnly ? ' open' : '') + '><summary>More recorded conditions</summary>' +
+        checkGroup('flow_direction', 'Flow direction', Store.valuesFor('flow_direction'), Store.facetCounts('flow_direction'), f.flow_direction) + missingValue + '</details>' +
       '</div>' +
       '<div class="panel-foot" style="display:flex;gap:8px;justify-content:space-between;align-items:center">' +
         '<button class="link-quiet" type="button" data-action="clear-filters">Clear all</button>' +
@@ -102,9 +102,9 @@ const ExplorerPage = (function () {
     return '<div class="notice notice-teal selection-tray" style="align-items:center">' +
       '<span class="dot dot-teal"></span>' +
       '<div style="flex:1">' +
-        '<span class="notice-title">' + picked.length + ' test' + (picked.length > 1 ? 's' : '') + ' selected</span> ' +
+        '<span class="notice-title">Compare selection <span class="tray-count">' + picked.length + '/2</span></span> ' +
         '<span class="muted">' + (picked.length === 1 ? 'Choose one more distinct record.' : 'Ready to check the conditions.') + '</span>' +
-        '<div class="selection-records">' + picked.map((p) => '<button class="btn btn-sm" data-pick="' + p.id + '" aria-label="Remove ' + p.id + ' from comparison">' + p.id + ' ' + UI.icon('close', 14) + '</button>').join('') + '</div>' +
+        '<div class="selection-records">' + picked.map((p, i) => '<button class="btn btn-sm" data-pick="' + p.id + '" aria-label="Remove ' + p.id + ' from comparison"><span class="tray-slot">' + (i ? 'B' : 'A') + '</span>' + p.id + ' ' + UI.icon('close', 14) + '</button>').join('') + '</div>' +
       '</div>' +
       '<div class="row" style="gap:8px">' +
         '<button class="btn btn-sm btn-primary" data-action="compare-picked"' +
@@ -244,6 +244,8 @@ const ExplorerPage = (function () {
       const quickValue = focused?.dataset.value;
       const filterAction = focused?.closest('#filters') ? focused.dataset.action : null;
       resultsSlot.innerHTML = resultsHTML();
+      root.querySelector('.explorer')?.classList.toggle('has-selection', Store.state.picked.length > 0);
+      root.querySelector('.explorer-search')?.classList.toggle('is-searching', !!Store.state.filters.q);
       const slot = root.querySelector('#coverage-slot');
       if (slot) slot.innerHTML = showCoverage ? coverageHTML() : '';
       if (o.rebuildFilters) {
@@ -301,6 +303,14 @@ const ExplorerPage = (function () {
       const band = Store.state.filters[input.dataset.band];
       const v = band[input.dataset.bound];
       input.value = v === null ? '' : v;
+    });
+    form.querySelectorAll('[data-quickband]').forEach((button) => {
+      const band = Store.state.filters[button.dataset.quickband];
+      const value = Number(button.dataset.value);
+      button.setAttribute('aria-pressed', band.min === value && band.max === value);
+    });
+    form.querySelectorAll('[data-missing]').forEach((radio) => {
+      radio.checked = radio.dataset.missing === Store.state.filters.missingData;
     });
     form.querySelectorAll('[data-filter]').forEach((cb) => {
       const selected = Store.state.filters[cb.dataset.filter];

@@ -180,27 +180,26 @@ const UI = (function () {
       'aria-labelledby="title-' + esc(record.id) + '">' +
       '<div class="record-card-top">' +
         '<div>' +
-          '<div class="record-id">' + esc(record.id) + ' · session ' + esc(record.session) + '</div>' +
+          '<div class="record-identity-line"><span class="record-id">' + esc(record.id) + '</span><span class="badge badge-ember">Demonstration</span></div>' +
           '<h3 id="title-' + esc(record.id) + '">' +
             '<a href="#/record/' + esc(record.id) + '">' + esc(record.title) + '</a>' +
           '</h3>' +
-          '<p class="record-sub">' + esc(record.run) + ' · ignition: ' + esc(record.ignition) + '</p>' +
+          '<p class="record-sub">Session ' + esc(record.session) + ' · ' + esc(record.run) + '</p>' +
         '</div>' +
         '<div class="tag-row" style="justify-content:flex-end">' +
-          '<span class="badge badge-ember">Demonstration</span>' +
           (record.outcomes || []).slice(0, 2).map((oc) => outcomeBadge(oc.type)).join('') +
         '</div>' +
       '</div>' +
-      '<div class="cond-grid">' + CARD_KEYS.map((k) => condValue(record, k)).join('') + '</div>' +
+      '<div class="cond-grid">' + ['oxygen_pct', 'airflow_cms', 'thickness_mm', 'fuel', 'geometry', 'flow_direction'].map((k) => condValue(record, k)).join('') + '</div>' +
       '<p class="observation-preview"><span>Illustrative observation</span> · ' + esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p>' +
       '<div class="record-foot">' +
-        '<div class="tag-row">' + completeness(record) + missingCount(record) + reviewedBadge(record) + '</div>' +
+        '<div class="tag-row record-metadata-status">' + missingCount(record) + reviewedBadge(record) + '</div>' +
         '<div class="record-actions">' +
           (o.hidePick ? '' :
             '<button class="btn btn-sm" data-pick="' + esc(record.id) + '" aria-pressed="' + selected + '">' +
-              icon('compare', 14) + (selected ? 'Selected for comparison' : 'Select to compare') +
+              icon(selected ? 'check' : 'compare', 14) + (selected ? 'Selected · remove' : 'Select to compare') +
             '</button>') +
-          '<a class="btn btn-sm btn-ghost" href="#/record/' + esc(record.id) + '">Open record ' + icon('chevron', 14) + '</a>' +
+          '<a class="btn btn-sm" href="#/record/' + esc(record.id) + '">View record ' + icon('chevron', 14) + '</a>' +
           '<a class="btn btn-sm btn-ghost" href="#/evidence/' + esc(record.id) + '">Inspect evidence</a>' +
         '</div>' +
       '</div>' +

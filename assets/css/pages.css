@@ -743,3 +743,40 @@ summary { cursor: pointer; color: var(--tx-1); font-weight: 600; min-height: var
   .pair-suggestions summary .muted { display: block; margin-left: var(--sp-5); }
   .pair-actions .btn { flex: 1; }
 }
+
+/* V2 Explorer: conditions first, compact records and an explicit pair tray. */
+.explorer-search { padding: var(--sp-5); background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-md); }
+.explorer-search.is-searching { border-color: var(--border-selected); }
+.record-card { padding: var(--sp-5); }
+.record-card-top { margin-bottom: var(--sp-3); }
+.record-identity-line { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.record-card h3 { font-size: var(--fs-17); }
+.record-card .cond-grid { grid-template-columns: repeat(3,minmax(0,1fr)); padding-block: var(--sp-4); gap: var(--sp-3) var(--sp-5); }
+.record-card .cond-grid > :nth-child(-n+3) .cond-value { font-size: var(--fs-20); font-variant-numeric: tabular-nums; }
+.record-card .cond-grid > :nth-child(n+4) { padding-top: var(--sp-3); border-top: 1px solid var(--line-soft); }
+.record-metadata-status { gap: var(--sp-2); }
+.record-card .record-foot { gap: var(--sp-3); margin-top: var(--sp-3); }
+.record-card .record-actions { gap: var(--sp-2); }
+.filters .check { padding: 7px 8px; margin-inline: -8px; border-radius: var(--r-sm); }
+.filters .check:has(input:checked) { background: var(--surface-selected); color: var(--teal-300); }
+.filters [data-quickband][aria-pressed="true"] { border-color: var(--border-selected); color: var(--teal-300); background: var(--surface-selected) !important; }
+.advanced-filters { border-top: 1px solid var(--line); padding-top: var(--sp-2); }
+.advanced-filters summary { font-size: var(--fs-13); }
+.advanced-filters[open] summary { margin-bottom: var(--sp-3); }
+.selection-tray { border-color: var(--border-selected); background: var(--bg-panel-2); box-shadow: var(--shadow-md); }
+.tray-count { margin-left: var(--sp-2); font-family: var(--font-mono); color: var(--teal-300); }
+.tray-slot { display: grid; place-items: center; width: 20px; height: 20px; background: var(--surface-selected); border-radius: 3px; color: var(--teal-300); font-size: var(--fs-12); }
+@media (max-width: 640px) {
+  .record-card { padding: var(--sp-4); }
+  .record-card .cond-grid { gap: var(--sp-3); }
+  .record-card .cond-grid > :nth-child(-n+3) .cond-value { font-size: var(--fs-17); }
+  .record-card .record-actions { width: 100%; }
+  .record-card .record-actions .btn { flex-grow: 1; }
+  .explorer.has-selection { padding-bottom: 180px; }
+  .selection-tray { position: fixed; inset: auto var(--sp-3) var(--sp-3); z-index: 25; margin: 0; padding: var(--sp-3); flex-wrap: wrap; gap: var(--sp-2); }
+  .selection-tray > .dot { display: none; }
+  .selection-tray > div { min-width: 0; }
+  .selection-tray .muted { display: block; font-size: var(--fs-12); }
+  .selection-tray > .row { width: 100%; }
+  .selection-tray [data-action="compare-picked"] { flex: 1; }
+}
