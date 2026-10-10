@@ -59,7 +59,7 @@ const RecordPage = (function () {
       { label: 'Instrumented measurements', available: false, note: 'not produced in this prototype' },
       { label: 'Verified labels', available: false, note: 'requires a human review pass' }
     ];
-    return '<details class="card card-lg record-media"><summary>Media inventory <span class="badge badge-unknown">No original files supplied</span></summary>' +
+    return '<details class="card card-lg record-media" id="record-media"><summary>Media inventory <span class="badge badge-unknown">No original files supplied</span></summary>' +
       '<div class="card-title"><h2 style="font-size:var(--fs-20)">Media inventory</h2>' +
         '<span class="badge ' + (kind === 'none' ? 'badge-unknown' : 'badge-teal') + '">' +
           UI.esc(kind === 'none' ? 'no media indexed' : kind === 'video' ? 'video described only' : 'frames described only') + '</span></div>' +
@@ -147,14 +147,14 @@ const RecordPage = (function () {
         '</div>' +
       '</div></div>' +
 
-      '<div class="wrap record-workspace"><section class="record-profile" aria-label="Record identity"><div class="record-symbol" aria-hidden="true">' + UI.icon('layers', 38) + '</div><div><span class="record-id">' + UI.esc(record.id) + '</span><h2>' + UI.esc(record.title) + '</h2><div class="tag-row">' + UI.factorChips(record) + '</div><p><span class="research-label">Illustrative observation</span> · ' + UI.esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p></div></section>' + UI.conditionStrip(record) +
+      '<div class="wrap record-workspace"><section class="record-profile" aria-label="Record identity">' + UI.recordThumbnail(record) + '<div><span class="record-id">' + UI.esc(record.id) + '</span><h2>' + UI.esc(record.title) + '</h2><div class="tag-row">' + UI.factorChips(record) + '</div><p><span class="research-label">Illustrative observation</span> · ' + UI.esc(record.outcomes?.[0]?.label || 'Not recorded') + '</p></div></section>' + UI.conditionStrip(record) +
         '<div class="record-provenance-note">' + UI.icon('book', 17) + '<p><strong>Source extraction unverified.</strong> Conditions and observations are team-authored demonstration content. NASA reports provide background references only.</p></div>' +
-      '<div class="detail-grid">' +
+      '<nav class="record-section-nav" aria-label="Record sections">' + [['record-metadata','Overview'],['record-observations','Observations'],['record-media','Media inventory'],['record-provenance','Provenance']].map(([id,label],i)=>'<button class="btn" type="button" data-action="record-section" data-target="'+id+'"'+(i ? '' : ' aria-current="location"')+'>'+label+'</button>').join('') + '</nav><div class="detail-grid">' +
         '<div class="stack-lg">' +
 
           '<section class="card card-lg">' +
             FIELD_GROUPS.map((g, i) =>
-              '<section class="metadata-group' + (i ? ' mt-6' : '') + '">' +
+              '<section' + (i ? '' : ' id="record-metadata"') + ' class="metadata-group' + (i ? ' mt-6' : '') + '">' +
                 '<div class="card-title"><h2 style="font-size:var(--fs-17)"><span class="section-marker">0' + (i + 1) + '</span>' + g.title + '</h2>' +
                   '<span class="badge">' + g.fields.filter((f) => !Store.isMissing(record, f.key)).length + '/' + g.fields.length + ' recorded</span></div>' +
                 '<dl class="def-list">' + g.fields.map((f) => fieldHTML(record, f)).join('') + '</dl>' +
@@ -166,7 +166,7 @@ const RecordPage = (function () {
 
           mediaSection(record) +
 
-          '<section class="card card-lg">' +
+          '<section class="card card-lg" id="record-observations">' +
             '<div class="card-title"><h2 style="font-size:var(--fs-20)">Illustrative behaviour and phase notes</h2></div>' +
             (record.outcomes || []).map((o) =>
               '<div class="obs-row"><div class="row row-wrap" style="gap:10px">' + UI.outcomeBadge(o.type) +
@@ -200,7 +200,7 @@ const RecordPage = (function () {
             '<div class="tag-row">' + UI.factorChips(record) + '</div>' +
           '</div>' +
 
-          '<div class="card">' +
+          '<div class="card" id="record-provenance">' +
             '<div class="card-title"><h3 style="font-size:var(--fs-15)">Provenance</h3>' +
               '<span class="badge badge-unknown">Unverified extraction</span></div>' +
             '<dl class="kv">' +
@@ -224,6 +224,16 @@ const RecordPage = (function () {
   }
 
   const actions = {
+    'record-section': (button) => {
+      const section = root.querySelector('#' + button.dataset.target);
+      if (!section) return;
+      root.querySelectorAll('[data-action="record-section"]').forEach((item) => item.removeAttribute('aria-current'));
+      button.setAttribute('aria-current', 'location');
+      if (section.tagName === 'DETAILS') section.open = true;
+      section.tabIndex = -1;
+      section.scrollIntoView({ block:'start' });
+      section.focus({ preventScroll:true });
+    },
     'copy-id': () => { const id = Router.current().id; if (Store.byId(id)) UI.copyText(id, 'Experiment ID copied.'); },
     'use-in-compare': () => {
       const id = (location.hash.split('/')[2] || '').split('?')[0];
