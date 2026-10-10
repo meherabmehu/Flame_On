@@ -211,3 +211,11 @@ Catalog records and comparison rules are unchanged.
 See [the seven-page implementation report](docs/seven-page-reference.md) for screen changes and checks.
 `node tools/reference-test.js` additionally verifies heatmap filtering, live totals, document navigation
 and seven desktop/mobile screen previews using the same temporary QA dependencies as the other tests.
+
+### Internal aerospace dashboard
+
+The six internal pages now follow the latest collage with electric-blue controls, refined navy panels
+and distinct local space artwork. Compare shows two experiments above analysis; Coverage adds a
+computed side summary; Explorer keeps its conditions in expandable rows. Evidence has a working
+navigation link, and mobile navigation isolates background focus. The homepage hero is unchanged.
+See [the internal dashboard report](docs/internal-dashboard.md) for backgrounds, validation and limits.

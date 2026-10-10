@@ -62,7 +62,7 @@ function htmlMain() { return document.getElementById('main').innerHTML; }
 (async function run() {
 // ---------- overview ----------
 check('header renders brand', document.querySelector('.brand-name')?.textContent === 'CinderLens');
-check('nav has 5 links', document.querySelectorAll('.nav-link').length === 5);
+check('nav has 6 working screen links', document.querySelectorAll('.nav-link').length === 6);
 check('overview hero present', text().includes('Understand fire'));
 check('overview shows example question', text().includes('what happened at low airflow'));
 check('overview honesty section', text().includes('deliberately does not do'));

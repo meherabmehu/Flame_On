@@ -15,7 +15,7 @@ const assert = require('node:assert/strict');
     await page.setViewportSize({ width, height: 1000 });
     for (const route of routes) {
       await page.goto(base + route);
-      await page.locator('main h1').waitFor();
+      await page.locator('main h1').waitFor().catch(error => { throw new Error(`Heading failed at ${width}: ${route}: ${error.message}`); });
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
       assert.equal(overflow, false, `Horizontal overflow at ${width}: ${route}`);
       layouts++;

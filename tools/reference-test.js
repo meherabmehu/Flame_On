@@ -47,7 +47,18 @@ const path = require('node:path');
     const a = await page.locator('.pair-slot').first().boundingBox();
     const analysis = await page.locator('.analysis-section').boundingBox();
     const b = await page.locator('.pair-slot').last().boundingBox();
-    assert.ok(a.x < analysis.x && analysis.x < b.x, 'Desktop analysis sits between experiment A and B');
-    console.log('PASS seven desktop/mobile screenshots, live catalog totals, all three heatmap views and filter counts, notes navigation/focus, desktop comparison layout');
+    assert.ok(a.x < b.x && Math.abs(a.y - b.y) < 2 && analysis.y > a.y, 'Desktop experiments sit side by side above condition analysis');
+    const backgrounds = new Set();
+    for (const name of ['explorer','compare','coverage','evidence','details','notes']) {
+      await page.goto(base + routes[name]);
+      assert.equal(await page.locator('body').evaluate(el => el.classList.contains('internal-dashboard')), true);
+      const image = await page.locator('#main').evaluate(el => getComputedStyle(el).backgroundImage);
+      assert.match(image, /space\.svg/);
+      backgrounds.add(image);
+    }
+    assert.equal(backgrounds.size, 6, 'Each internal screen has distinct decorative space art');
+    await page.goto(base);
+    assert.equal(await page.locator('body').evaluate(el => el.classList.contains('internal-dashboard')), false);
+    console.log('PASS seven desktop/mobile screenshots, live totals, three heatmap filters, notes focus, side-by-side comparison, six distinct backgrounds and unmodified hero styling');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
