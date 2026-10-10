@@ -62,6 +62,7 @@ const Store = (function () {
     try {
       localStorage.setItem('cinderlens.filters', JSON.stringify(state.filters));
       localStorage.setItem('cinderlens.compare', JSON.stringify(state.compare));
+      localStorage.setItem('cinderlens.picked', JSON.stringify(state.picked));
     } catch (e) { /* private mode — state stays in memory only */ }
   }
 
@@ -69,8 +70,23 @@ const Store = (function () {
     try {
       const f = JSON.parse(localStorage.getItem('cinderlens.filters') || 'null');
       const c = JSON.parse(localStorage.getItem('cinderlens.compare') || 'null');
-      if (f) state.filters = Object.assign(state.filters, f);
-      if (c) state.compare = Object.assign(state.compare, c);
+      if (f && typeof f === 'object') {
+        state.filters.q = typeof f.q === 'string' ? f.q : '';
+        ['fuel', 'geometry', 'flow_direction'].forEach((k) => {
+          state.filters[k] = Array.isArray(f[k]) ? f[k].filter((v) => typeof v === 'string') : [];
+        });
+        ['oxygen', 'airflow', 'thickness'].forEach((k) => {
+          ['min', 'max'].forEach((b) => { state.filters[k][b] = Number.isFinite(f[k]?.[b]) ? f[k][b] : null; });
+        });
+        state.filters.reviewedOnly = f.reviewedOnly === true;
+        state.filters.missingData = ['include', 'exclude', 'only'].includes(f.missingData) ? f.missingData : 'include';
+      }
+      if (c && typeof c === 'object') {
+        state.compare = { factor: FACTORS.some((x) => x.key === c.factor) ? c.factor : 'airflow_cms',
+          a: byId(c.a) ? c.a : null, b: byId(c.b) ? c.b : null };
+      }
+      const picked = JSON.parse(localStorage.getItem('cinderlens.picked') || '[]');
+      state.picked = Array.isArray(picked) ? [...new Set(picked.filter((id) => byId(id)))].slice(0, 2) : [];
     } catch (e) { /* ignore malformed stored state */ }
   }
 
@@ -81,7 +97,7 @@ const Store = (function () {
   }
 
   function byId(id) {
-    return CATALOG.find((r) => r.id === id) || null;
+    return records().find((r) => r.id === id) || null;
   }
 
   /* --------------------------------------------------------------- filtering */
@@ -197,7 +213,7 @@ const Store = (function () {
     const chips = [];
     if (f.q) chips.push({ key: 'q', label: 'Search: “' + f.q + '”', clear: { q: '' } });
     f.fuel.forEach((v) => chips.push({ key: 'fuel', label: 'Fuel: ' + v, clear: { fuel: f.fuel.filter((x) => x !== v) } }));
-    f.geometry.forEach((v) => chips.push({ key: 'geometry', label: 'Geometry: ' + GEOMETRY_LABELS[v] || v, clear: { geometry: f.geometry.filter((x) => x !== v) } }));
+    f.geometry.forEach((v) => chips.push({ key: 'geometry', label: 'Geometry: ' + (GEOMETRY_LABELS[v] || v), clear: { geometry: f.geometry.filter((x) => x !== v) } }));
     f.flow_direction.forEach((v) => chips.push({ key: 'flow_direction', label: 'Flow: ' + v, clear: { flow_direction: f.flow_direction.filter((x) => x !== v) } }));
     [['oxygen', 'Oxygen'], ['airflow', 'Airflow'], ['thickness', 'Thickness']].forEach(([k, label]) => {
       const band = f[k];
@@ -230,13 +246,16 @@ const Store = (function () {
   }
 
   function togglePick(id) {
+    if (!byId(id)) return false;
     const i = state.picked.indexOf(id);
     if (i >= 0) state.picked.splice(i, 1);
     else {
+      if (state.picked.length >= 2) return false;
       state.picked.push(id);
-      if (state.picked.length > 2) state.picked.shift();
     }
+    persist();
     emit();
+    return true;
   }
 
   restore();
