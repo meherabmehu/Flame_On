@@ -29,6 +29,7 @@ const dom = new JSDOM(html, {
 });
 const { window } = dom;
 const { document } = window;
+window.scrollTo = () => {};
 
 // Load the scripts manually in document order (jsdom won't fetch local files).
 const scripts = [...document.querySelectorAll('script[src]')].map((s) => s.getAttribute('src'));
@@ -60,9 +61,9 @@ function htmlMain() { return document.getElementById('main').innerHTML; }
 
 (async function run() {
 // ---------- overview ----------
-check('header renders brand', htmlMain || document.body.textContent.includes('Flame in Freefall'));
+check('header renders brand', document.querySelector('.brand-name')?.textContent === 'CinderLens');
 check('nav has 5 links', document.querySelectorAll('.nav-link').length === 5);
-check('overview hero present', text().includes('Flame in Freefall'));
+check('overview hero present', text().includes('Understand fire'));
 check('overview shows example question', text().includes('what happened at low airflow'));
 check('overview honesty section', text().includes('deliberately does not do'));
 check('overview sources listed', text().includes('20160000593') && text().includes('20210011385'));
@@ -155,9 +156,9 @@ clearBtn.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 check('filters cleared', window.CinderLens.Store.state.filters.fuel.length === 0);
 
 // pick two records then compare
-const picks = document.querySelectorAll('[data-pick]');
+const picks = document.querySelectorAll('.record-card [data-pick]');
 picks[0].dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-const picks2 = document.querySelectorAll('[data-pick]');
+const picks2 = document.querySelectorAll('.record-card [data-pick]');
 picks2[1].dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 check('two records picked', window.CinderLens.Store.state.picked.length === 2);
 const comparePicked = document.querySelector('[data-action="compare-picked"]');
@@ -196,7 +197,7 @@ check('evidence page for a lone record renders', text().includes('BASS2-T137'));
 
 // evidence chooser
 await nav('#/evidence');
-check('evidence chooser lists media records', text().includes('Records with media indexed'));
+check('evidence chooser lists media records', text().includes('Records with illustrative media descriptions'));
 
 // ---------- record detail ----------
 await nav('#/record/BASS2-T133');
@@ -253,6 +254,55 @@ check('describePair produces sentence', (M.describePair(S.byId('BASS2-T101'), S.
 
 const withMissing = S.records().filter(r => S.countMissing(r) > 0).length;
 check('some rows intentionally have missing fields', withMissing > 0, String(withMissing));
+
+// Focused regressions for state, filters, invalid links and honesty.
+S.set({ picked: [] });
+check('invalid comparison selection rejected', S.togglePick('UNKNOWN') === false);
+S.togglePick('BASS2-T101'); S.togglePick('BASS2-T102');
+check('third selection requires explicit removal', S.togglePick('BASS2-T103') === false && S.state.picked.join(',') === 'BASS2-T101,BASS2-T102');
+S.togglePick('BASS2-T101');
+check('selection can be removed', S.state.picked.length === 1 && S.state.picked[0] === 'BASS2-T102');
+check('selection persisted', JSON.parse(window.localStorage.getItem('cinderlens.picked')).length === 1);
+S.resetFilters();
+S.setFilter({ fuel: ['PMMA'], airflow: { min: 3, max: 3 }, oxygen: { min: 21, max: 21 } });
+check('combined filters constrain all results', S.results().length > 0 && S.results().every(r => r.fuel === 'PMMA' && r.airflow_cms === 3 && r.oxygen_pct === 21));
+S.setFilter({ q: 'nonexistent-query' });
+check('unmatched search returns no records', S.results().length === 0);
+S.resetFilters();
+await nav('#/explorer');
+S.setFilter({ fuel: ['PMMA', 'Cotton-fiberglass'] });
+window.CinderLens.App.PAGES.explorer.refresh({ rebuildFilters: true });
+document.querySelector('[data-chip-clear="1"]').click();
+check('second chip removes its own value', S.state.filters.fuel.length === 1 && S.state.filters.fuel[0] === 'PMMA');
+S.resetFilters();
+await nav('#/compare?a=UNKNOWN&b=&factor=bad-key');
+check('invalid comparison URL explained', text().includes('Unknown comparison factor') && text().includes('not in the catalog'));
+check('invalid comparison ID clears slot', S.state.compare.a === null && S.state.compare.b === null);
+await nav('#/compare?a=BASS2-T101&b=BASS2-T101&factor=airflow_cms');
+check('duplicate pair cannot describe an outcome difference', text().includes('No change to compare') && !text().includes('the recorded outcome is'));
+await nav('#/record/%E0%A4%A');
+check('malformed encoded ID handled', text().includes('Record not found'));
+await nav('#/record/BASS2-T101');
+check('demo media does not claim a supplied file', text().includes('no video file supplied') && !text().includes('video available'));
+check('record metadata uses definition lists', document.querySelectorAll('.def-list dt').length === 13 && document.querySelectorAll('.def-list dd').length === 13);
+await nav('#/compare?a=BASS2-T101&b=BASS2-T102&factor=airflow_cms');
+check('comparison uses counts instead of fit percentages', !/fit\s*\d+%/.test(text()) && text().includes('matched conditions'));
+check('prototype rules explicitly unvalidated', text().includes('not scientifically validated'));
+
+// Verify the redesign has not changed any existing catalog verdict.
+const vm = require('vm');
+const baselineContext = vm.createContext({ console, localStorage: { getItem: () => null, setItem: () => {} } });
+const cp = require('child_process');
+for (const file of ['assets/js/data/catalog.js', 'assets/js/store.js', 'assets/js/matcher.js']) {
+  vm.runInContext(cp.execFileSync('git', ['show', 'HEAD:' + file], { cwd: ROOT, encoding: 'utf8' }), baselineContext);
+}
+const baseline = vm.runInContext('({Matcher, CATALOG, FACTORS})', baselineContext);
+let equal = true, comparisons = 0;
+for (const factor of baseline.FACTORS) for (const a of baseline.CATALOG) for (const b of baseline.CATALOG) {
+  equal = equal && baseline.Matcher.pairVerdict(a, b, factor.key).verdict === M.pairVerdict(S.byId(a.id), S.byId(b.id), factor.key).verdict;
+  comparisons++;
+}
+check('all ' + comparisons + ' existing catalog verdicts preserved', equal);
 
 console.log('\n' + (failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED'));
 process.exit(failures === 0 ? 0 : 1);
