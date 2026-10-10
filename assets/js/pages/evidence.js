@@ -161,7 +161,7 @@ const EvidencePage = (function () {
           '<span>' + UI.esc(record.id) + '</span>' +
         '</nav>' +
         '<p class="eyebrow">Evidence &amp; results</p>' +
-        '<h1>Evidence — ' + UI.esc(record.id) + '</h1>' +
+        '<h1>Evidence &amp; Observations — ' + UI.esc(record.id) + '</h1>' +
         '<p class="lead">' + UI.esc(record.id) + ' · session ' + UI.esc(record.session) + ' · ' + UI.esc(record.run) + '</p>' +
         '<div class="tag-row mt-4">' +
           '<span class="badge badge-ember">' + UI.esc(COPY.demoTag) + '</span>' +

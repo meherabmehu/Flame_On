@@ -91,7 +91,7 @@ UI.esc(
       '<div class="page-head"><div class="wrap page-head-inner">' +
         '<div>' +
           '<p class="eyebrow">Data notes</p>' +
-          '<h1>Data Notes</h1>' +
+          '<h1>Data Notes &amp; Methodology</h1>' +
           '<p class="lead">Understand the demonstration data, what the prototype rules check, and why a match is not scientific validation.</p>' +
         '</div>' +
       '</div></div>' +
