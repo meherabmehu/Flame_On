@@ -208,6 +208,21 @@ const UI = (function () {
 
   /* --------------------------------------------------------- state blocks */
 
+  function evidenceSummary(record) {
+    const states = [
+      ['videoOff', 'Original media', 'Not supplied', 'No video or frame file available.'],
+      ['book', 'Source extraction', 'Unverified', 'Team-authored demonstration row.'],
+      ['shield', 'Demo metadata check', record.metadataReviewed ? 'Finished' : 'Pending', 'Interface review only; no scientific validation.']
+    ];
+    return '<section class="evidence-status-strip" aria-label="Evidence availability">' + states.map((s) =>
+      '<div>' + icon(s[0], 18) + '<div><span class="research-label">' + s[1] + '</span><strong>' + s[2] + '</strong><p>' + s[3] + '</p></div></div>').join('') + '</section>';
+  }
+
+  function conditionStrip(record) {
+    return '<div class="condition-strip" aria-label="Key demonstration conditions">' +
+      ['oxygen_pct', 'airflow_cms', 'thickness_mm', 'pressure_kpa'].map((key) => condValue(record, key)).join('') + '</div>';
+  }
+
   function state(opts) {
     const o = opts || {};
     return '<div class="state' + (o.dashed ? ' state-dashed' : '') + (o.inline ? ' state-inline' : '') + '"' +
@@ -332,7 +347,7 @@ const UI = (function () {
   }
 
   return {
-    esc, icon, brandMark, mediaPlaceholder, outcomeBadge, verdictBadge, missingCount,
+    esc, icon, brandMark, mediaPlaceholder, evidenceSummary, conditionStrip, outcomeBadge, verdictBadge, missingCount,
     reviewedBadge, completeness, recordCard, condValue, state, emptyDataState,
     noResultsState, skeletonList, toast, dataCaveatStrip,
     factorChips, interpretationBlock, trapFocus, copyText, CARD_KEYS, OUTCOME_STYLE

@@ -175,19 +175,26 @@ const EvidencePage = (function () {
       '</div>' +
     '</div></div>' +
 
-    '<div class="wrap"><div class="evidence-grid">' +
+    '<div class="wrap evidence-workspace">' + UI.evidenceSummary(record) + UI.conditionStrip(record) +
+      '<nav class="inspection-nav" aria-label="Evidence sections">' +
+        [['obs-title', 'Observations'], ['trace-title', 'Traceability'], ['lim-title', 'Limitations']].map((s) =>
+          '<button class="btn btn-sm btn-ghost" data-action="inspect-section" data-section="' + s[0] + '">' + s[1] + '</button>').join('') +
+      '</nav><div class="evidence-grid">' +
       '<div class="stack-lg">' +
 
         '<section class="card card-flush" aria-labelledby="media-title">' +
           '<figure class="media-frame" style="border:0;border-radius:0">' +
-            UI.mediaPlaceholder(record, { showPlay: true }) +
+            '<div class="media-unavailable">' + UI.icon('videoOff', 28) + '<div><strong>No original experiment footage</strong><p>This prototype provides metadata and illustrative observations only.</p></div></div>' +
+            (record.media.kind === 'none' ? UI.mediaPlaceholder(record, { showPlay: false }) :
+              '<details class="schematic-disclosure"><summary>View illustrative schematic <span class="muted">Not source footage</span></summary>' +
+              UI.mediaPlaceholder(record, { showPlay: false }) + '</details>') +
             '<figcaption>' +
               '<div class="card-title" style="margin-bottom:8px">' +
                 '<h2 id="media-title" style="font-size:var(--fs-17)">Experiment media</h2>' +
                 '<span class="badge">' + UI.esc(record.media.kind === 'none' ? 'no file' : record.media.label) + '</span>' +
               '</div>' +
               UI.esc(mediaNote) +
-              '<p class="mt-2 muted" style="font-size:var(--fs-12)">The drawing above is a schematic of the duct and sample, generated from this record’s fields. ' +
+              '<p class="mt-2 muted" style="font-size:var(--fs-12)">The optional drawing is a schematic of the duct and sample, generated from this record’s fields. ' +
                 'It is not a frame from a NASA video.</p>' +
             '</figcaption>' +
           '</figure>' +
@@ -214,7 +221,7 @@ const EvidencePage = (function () {
           timeline(record) +
         '</section>' +
 
-        '<section class="card card-lg" aria-labelledby="meas-title">' +
+        '<details class="card card-lg planned-measurements"><summary>Visual measurements <span class="badge badge-warn">Not implemented</span></summary>' +
           '<div class="card-title"><h2 id="meas-title" style="font-size:var(--fs-20)">Visual measurements</h2>' +
             '<span class="badge badge-warn">Not implemented</span></div>' +
           '<p style="font-size:var(--fs-14);max-width:74ch">The build guide describes computer vision on a selected video subset to measure visible flame changes, ' +
@@ -225,7 +232,7 @@ const EvidencePage = (function () {
                 '<div class="concept-stub mt-3">Awaiting verified labels</div>' +
                 '<p>No value is produced in this prototype, and no placeholder number is shown in its place.</p></div>').join('') +
           '</div>' +
-        '</section>' +
+        '</details>' +
 
         '<section class="card card-lg" aria-labelledby="trace-title">' +
           '<div class="card-title"><h2 id="trace-title" style="font-size:var(--fs-20)">How each observation is traceable</h2></div>' +
@@ -252,10 +259,10 @@ const EvidencePage = (function () {
             '<p class="tx-1">' + UI.esc((record.outcomes && record.outcomes[0]) ? record.outcomes[0].label : 'Not recorded') + '</p>' +
             '<p class="muted" style="font-size:var(--fs-12)">Team-authored demonstration outcome in ' + UI.esc(record.id) + '.</p>' +
           '</div>' +
-          '<div class="claim claim-concept">' +
+          '<details class="claim claim-concept"><summary>Proposed interpretation</summary>' +
             '<h4>Proposed interpretation</h4>' +
             '<p class="muted">A machine explanation of this test would appear here. No model is trained in this prototype, so the slot stays empty and clearly marked.</p>' +
-          '</div>' +
+          '</details>' +
         '</div>' +
 
         '<div class="card">' +
@@ -317,6 +324,13 @@ const EvidencePage = (function () {
   }
 
   const actions = {
+    'inspect-section': (button) => {
+      const heading = root.querySelector('#' + button.dataset.section);
+      if (!heading) return;
+      heading.setAttribute('tabindex', '-1');
+      heading.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+      heading.focus({ preventScroll: true });
+    },
     'compare-with': () => {
       const c = Store.state.compare;
       const id = (location.hash.split('/')[2] || '').split('?')[0];
