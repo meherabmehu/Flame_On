@@ -72,7 +72,8 @@ flame-on/
 │   ├── base.css                reset, typography, layout primitives
 │   ├── components.css          header, buttons, badges, tables, state blocks
 │   ├── pages.css               page layouts (explorer, compare, evidence, record)
-│   └── responsive.css          tablet / mobile / print / reduced motion
+│   ├── responsive.css          tablet / mobile / print / reduced motion
+│   └── hero.css                cinematic homepage and responsive scene layout
 ├── assets/js/
 │   ├── data/catalog.js         DEMONSTRATION RECORDS + factor definitions + copy
 │   ├── store.js                state, filtering, faceting, persistence
@@ -80,6 +81,7 @@ flame-on/
 │   ├── ui.js                   shared components, badges, empty/loading states
 │   ├── router.js               hash routing
 │   ├── shell.js                header, navigation, data-mode control, footer
+│   ├── components/heroFlame.js  isolated procedural WebGL concept artwork
 │   ├── pages/                  overview, explorer, compare, evidence, record, dataNotes
 │   └── main.js                 bootstrap, delegated actions, public API
 └── docs/
@@ -100,7 +102,9 @@ communicate comparable, caveats, rejected, information and unknown.
 and monospace for test IDs and measurement timings.
 
 **Motion** — 120–320 ms transitions that explain change (row highlighting when a factor varies, panel
-expansion, toast confirmation). No decorative movement; `prefers-reduced-motion` disables it.
+expansion, toast confirmation). The homepage also has a decorative procedural WebGL flame with slow
+motion and damped pointer interaction. A pause control stops it; `prefers-reduced-motion` replaces it
+with a static illustration. It pauses offscreen and releases GPU resources on route changes.
 
 **Honesty mechanics** — recorded and proposed content are never blended: proposed AI features appear in
 dashed "not implemented" panels. Missing metadata is rendered as "not recorded" with a dashed marker,
@@ -163,6 +167,7 @@ node tools/smoke-test.js
 # In another terminal: python -m http.server 8000 --bind 127.0.0.1
 node tools/browser-test.js
 node tools/accessibility-test.js
+node tools/hero-test.js
 ```
 
 Browser scripts use installed Microsoft Edge on Windows and a local server on port 8000. They do not
@@ -183,3 +188,14 @@ reveals indexed record IDs on hover or keyboard focus. Mobile navigation uses a 
 The V2 checks cover 152 route/viewport layouts and 17 automated accessibility scans, including expanded
 controls. Catalog values, matching rules, ranking and verdicts are unchanged from the preceding build.
 See [the V2 refinement report](docs/ui-refinement-v2.md) for page changes, validation and limitations.
+
+### Cinematic interactive hero
+
+The homepage now uses a native WebGL shader for a three-dimensional decorative flame, concentric
+orbits and floating markers. No library, external model or scientific simulation is required. The HUD
+uses generic condition names, not invented measurements. The scene is explicitly labeled **Concept
+visualization — illustrative only**. Unsupported WebGL, shader failure and reduced-motion preference
+retain a static SVG fallback. Phones and low-power devices have smaller rendering budgets.
+
+See [the hero implementation report](docs/cinematic-hero.md) for controls, cleanup, performance bounds,
+browser verification and remaining hardware-testing limits.

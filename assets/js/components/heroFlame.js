@@ -82,7 +82,7 @@ const HeroFlame = (function () {
     const lowPower = !!navigator.connection?.saveData || (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
     const abort = new AbortController();
     const listen = (target, name, handler) => target.addEventListener(name, handler, { signal: abort.signal });
-    let gl = null, program = null, buffer = null, uniforms = null;
+    let gl = null, ownedContext = null, program = null, buffer = null, uniforms = null;
     let frame = 0, last = 0, time = 0, frames = 0, visible = true, paused = false, lost = false, destroyed = false;
     let px = 0, py = 0, tx = 0, ty = 0;
     let resizeObserver, intersectionObserver;
@@ -103,20 +103,25 @@ const HeroFlame = (function () {
       if (destroyed || motionReduced || lost) { fallback(motionReduced ? 'reduced-motion' : 'unavailable'); return; }
       if (!window.WebGLRenderingContext) { fallback('unsupported'); return; }
       if (!gl) {
+        const shaders = [];
         try {
           gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false, preserveDrawingBuffer: false, powerPreference: 'low-power' });
           if (!gl) { fallback('unsupported'); return; }
+          ownedContext = gl;
           const vertex = compile(gl.VERTEX_SHADER, vertexSource);
+          shaders.push(vertex);
           const fragment = compile(gl.FRAGMENT_SHADER, '#define STEPS ' + (lowPower ? '24' : '36') + '\n' + fragmentSource);
+          shaders.push(fragment);
           program = gl.createProgram(); gl.attachShader(program, vertex); gl.attachShader(program, fragment); gl.linkProgram(program);
           gl.deleteShader(vertex); gl.deleteShader(fragment);
+          shaders.length = 0;
           if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error('Hero program unavailable');
           gl.useProgram(program);
           buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
           gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
           const location = gl.getAttribLocation(program, 'a_position'); gl.enableVertexAttribArray(location); gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
           uniforms = ['u_resolution','u_time','u_pointer'].map((name) => gl.getUniformLocation(program, name));
-        } catch (e) { release(); fallback('unsupported'); return; }
+        } catch (e) { shaders.forEach(shader => gl.deleteShader(shader)); release(); fallback('unsupported'); return; }
       }
       canvas.hidden = false; control.hidden = false;
       figure.dataset.sceneState = lowPower ? 'webgl-low-power' : 'webgl';
@@ -140,8 +145,9 @@ const HeroFlame = (function () {
     function tick(now) {
       frame = 0;
       if (destroyed || !visible || document.hidden || motionReduced || paused || lost) return;
-      const elapsed = last ? now - last : 34;
-      if (elapsed >= (lowPower ? 50 : 32)) {
+      const interval = lowPower ? 50 : 32;
+      const elapsed = last ? now - last : interval;
+      if (elapsed >= interval) {
         const delta = Math.min(elapsed / 1000, .08); last = now; time += delta;
         const damping = 1 - Math.exp(-delta * 5);
         px += (tx-px)*damping; py += (ty-py)*damping;
@@ -169,10 +175,11 @@ const HeroFlame = (function () {
     function destroy() {
       if (destroyed) return; destroyed = true; stop(); abort.abort(); resizeObserver?.disconnect(); intersectionObserver?.disconnect();
       reduce.removeEventListener('change', motionChanged); small.removeEventListener('change', resize);
-      const context = gl; release(); context?.getExtension('WEBGL_lose_context')?.loseContext();
+      const context = ownedContext; release(); context?.getExtension('WEBGL_lose_context')?.loseContext(); ownedContext = null;
     }
     listen(figure,'pointermove',pointer);
     listen(figure,'pointerleave',() => { tx = 0; ty = 0; });
+    listen(figure,'pointercancel',() => { tx = 0; ty = 0; });
     listen(control,'click',() => { paused = !paused; sync(); });
     listen(document,'visibilitychange',sync);
     function motionChanged(event) { motionReduced = event.matches; if (motionReduced) fallback('reduced-motion'); else initialize(); }

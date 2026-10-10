@@ -1,5 +1,10 @@
 # Current implementation note
 
+The latest homepage uses a cinematic, interactive WebGL concept flame. Its implementation and
+verification are documented in [cinematic-hero.md](cinematic-hero.md). The scene has explicit concept
+labels, generic HUD categories, a pause control, a static reduced-motion/unsupported fallback and
+route cleanup. The V2 application-wide refinement is recorded in [ui-refinement-v2.md](ui-refinement-v2.md).
+
 The frontend refinement report in [frontend-report.md](frontend-report.md) records the current UI,
 verification and limitations. The screen walkthrough below also documents the original prototype.
 The overview has been simplified, search is always outside the filter drawer, and Coverage is a
